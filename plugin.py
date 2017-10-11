@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# TODO
-# Token invalidieren, wenn Zugriff nicht möglich ist. Mit altem Token testen!
-
 from Plugins.Plugin import PluginDescriptor
 from Screens.Screen import Screen
 from Screens.InfoBar import MoviePlayer
@@ -59,18 +56,20 @@ def downloadJson(url):
 class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
 	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="400,300" flags="wfNoBorder">
-					<ePixmap position="center,15" size="380,35" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="config" position="10,70" size="380,180" font="Regular;20" scrollbarMode="showOnDemand" />
+		skin = '''<screen position="center,center" size="470,300" flags="wfNoBorder">
+					<ePixmap position="center,10" size="450,45" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="config" position="10,70" size="460,180" font="Regular;20" scrollbarMode="showOnDemand" />
 					<widget name="buttonred" position="10,260" size="120,35" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
-					<widget name="buttongreen" position="150,260" size="120,35" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="buttongreen" position="165,260" size="120,35" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="buttonblue" position="320,260" size="135,35" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
 				</screen>'''
 	else:
-		skin = '''<screen position="center,center" size="600,450" flags="wfNoBorder">
-					<ePixmap position="center,15" size="570,53" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="config" position="15,100" size="570,270" font="Regular;32" itemHeight="42" scrollbarMode="showOnDemand" />
+		skin = '''<screen position="center,center" size="670,450" flags="wfNoBorder">
+					<ePixmap position="center,15" size="640,59" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="config" position="15,100" size="650,270" font="Regular;32" itemHeight="42" scrollbarMode="showOnDemand" />
 					<widget name="buttonred" position="15,390" size="180,50" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
 					<widget name="buttongreen" position="225,390" size="180,50" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
+					<widget name="buttonblue" position="440,390" size="215,50" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
 				</screen>'''
 
 	def __init__(self, session):
@@ -86,10 +85,12 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		ConfigListScreen.__init__(self, self.list)
 		self['buttonred'] = Label(_('Cancel'))
 		self['buttongreen'] = Label(_('Ok'))
-		self['setupActions'] = ActionMap(['SetupActions', 'VirtualKeyboardActions'],
+		self['buttonblue'] = Label('virt. Tastatur')
+		self['setupActions'] = ActionMap(['SetupActions', 'VirtualKeyboardActions', 'ColorActions'],
 		{
 			'green': self.save,
 			'red': self.cancel,
+			'blue': self.virtualKeyboard,
 			'save': self.save,
 			'cancel': self.cancel,
 			'ok': self.save,

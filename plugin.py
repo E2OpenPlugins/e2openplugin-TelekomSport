@@ -132,10 +132,10 @@ class TelekomSportMoviePlayer(MoviePlayer):
 
 	def __init__(self, session, service):
 		MoviePlayer.__init__(self, session, service)
-		self.skinName = "MoviePlayer"
+		self.skinName = 'MoviePlayer'
 
 	def leavePlayer(self):
-		self.session.openWithCallback(self.leavePlayerConfirmed, MessageBox, "Abspielen beenden?")
+		self.session.openWithCallback(self.leavePlayerConfirmed, MessageBox, 'Abspielen beenden?')
 
 	def leavePlayerConfirmed(self, answer):
 		if answer:

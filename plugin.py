@@ -315,8 +315,8 @@ class TelekomSportEventScreen(Screen):
 					<ePixmap position="center,25" size="800,100" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="description" position="10,150" size="800,40" font="Regular;25" zPosition="1" />
 					<widget name="match" position="10,200" size="800,45" noWrap="1" halign="center" font="Regular;35" zPosition="1" />
-					<widget name="subdescription" position="10,270" size="800,35" font="Regular;25" zPosition="1" />
-					<widget source="list" render="Listbox" position="10,305" size="800,300" scrollbarMode="showOnDemand">
+					<widget name="subdescription" position="10,270" size="800,90" font="Regular;25" zPosition="1" />
+					<widget source="list" render="Listbox" position="10,370" size="800,250" scrollbarMode="showOnDemand">
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (30,[
@@ -328,7 +328,7 @@ class TelekomSportEventScreen(Screen):
 							}
 						</convert>
 					</widget>
-					<widget name="status" position="10,305" size="800,300" font="Regular;25" halign="center" zPosition="1" />
+					<widget name="status" position="10,370" size="800,250" font="Regular;25" halign="center" zPosition="1" />
 					<widget name="pay" position="15,630" size="200,35" valign="center" halign="center" zPosition="2" font="Regular;20"/>
 					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
 						<convert type="ClockToText">
@@ -341,8 +341,8 @@ class TelekomSportEventScreen(Screen):
 					<ePixmap position="center,25" size="1200,150" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="description" position="15,230" size="1200,50" font="Regular;35" zPosition="1" />
 					<widget name="match" position="15,290" size="1200,65" noWrap="1" halign="center" font="Regular;50" zPosition="1" />
-					<widget name="subdescription" position="15,370" size="1200,50" font="Regular;35" zPosition="1" />
-					<widget source="list" render="Listbox" position="15,420" size="1200,500" scrollbarMode="showOnDemand">
+					<widget name="subdescription" position="15,370" size="1200,130" font="Regular;35" zPosition="1" />
+					<widget source="list" render="Listbox" position="15,500" size="1200,400" scrollbarMode="showOnDemand">
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (45,[
@@ -354,7 +354,7 @@ class TelekomSportEventScreen(Screen):
 							}
 						</convert>
 					</widget>
-					<widget name="status" position="15,420" size="1200,500" font="Regular;35" halign="center" zPosition="1" />
+					<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
 					<widget name="pay" position="35,955" size="250,50" valign="center" halign="center" zPosition="2" font="Regular;32"/>
 					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
 						<convert type="ClockToText">
@@ -487,7 +487,7 @@ class TelekomSportEventScreen(Screen):
 			self['subdescription'].setText('Die Übertragung startet am ' + self.starttime.strftime('%d.%m.%Y') + ' um ' + self.starttime.strftime('%H:%M') + pay)
 
 	def buildPostEventScreen(self, jsonData):
-		self['subdescription'].setText('Videos:')
+		self['subdescription'].setText('Übertragung vom ' + self.starttime.strftime('%d.%m.%Y %H:%M') + '\n\nVideos:')
 		for content in jsonData['data']['content']:
 			if content['group_elements']:
 				for element in content['group_elements']:
@@ -499,7 +499,7 @@ class TelekomSportEventScreen(Screen):
 							self.videoList.append((title, videos['title'].encode('utf8'), str(videos['videoID']), str(videos['pay'])))
 
 	def buildLiveEventScreen(self, jsonData):
-		self['subdescription'].setText('Videos:')
+		self['subdescription'].setText('Übertragung vom ' + self.starttime.strftime('%d.%m.%Y %H:%M') + '\n\nVideos:')
 		for content in jsonData['data']['content']:
 			if content['group_elements']:
 				for element in content['group_elements']:

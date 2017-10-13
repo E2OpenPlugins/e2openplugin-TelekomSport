@@ -372,6 +372,7 @@ class TelekomSportEventScreen(Screen):
 		self.session = session
 		self.starttime = starttime
 		self.url = url
+		self.match = match
 
 		self['match'] = Label(match)
 		self['description'] = Label(description)
@@ -496,7 +497,7 @@ class TelekomSportEventScreen(Screen):
 							title = videos['title'].encode('utf8')
 							if videos['pay']:
 								title += ' *'
-							self.videoList.append((title, videos['title'].encode('utf8'), str(videos['videoID']), str(videos['pay'])))
+							self.videoList.append((title, self.match + ' - ' + videos['title'].encode('utf8'), str(videos['videoID']), str(videos['pay'])))
 
 	def buildLiveEventScreen(self, jsonData):
 		self['subdescription'].setText('Übertragung vom ' + self.starttime.strftime('%d.%m.%Y %H:%M') + '\n\nVideos:')

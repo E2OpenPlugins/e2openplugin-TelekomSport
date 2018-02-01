@@ -408,12 +408,12 @@ class TelekomSportEventScreen(Screen):
 				if 'error_description' in jsonData:
 					return jsonData['error_description'].encode('utf8')
 				else:
-					return 'Fehler beim Login ' + account + '. Account. Kein access_token.'
+					return 'Fehler beim Login ' + str(account) + '. Account. Kein access_token.'
 
 			response = urllib2.urlopen(urllib2.Request(self.jwt_url, json.dumps({'token': jsonData['access_token']}), {'Content-Type': 'application/json'})).read()
 			jsonResult = json.loads(response)
 			if 'data' not in jsonResult or 'token' not in jsonResult['data']:
-				return 'Fehler beim Login ' + account + '. Account. Kein Token.'
+				return 'Fehler beim Login ' + str(account) + '. Account. Kein Token.'
 
 			config_token.value = jsonResult['data']['token']
 			config_token.save()
@@ -421,7 +421,7 @@ class TelekomSportEventScreen(Screen):
 			config_token_expiration_time.save()
 			return ''
 		except Exception as e:
-			return 'Fehler beim Login ' + account + '. Account. ' + str(e)
+			return 'Fehler beim Login ' + str(account) + '. Account. ' + str(e)
 
 	def loginAllAccounts(self):
 		if config.plugins.telekomsport.username1.value:

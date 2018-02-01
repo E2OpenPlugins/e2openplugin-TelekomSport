@@ -123,7 +123,7 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		self.session.openWithCallback(self.virtualKeyBoardCallback, VirtualKeyBoard, title = self['config'].getCurrent()[0], text = self['config'].getCurrent()[1].value)
 
 	def virtualKeyBoardCallback(self, callback = None):
-		if callback is not None and len(callback):
+		if callback is not None:
 			self['config'].getCurrent()[1].value = callback
 			self['config'].invalidate(self['config'].getCurrent())
 

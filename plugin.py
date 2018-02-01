@@ -10,7 +10,7 @@ from Components.Sources.List import List
 from Components.Label import Label
 from Components.MultiContent import MultiContentEntryText
 from Components.ConfigList import ConfigListScreen
-from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing
+from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo
 
 from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceReference, getDesktop
 
@@ -33,6 +33,7 @@ config.plugins.telekomsport.username2 = ConfigText(default = '', fixed_size = Fa
 config.plugins.telekomsport.password2 = ConfigPassword(default = '', fixed_size = False)
 config.plugins.telekomsport.token2 = ConfigText(default = '')
 config.plugins.telekomsport.token2_expiration_time = ConfigInteger(default = 0)
+config.plugins.telekomsport.hide_unplayable = ConfigYesNo(default=False)
 
 
 def encode(x):
@@ -75,12 +76,20 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		self.list = []
-		self.list.append(getConfigListEntry('1. Account', ConfigNothing()))
-		self.list.append(getConfigListEntry('Benutzername', config.plugins.telekomsport.username1))
-		self.list.append(getConfigListEntry('Passwort', config.plugins.telekomsport.password1))
-		self.list.append(getConfigListEntry('2. Account', ConfigNothing()))
-		self.list.append(getConfigListEntry('Benutzername', config.plugins.telekomsport.username2))
-		self.list.append(getConfigListEntry('Passwort', config.plugins.telekomsport.password2))
+		self.config_account1_text = getConfigListEntry('1. Account', ConfigNothing())
+		self.list.append(self.config_account1_text)
+		self.config_username1 = getConfigListEntry('Benutzername', config.plugins.telekomsport.username1)
+		self.list.append(self.config_username1)
+		self.config_password1 = getConfigListEntry('Passwort', config.plugins.telekomsport.password1)
+		self.list.append(self.config_password1)
+		self.config_account2_text = getConfigListEntry('2. Account', ConfigNothing())
+		self.list.append(self.config_account2_text)
+		self.config_username2 = getConfigListEntry('Benutzername', config.plugins.telekomsport.username2)
+		self.list.append(self.config_username2)
+		self.config_password2 = getConfigListEntry('Passwort', config.plugins.telekomsport.password2)
+		self.list.append(self.config_password2)
+		self.config_hide_unplayable = getConfigListEntry('Unspielbares ausblenden', config.plugins.telekomsport.hide_unplayable)
+		self.list.append(self.config_hide_unplayable)
 
 		ConfigListScreen.__init__(self, self.list)
 		self['buttonred'] = Label(_('Cancel'))
@@ -120,7 +129,8 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		self.close()
 
 	def virtualKeyboard(self):
-		self.session.openWithCallback(self.virtualKeyBoardCallback, VirtualKeyBoard, title = self['config'].getCurrent()[0], text = self['config'].getCurrent()[1].value)
+		if self['config'].getCurrent() in (self.config_username1, self.config_username2, self.config_password1, self.config_password2):
+			self.session.openWithCallback(self.virtualKeyBoardCallback, VirtualKeyBoard, title = self['config'].getCurrent()[0], text = self['config'].getCurrent()[1].value)
 
 	def virtualKeyBoardCallback(self, callback = None):
 		if callback is not None:
@@ -628,7 +638,7 @@ class TelekomSportEventLaneScreen(Screen):
 
 		try:
 			for events in jsonData['data']['data']:
-				if events['target_type'] and events['target_type'] == 'event':
+				if events['target_type'] and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
 					description = events['metadata']['description_bold'].encode('utf8')
 					subdescription = events['metadata']['description_regular'].encode('utf8')
 					original = events['metadata']['scheduled_start']['original'].encode('utf8')

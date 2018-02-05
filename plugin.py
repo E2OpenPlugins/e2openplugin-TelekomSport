@@ -162,7 +162,8 @@ class TelekomSportMoviePlayer(MoviePlayer):
 			self.close()
 
 	def openEventView(self):
-		self.session.open(TelekomSportStandingsResultsScreen, '', self.standings_url)
+		if self.standings_url:
+			self.session.open(TelekomSportStandingsResultsScreen, '', self.standings_url)
 
 	def showMovies(self):
 		pass

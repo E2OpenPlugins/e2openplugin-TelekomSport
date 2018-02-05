@@ -298,7 +298,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 				self.standingsList.append((str(rank), team_title, played, win, draw, loss, goals_for + ':' + goals_against, goal_diff, points, rank))
 			self.standingsList = sorted(self.standingsList, key = lambda entry: entry[9])
 		except Exception as e:
-			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportStandingsResultsScreen ' + str(e))
+			self['status'].setText('Aktuell steht die Tabelle nicht zur Verfügung. Bitte versuchen sie es später noch einmal.')
 			return False
 		return True
 

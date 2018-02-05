@@ -10,7 +10,7 @@ from Components.Sources.List import List
 from Components.Label import Label
 from Components.MultiContent import MultiContentEntryText
 from Components.ConfigList import ConfigListScreen
-from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo
+from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo, ConfigSelection, NoSave
 
 from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceReference, getDesktop
 
@@ -34,6 +34,9 @@ config.plugins.telekomsport.password2 = ConfigPassword(default = '', fixed_size 
 config.plugins.telekomsport.token2 = ConfigText(default = '')
 config.plugins.telekomsport.token2_expiration_time = ConfigInteger(default = 0)
 config.plugins.telekomsport.hide_unplayable = ConfigYesNo(default=False)
+# Use 2 config variables as workaround as empty ConfigSelection is not initialized with the stored value after e2 restart
+config.plugins.telekomsport.default_section = ConfigText(default = '', fixed_size = False)
+config.plugins.telekomsport.default_section_chooser = NoSave(ConfigSelection([], default = None))
 
 
 def encode(x):
@@ -57,24 +60,25 @@ def downloadJson(url):
 class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
 	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="470,300" flags="wfNoBorder">
+		skin = '''<screen position="center,center" size="470,320" flags="wfNoBorder">
 					<ePixmap position="center,10" size="450,45" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="config" position="10,70" size="460,180" font="Regular;20" scrollbarMode="showOnDemand" />
-					<widget name="buttonred" position="10,260" size="120,35" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
-					<widget name="buttongreen" position="165,260" size="120,35" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
-					<widget name="buttonblue" position="320,260" size="135,35" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="config" position="10,70" size="460,200" font="Regular;20" scrollbarMode="showOnDemand" />
+					<widget name="buttonred" position="10,280" size="120,35" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="buttongreen" position="165,280" size="120,35" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="buttonblue" position="320,280" size="135,35" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
 				</screen>'''
 	else:
-		skin = '''<screen position="center,center" size="670,450" flags="wfNoBorder">
+		skin = '''<screen position="center,center" size="670,520" flags="wfNoBorder">
 					<ePixmap position="center,15" size="640,59" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="config" position="15,100" size="650,270" font="Regular;32" itemHeight="42" scrollbarMode="showOnDemand" />
-					<widget name="buttonred" position="15,390" size="180,50" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
-					<widget name="buttongreen" position="225,390" size="180,50" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
-					<widget name="buttonblue" position="440,390" size="215,50" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
+					<widget name="config" position="15,100" size="650,340" font="Regular;32" itemHeight="42" scrollbarMode="showOnDemand" />
+					<widget name="buttonred" position="15,460" size="180,50" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
+					<widget name="buttongreen" position="225,460" size="180,50" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
+					<widget name="buttonblue" position="440,460" size="215,50" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
 				</screen>'''
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
+
 		self.list = []
 		self.config_account1_text = getConfigListEntry('1. Account', ConfigNothing())
 		self.list.append(self.config_account1_text)
@@ -90,6 +94,8 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		self.list.append(self.config_password2)
 		self.config_hide_unplayable = getConfigListEntry('Unspielbares ausblenden', config.plugins.telekomsport.hide_unplayable)
 		self.list.append(self.config_hide_unplayable)
+		self.config_default_section_chooser = getConfigListEntry('Default Abschnitt', config.plugins.telekomsport.default_section_chooser)
+		self.list.append(self.config_default_section_chooser)
 
 		ConfigListScreen.__init__(self, self.list)
 		self['buttonred'] = Label(_('Cancel'))
@@ -107,6 +113,7 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		}, -2)
 		config.plugins.telekomsport.password1.value = decode(config.plugins.telekomsport.password1.value)
 		config.plugins.telekomsport.password2.value = decode(config.plugins.telekomsport.password2.value)
+		config.plugins.telekomsport.default_section_chooser.value = config.plugins.telekomsport.default_section.value
 		self.onLayoutFinish.append(self.setWindowTitle)
 
 	def setWindowTitle(self):
@@ -119,6 +126,8 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		config.plugins.telekomsport.password2.value = encode(config.plugins.telekomsport.password2.value)
 		config.plugins.telekomsport.token2.value = ''
 		config.plugins.telekomsport.token2_expiration_time.value = 0
+		config.plugins.telekomsport.default_section.value = config.plugins.telekomsport.default_section_chooser.value
+		config.plugins.telekomsport.default_section.save()
 		for x in self['config'].list:
 			x[1].save()
 		self.close()
@@ -883,6 +892,7 @@ class TelekomSportMainScreen(Screen):
 		self.delay.start(0, True)
 
 	def buildList(self):
+		default_section_choicelist = [('', 'Default')]
 		result, jsonData, err = downloadJson(self.base_url + self.main_page)
 		if not result:
 			self['status'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
@@ -892,21 +902,38 @@ class TelekomSportMainScreen(Screen):
 			for sports in jsonData['data']['filter']:
 				title = sports['title'].encode('utf8')
 				self.sportslist.append((title, '', title, sports['target'].encode('utf8')))
+				default_section_choicelist.append((title, title))
 				if sports['children']:
 					for subsport in sports['children']:
 						subtitle = subsport['title'].encode('utf8')
 						self.sportslist.append(('', subtitle, title + ' - ' + subtitle, subsport['target'].encode('utf8')))
+						default_section_choicelist.append((subtitle, subtitle))
 		except Exception as e:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportMainScreen ' + str(e))
 			return
 
+		config.plugins.telekomsport.default_section_chooser.setChoices(default_section_choicelist, '')
+
 		self['list'].setList(self.sportslist)
 		self['status'].hide()
+		self.selectDefaultSportsType()
 
 	def ok(self):
 		if self['list'].getCurrent():
 			title = self['list'].getCurrent()[2]
 			urlpart = self['list'].getCurrent()[3]
+			self.session.open(TelekomSportSportsTypeScreen, title, urlpart)
+
+	def selectDefaultSportsType(self):
+		if config.plugins.telekomsport.default_section.value:
+			items =  filter(lambda x: x[0] == config.plugins.telekomsport.default_section.value or x[1] == config.plugins.telekomsport.default_section.value, self.sportslist)
+			if items:
+				self.selectSportsType(items[0])
+
+	def selectSportsType(self, item):
+		if item:
+			title = item[2]
+			urlpart = item[3]
 			self.session.open(TelekomSportSportsTypeScreen, title, urlpart)
 
 	def showSetup(self):

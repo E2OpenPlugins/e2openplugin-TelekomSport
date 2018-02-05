@@ -149,9 +149,10 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
 class TelekomSportMoviePlayer(MoviePlayer):
 
-	def __init__(self, session, service):
+	def __init__(self, session, service, standings_url):
 		MoviePlayer.__init__(self, session, service)
 		self.skinName = 'MoviePlayer'
+		self.standings_url = standings_url
 
 	def leavePlayer(self):
 		self.session.openWithCallback(self.leavePlayerConfirmed, MessageBox, 'Abspielen beenden?')
@@ -159,6 +160,9 @@ class TelekomSportMoviePlayer(MoviePlayer):
 	def leavePlayerConfirmed(self, answer):
 		if answer:
 			self.close()
+
+	def openEventView(self):
+		self.session.open(TelekomSportStandingsResultsScreen, '', self.standings_url)
 
 	def showMovies(self):
 		pass
@@ -386,11 +390,12 @@ class TelekomSportEventScreen(Screen):
 	jwt_url = 'https://www.telekomsport.de/service/auth/app/login/jwt'
 	stream_access_url = 'https://www.telekomsport.de/service/player/streamAccess'
 
-	def __init__(self, session, description, starttime, match, url):
+	def __init__(self, session, description, starttime, match, url, standings_url):
 		Screen.__init__(self, session)
 		self.session = session
 		self.starttime = starttime
 		self.url = url
+		self.standings_url = standings_url
 		self.match = match
 
 		self['match'] = Label(match)
@@ -491,7 +496,7 @@ class TelekomSportEventScreen(Screen):
 		ref = eServiceReference(4097, 0, playlisturl)
 		ref.setName(title)
 
-		self.session.open(TelekomSportMoviePlayer, ref)
+		self.session.open(TelekomSportMoviePlayer, ref, self.standings_url)
 
 	def buildPreEventScreen(self, jsonData):
 		pay = ''
@@ -617,10 +622,11 @@ class TelekomSportEventLaneScreen(Screen):
 					</widget>
 				</screen>'''
 
-	def __init__(self, session, main_title, title, url):
+	def __init__(self, session, main_title, title, url, standings_url):
 		Screen.__init__(self, session)
 		self.session = session
 		self.url = url
+		self.standings_url = standings_url
 
 		self['title'] = Label(main_title)
 		self['subtitle'] = Label(title)
@@ -676,7 +682,7 @@ class TelekomSportEventLaneScreen(Screen):
 			match = self['list'].getCurrent()[2]
 			urlpart = self['list'].getCurrent()[3]
 			starttime = self['list'].getCurrent()[4]
-			self.session.open(TelekomSportEventScreen, description, starttime, match, urlpart)
+			self.session.open(TelekomSportEventScreen, description, starttime, match, urlpart, self.standings_url)
 
 
 class TelekomSportSportsTypeScreen(Screen):
@@ -802,7 +808,7 @@ class TelekomSportSportsTypeScreen(Screen):
 			title = self['list'].getCurrent()[2]
 			urlpart = self['list'].getCurrent()[3]
 			if urlpart != '':
-				self.session.open(TelekomSportEventLaneScreen, self.main_title, title, urlpart)
+				self.session.open(TelekomSportEventLaneScreen, self.main_title, title, urlpart, self.standingsResultsUrl)
 
 	def showTableResults(self):
 		if self.standingsResultsUrl:

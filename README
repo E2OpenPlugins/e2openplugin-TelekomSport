@@ -1,0 +1,11 @@
+                  <<< TelekomSport >>>
+
+           Open Source Telekom Sport Plugin for E2 based Linux set-top box
+
+  This file is open source software; you can redistribute it and/or modify  
+     it under the terms of the GNU General Public License version 2 as      
+               published by the Free Software Foundation.
+
+This plugin can playback TelekomSport streams. If you have a subscription 
+you can see live streams of sports events. Without subscription you can see
+short summaries of games.

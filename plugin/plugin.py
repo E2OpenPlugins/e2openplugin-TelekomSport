@@ -184,7 +184,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 					<widget name="table_header_goals" position="570,200" size="70,20" font="Regular;18" zPosition="1" />
 					<widget name="table_header_goaldiff" position="685,200" size="70,20" font="Regular;18" zPosition="1" />
 					<widget name="table_header_points" position="730,200" size="100,20" font="Regular;18" zPosition="1" />
-					<widget source="standings" render="Listbox" position="10,230" size="800,390" scrollbarMode="showOnDemand">
+					<widget source="list" render="Listbox" position="10,230" size="800,390" scrollbarMode="showOnDemand">
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (25,[
@@ -198,13 +198,23 @@ class TelekomSportStandingsResultsScreen(Screen):
 									MultiContentEntryText(pos = (680, 0), size = (50, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 7), # goal diff
 									MultiContentEntryText(pos = (730, 0), size = (50, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 8), # points
 								]),
+								"schedule": (25,[
+									MultiContentEntryText(pos = (0, 0), size = (250, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # home team
+									MultiContentEntryText(pos = (260, 0), size = (25, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # home goals
+									MultiContentEntryText(pos = (290, 0), size = (10, 25), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 2), # -
+									MultiContentEntryText(pos = (310, 0), size = (25, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # away goals
+									MultiContentEntryText(pos = (350, 0), size = (250, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 4), # away team
+								]),
 								},
 								"fonts": [gFont("Regular", 20)],
 								"itemHeight": 25
 							}
 						</convert>
 					</widget>
-					<widget name="status" position="10,230" size="800,420" font="Regular;25" halign="center" zPosition="1" />
+					<widget name="status" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
+					<widget name="status_standings" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
+					<widget name="status_schedule" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
+					<widget name="buttonblue" position="15,630" size="160,35" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
 					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
 						<convert type="ClockToText">
 							Format:%d.%m.%Y %H:%M
@@ -215,7 +225,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
 					<ePixmap position="center,25" size="1200,150" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-					<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
+					<widget name="subtitle" position="15,235" size="1200,50" font="Regular;38" zPosition="1" />
 					<widget name="table_header_team" position="60,300" size="100,40" font="Regular;30" zPosition="1" />
 					<widget name="table_header_matches" position="580,300" size="80,40" font="Regular;30" zPosition="1" />
 					<widget name="table_header_wins" position="685,300" size="40,40" font="Regular;30" zPosition="1" />
@@ -224,7 +234,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 					<widget name="table_header_goals" position="825,300" size="70,40" font="Regular;30" zPosition="1" />
 					<widget name="table_header_goaldiff" position="960,300" size="70,40" font="Regular;30" zPosition="1" />
 					<widget name="table_header_points" position="1030,300" size="100,40" font="Regular;30" zPosition="1" />
-					<widget source="standings" render="Listbox" position="15,340" size="1200,610" scrollbarMode="showOnDemand">
+					<widget source="list" render="Listbox" position="15,340" size="1200,610" scrollbarMode="showOnDemand">
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (40,[
@@ -238,13 +248,23 @@ class TelekomSportStandingsResultsScreen(Screen):
 									MultiContentEntryText(pos = (960, 0), size = (50, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 7), # goal diff
 									MultiContentEntryText(pos = (1035, 0), size = (50, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 8), # points
 								]),
+								"schedule": (40,[
+									MultiContentEntryText(pos = (0, 0), size = (400, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # home team
+									MultiContentEntryText(pos = (420, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # home goals
+									MultiContentEntryText(pos = (470, 0), size = (10, 40), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 2), # -
+									MultiContentEntryText(pos = (490, 0), size = (40, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # away goals
+									MultiContentEntryText(pos = (560, 0), size = (400, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 4), # away team
+								]),
 								},
 								"fonts": [gFont("Regular", 32)],
 								"itemHeight": 40
 							}
 						</convert>
 					</widget>
-					<widget name="status" position="15,340" size="1200,610" font="Regular;35" halign="center" zPosition="1" />
+					<widget name="status" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
+					<widget name="status_standings" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
+					<widget name="status_schedule" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
+					<widget name="buttonblue" position="35,955" size="240,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
 					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
 						<convert type="ClockToText">
 							Format:%d.%m.%Y %H:%M
@@ -268,24 +288,73 @@ class TelekomSportStandingsResultsScreen(Screen):
 		self['table_header_goaldiff'] = Label('Diff')
 		self['table_header_points'] = Label('Punkte')
 		self['status'] = Label('Lade Daten...')
+		self['status_standings'] = Label('')
+		self['status_standings'].hide()
+		self['status_schedule'] = Label('')
+		self['status_schedule'].hide()
 
 		self.standingsList = []
-		self['standings'] = List(self.standingsList)
+		self.scheduleList = []
+		self['list'] = List()
+		self.curr = 'standings'
 
-		self['actions'] = ActionMap(['SetupActions', 'DirectionActions'],
+		self['buttonblue'] = Label('')
+
+		self['actions'] = ActionMap(['SetupActions', 'DirectionActions', 'ColorActions'],
 		{
 			'cancel': self.close,
 			'ok': self.close,
+			'blue': self.switchList,
 		})
 
 		self.delay = eTimer()
 		self.delay.callback.append(self.buildScreen)
 		self.delay.start(0, True)
 
+	def toogleStandingsVisibility(self, show):
+		self['table_header_team'].setVisible(show)
+		self['table_header_matches'].setVisible(show)
+		self['table_header_wins'].setVisible(show)
+		self['table_header_draws'].setVisible(show)
+		self['table_header_losses'].setVisible(show)
+		self['table_header_goals'].setVisible(show)
+		self['table_header_goaldiff'].setVisible(show)
+		self['table_header_points'].setVisible(show)
+
+	def showSchedule(self):
+		self['status_standings'].hide()
+		self.toogleStandingsVisibility(False)
+		self['subtitle'].setText('Ergebnisse')
+		self['buttonblue'].setText('Tabelle')
+		if self['status_schedule'].getText() == '':
+			self['list'].style = 'schedule'
+			self['list'].setList(self.scheduleList)
+		else:
+			self['status_schedule'].show()
+
+	def showStandings(self):
+		self['status_schedule'].hide()
+		self['subtitle'].setText('Tabelle')
+		self['buttonblue'].setText('Ergebnisse')
+		if self['status_standings'].getText() == '':
+			self.toogleStandingsVisibility(True)
+			self['list'].style = 'default'
+			self['list'].setList(self.standingsList)
+		else:
+			self['status_standings'].show()
+
+	def switchList(self):
+		if self.curr == 'standings':
+			self.curr = 'schedule'
+			self.showSchedule()
+		elif self.curr == 'schedule':
+			self.curr = 'standings'
+			self.showStandings()
+
 	def loadStandings(self, url):
 		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
 		if not result:
-			self['status'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
+			self['status_standings'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
 			return False
 
 		try:
@@ -303,33 +372,54 @@ class TelekomSportStandingsResultsScreen(Screen):
 				self.standingsList.append((str(rank), team_title, played, win, draw, loss, goals_for + ':' + goals_against, goal_diff, points, rank))
 			self.standingsList = sorted(self.standingsList, key = lambda entry: entry[9])
 		except Exception as e:
-			self['status'].setText('Aktuell steht die Tabelle nicht zur Verfügung. Bitte versuchen sie es später noch einmal.')
+			self['status_standings'].setText('Aktuell steht die Tabelle nicht zur Verfügung. Bitte versuchen sie es später noch einmal.')
 			return False
 		return True
 
 	def loadSchedule(self, url):
+		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
+		if not result:
+			self['status_schedule'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
+			return False
+
+		try:
+			for ev in jsonData['data']['slots'][0]['events']:
+				state = ev['metadata']['state']
+				home_team = ev['metadata']['details']['home']['name_full'].encode('utf8')
+				away_team = ev['metadata']['details']['away']['name_full'].encode('utf8')
+				if state == 'pre':
+					home_goals = ' '
+					away_goals = ' '
+				else:
+					home_goals = str(ev['metadata']['details']['result']['home'])
+					away_goals = str(ev['metadata']['details']['result']['away'])
+				self.scheduleList.append((home_team, home_goals, '-', away_goals, away_team))
+		except Exception as e:
+			self['status_schedule'].setText('Bitte Pluginentwickler informieren:\nTelekomSportStandingsResultsScreen ' + str(e))
+			return False
 		return True
 
 	def buildScreen(self):
+		self.toogleStandingsVisibility(False)
 		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + self.url)
 		if not result:
 			self['status'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
+			self.curr = 'error'
 			return
 
 		try:
 			standings_url = jsonData['data']['content'][0]['group_elements'][0]['data']['urls']['standings_url'].encode('utf8')
 			schedule_url = jsonData['data']['content'][0]['group_elements'][0]['data']['urls']['schedule_url'].encode('utf8')
-
-			if not self.loadStandings(standings_url):
-				return
-			if not self.loadSchedule(schedule_url):
-				return
 		except Exception as e:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportStandingsResultsScreen ' + str(e))
+			self.curr = 'error'
 			return
 
-		self['standings'].setList(self.standingsList)
+		self.loadSchedule(schedule_url)
+		self.loadStandings(standings_url)
+
 		self['status'].hide()
+		self.showStandings()
 
 
 class TelekomSportEventScreen(Screen):

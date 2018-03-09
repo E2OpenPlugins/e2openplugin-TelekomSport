@@ -149,10 +149,11 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
 class TelekomSportMoviePlayer(MoviePlayer):
 
-	def __init__(self, session, service, standings_url):
+	def __init__(self, session, service, standings_url, schedule_url):
 		MoviePlayer.__init__(self, session, service)
 		self.skinName = 'MoviePlayer'
 		self.standings_url = standings_url
+		self.schedule_url = schedule_url
 
 	def leavePlayer(self):
 		self.session.openWithCallback(self.leavePlayerConfirmed, MessageBox, 'Abspielen beenden?')
@@ -163,7 +164,7 @@ class TelekomSportMoviePlayer(MoviePlayer):
 
 	def openEventView(self):
 		if self.standings_url:
-			self.session.open(TelekomSportStandingsResultsScreen, '', self.standings_url)
+			self.session.open(TelekomSportStandingsResultsScreen, '', self.standings_url, self.schedule_url)
 
 	def showMovies(self):
 		pass
@@ -179,8 +180,8 @@ class TelekomSportStandingsResultsScreen(Screen):
 					<widget name="table_header_team" position="40,200" size="100,20" font="Regular;18" zPosition="1" />
 					<widget name="table_header_matches" position="395,200" size="60,20" font="Regular;18" zPosition="1" />
 					<widget name="table_header_wins" position="460,200" size="30,20" font="Regular;18" zPosition="1" />
-					<widget name="table_header_draws" position="490,200" size="30,20" font="Regular;18" zPosition="1" />
-					<widget name="table_header_losses" position="520,200" size="30,20" font="Regular;18" zPosition="1" />
+					<widget name="table_header_draws" position="495,200" size="30,20" font="Regular;18" zPosition="1" />
+					<widget name="table_header_losses" position="530,200" size="30,20" font="Regular;18" zPosition="1" />
 					<widget name="table_header_goals" position="570,200" size="70,20" font="Regular;18" zPosition="1" />
 					<widget name="table_header_goaldiff" position="685,200" size="70,20" font="Regular;18" zPosition="1" />
 					<widget name="table_header_points" position="730,200" size="100,20" font="Regular;18" zPosition="1" />
@@ -191,27 +192,24 @@ class TelekomSportStandingsResultsScreen(Screen):
 									MultiContentEntryText(pos = (0, 0), size = (25, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
 									MultiContentEntryText(pos = (30, 0), size = (370, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # team
 									MultiContentEntryText(pos = (400, 0), size = (50, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # count matches
-									MultiContentEntryText(pos = (450, 0), size = (30, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 3), # count wins
-									MultiContentEntryText(pos = (480, 0), size = (30, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 4), # count draws
-									MultiContentEntryText(pos = (510, 0), size = (30, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 5), # count losses
-									MultiContentEntryText(pos = (560, 0), size = (120, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
-									MultiContentEntryText(pos = (680, 0), size = (50, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 7), # goal diff
-									MultiContentEntryText(pos = (730, 0), size = (50, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 8), # points
+									MultiContentEntryText(pos = (440, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # count wins
+									MultiContentEntryText(pos = (475, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 4), # count draws
+									MultiContentEntryText(pos = (510, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 5), # count losses
+									MultiContentEntryText(pos = (555, 0), size = (95, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
+									MultiContentEntryText(pos = (650, 0), size = (50, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
+									MultiContentEntryText(pos = (720, 0), size = (50, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
 								]),
-								"schedule": (25,[
-									MultiContentEntryText(pos = (0, 0), size = (250, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # home team
-									MultiContentEntryText(pos = (260, 0), size = (25, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # home goals
-									MultiContentEntryText(pos = (290, 0), size = (10, 25), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 2), # -
-									MultiContentEntryText(pos = (310, 0), size = (25, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # away goals
-									MultiContentEntryText(pos = (350, 0), size = (250, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 4), # away team
+								"schedule": (65,[
+									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
+									MultiContentEntryText(pos = (620, 0), size = (240, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
+									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # teams + result
 								]),
 								},
-								"fonts": [gFont("Regular", 20)],
-								"itemHeight": 25
+								"fonts": [gFont("Regular", 20), gFont("Regular", 24)],
+								"itemHeight": 65
 							}
 						</convert>
 					</widget>
-					<widget name="status" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
 					<widget name="status_standings" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
 					<widget name="status_schedule" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
 					<widget name="buttonblue" position="15,630" size="160,35" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
@@ -228,12 +226,12 @@ class TelekomSportStandingsResultsScreen(Screen):
 					<widget name="subtitle" position="15,235" size="1200,50" font="Regular;38" zPosition="1" />
 					<widget name="table_header_team" position="60,300" size="100,40" font="Regular;30" zPosition="1" />
 					<widget name="table_header_matches" position="580,300" size="80,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_wins" position="685,300" size="40,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_draws" position="725,300" size="40,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_losses" position="765,300" size="40,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_goals" position="825,300" size="70,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_goaldiff" position="960,300" size="70,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_points" position="1030,300" size="100,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_wins" position="690,300" size="25,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_draws" position="740,300" size="25,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_losses" position="785,300" size="25,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_goals" position="855,300" size="70,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_goaldiff" position="995,300" size="60,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_points" position="1055,300" size="100,40" font="Regular;30" zPosition="1" />
 					<widget source="list" render="Listbox" position="15,340" size="1200,610" scrollbarMode="showOnDemand">
 						<convert type="TemplatedMultiContent">
 							{"templates":
@@ -241,27 +239,24 @@ class TelekomSportStandingsResultsScreen(Screen):
 									MultiContentEntryText(pos = (0, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
 									MultiContentEntryText(pos = (45, 0), size = (555, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # team
 									MultiContentEntryText(pos = (600, 0), size = (50, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # count matches
-									MultiContentEntryText(pos = (670, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 3), # count wins
-									MultiContentEntryText(pos = (710, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 4), # count draws
-									MultiContentEntryText(pos = (750, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 5), # count losses
-									MultiContentEntryText(pos = (810, 0), size = (120, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
-									MultiContentEntryText(pos = (960, 0), size = (50, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 7), # goal diff
-									MultiContentEntryText(pos = (1035, 0), size = (50, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 8), # points
+									MultiContentEntryText(pos = (650, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # count wins
+									MultiContentEntryText(pos = (700, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 4), # count draws
+									MultiContentEntryText(pos = (755, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 5), # count losses
+									MultiContentEntryText(pos = (835, 0), size = (150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
+									MultiContentEntryText(pos = (990, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
+									MultiContentEntryText(pos = (1060, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
 								]),
-								"schedule": (40,[
-									MultiContentEntryText(pos = (0, 0), size = (400, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # home team
-									MultiContentEntryText(pos = (420, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # home goals
-									MultiContentEntryText(pos = (470, 0), size = (10, 40), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 2), # -
-									MultiContentEntryText(pos = (490, 0), size = (40, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # away goals
-									MultiContentEntryText(pos = (560, 0), size = (400, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 4), # away team
+								"schedule": (90,[
+									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
+									MultiContentEntryText(pos = (925, 0), size = (360, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
+									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # teams + result
 								]),
 								},
-								"fonts": [gFont("Regular", 32)],
+								"fonts": [gFont("Regular", 32), gFont("Regular", 36)],
 								"itemHeight": 40
 							}
 						</convert>
 					</widget>
-					<widget name="status" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
 					<widget name="status_standings" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
 					<widget name="status_schedule" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
 					<widget name="buttonblue" position="35,955" size="240,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
@@ -272,10 +267,11 @@ class TelekomSportStandingsResultsScreen(Screen):
 					</widget>
 				</screen>'''
 
-	def __init__(self, session, title, url):
+	def __init__(self, session, title, standings_url, schedule_url):
 		Screen.__init__(self, session)
 		self.session = session
-		self.url = url
+		self.standings_url = standings_url
+		self.schedule_url = schedule_url
 
 		self['title'] = Label(title)
 		self['subtitle'] = Label('Tabelle')
@@ -287,9 +283,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 		self['table_header_goals'] = Label('Tore')
 		self['table_header_goaldiff'] = Label('Diff')
 		self['table_header_points'] = Label('Punkte')
-		self['status'] = Label('Lade Daten...')
-		self['status_standings'] = Label('')
-		self['status_standings'].hide()
+		self['status_standings'] = Label('Lade Daten...')
 		self['status_schedule'] = Label('')
 		self['status_schedule'].hide()
 
@@ -324,7 +318,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 	def showSchedule(self):
 		self['status_standings'].hide()
 		self.toogleStandingsVisibility(False)
-		self['subtitle'].setText('Ergebnisse')
+		self['subtitle'].setText('Spielplan')
 		self['buttonblue'].setText('Tabelle')
 		if self['status_schedule'].getText() == '':
 			self['list'].style = 'schedule'
@@ -335,9 +329,10 @@ class TelekomSportStandingsResultsScreen(Screen):
 	def showStandings(self):
 		self['status_schedule'].hide()
 		self['subtitle'].setText('Tabelle')
-		self['buttonblue'].setText('Ergebnisse')
-		if self['status_standings'].getText() == '':
+		self['buttonblue'].setText('Spielplan')
+		if self['status_standings'].getText() == '' or self['status_standings'].getText() == 'Lade Daten...':
 			self.toogleStandingsVisibility(True)
+			self['status_standings'].hide()
 			self['list'].style = 'default'
 			self['list'].setList(self.standingsList)
 		else:
@@ -351,14 +346,14 @@ class TelekomSportStandingsResultsScreen(Screen):
 			self.curr = 'standings'
 			self.showStandings()
 
-	def loadStandings(self, url):
+	def loadNormalStandings(self, url):
 		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
 		if not result:
 			self['status_standings'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
 			return False
 
 		try:
-			for team in jsonData['data']:
+			for team in jsonData['data']['standing'][0]['ranking']:
 				rank = team['rank']
 				team_title = team['team_title'].encode('utf8')
 				played = str(team['played'])
@@ -376,6 +371,23 @@ class TelekomSportStandingsResultsScreen(Screen):
 			return False
 		return True
 
+	def loadStandings(self, url):
+		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
+		if not result:
+			self['status_standings'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
+			return False
+
+		normal_standings_url = ''
+		try:
+			for g in jsonData['data']['content'][0]['group_elements']:
+				if g['type'] == 'standings':
+					normal_standings_url = g['data']['urls']['standings_url'].encode('utf8')
+		except Exception as e:
+			self['status_standings'].setText('Aktuell steht die Tabelle nicht zur Verfügung. Bitte versuchen sie es später noch einmal.')
+			return False
+
+		return self.loadNormalStandings(normal_standings_url)
+
 	def loadSchedule(self, url):
 		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
 		if not result:
@@ -383,17 +395,30 @@ class TelekomSportStandingsResultsScreen(Screen):
 			return False
 
 		try:
-			for ev in jsonData['data']['slots'][0]['events']:
-				state = ev['metadata']['state']
-				home_team = ev['metadata']['details']['home']['name_full'].encode('utf8')
-				away_team = ev['metadata']['details']['away']['name_full'].encode('utf8')
-				if state == 'pre':
-					home_goals = ' '
-					away_goals = ' '
-				else:
-					home_goals = str(ev['metadata']['details']['result']['home'])
-					away_goals = str(ev['metadata']['details']['result']['away'])
-				self.scheduleList.append((home_team, home_goals, '-', away_goals, away_team))
+			for c in jsonData['data']['content']:
+				for g in c['group_elements']:
+					for d in g['data']['days']:
+						for ev in d['events']:
+							if ev['type'] == 'skyConferenceEvent':
+								continue
+							description = ev['metadata']['description_bold'].encode('utf8')
+							sub_description = ev['metadata']['description_regular'].encode('utf8')
+							if sub_description:
+								description = description + ' - ' + sub_description
+							original = ev['metadata']['scheduled_start']['original']
+							starttime = datetime.strptime(original, '%Y-%m-%d %H:%M:%S')
+							starttime_str = starttime.strftime('%d.%m.%Y %H:%M')
+							home_team = ev['metadata']['details']['home']['name_full'].encode('utf8')
+							away_team = ev['metadata']['details']['away']['name_full'].encode('utf8')
+							if ev['metadata']['details']['encounter']['state'] == 'pre':
+								home_goals = ' '
+								away_goals = ' '
+							else:
+								home_goals = str(ev['metadata']['details']['encounter']['result']['home']).encode('utf8')
+								away_goals = str(ev['metadata']['details']['encounter']['result']['away']).encode('utf8')
+							match = home_team + '  ' + home_goals + ' - ' + away_goals + '  ' + away_team
+
+							self.scheduleList.append((description, starttime_str, match))
 		except Exception as e:
 			self['status_schedule'].setText('Bitte Pluginentwickler informieren:\nTelekomSportStandingsResultsScreen ' + str(e))
 			return False
@@ -401,24 +426,9 @@ class TelekomSportStandingsResultsScreen(Screen):
 
 	def buildScreen(self):
 		self.toogleStandingsVisibility(False)
-		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + self.url)
-		if not result:
-			self['status'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
-			self.curr = 'error'
-			return
+		self.loadSchedule(self.schedule_url)
+		self.loadStandings(self.standings_url)
 
-		try:
-			standings_url = jsonData['data']['content'][0]['group_elements'][0]['data']['urls']['standings_url'].encode('utf8')
-			schedule_url = jsonData['data']['content'][0]['group_elements'][0]['data']['urls']['schedule_url'].encode('utf8')
-		except Exception as e:
-			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportStandingsResultsScreen ' + str(e))
-			self.curr = 'error'
-			return
-
-		self.loadSchedule(schedule_url)
-		self.loadStandings(standings_url)
-
-		self['status'].hide()
 		self.showStandings()
 
 
@@ -481,12 +491,13 @@ class TelekomSportEventScreen(Screen):
 	jwt_url = 'https://www.telekomsport.de/service/auth/app/login/jwt'
 	stream_access_url = 'https://www.telekomsport.de/service/player/streamAccess'
 
-	def __init__(self, session, description, starttime, match, url, standings_url):
+	def __init__(self, session, description, starttime, match, url, standings_url, schedule_url):
 		Screen.__init__(self, session)
 		self.session = session
 		self.starttime = starttime
 		self.url = url
 		self.standings_url = standings_url
+		self.schedule_url = schedule_url
 		self.match = match
 
 		self['match'] = Label(match)
@@ -587,7 +598,7 @@ class TelekomSportEventScreen(Screen):
 		ref = eServiceReference(4097, 0, playlisturl)
 		ref.setName(title)
 
-		self.session.open(TelekomSportMoviePlayer, ref, self.standings_url)
+		self.session.open(TelekomSportMoviePlayer, ref, self.standings_url, self.schedule_url)
 
 	def buildPreEventScreen(self, jsonData):
 		pay = ''
@@ -713,11 +724,12 @@ class TelekomSportEventLaneScreen(Screen):
 					</widget>
 				</screen>'''
 
-	def __init__(self, session, main_title, title, url, standings_url):
+	def __init__(self, session, main_title, title, url, standings_url, schedule_url):
 		Screen.__init__(self, session)
 		self.session = session
 		self.url = url
 		self.standings_url = standings_url
+		self.schedule_url = schedule_url
 
 		self['title'] = Label(main_title)
 		self['subtitle'] = Label(title)
@@ -773,7 +785,7 @@ class TelekomSportEventLaneScreen(Screen):
 			match = self['list'].getCurrent()[2]
 			urlpart = self['list'].getCurrent()[3]
 			starttime = self['list'].getCurrent()[4]
-			self.session.open(TelekomSportEventScreen, description, starttime, match, urlpart, self.standings_url)
+			self.session.open(TelekomSportEventScreen, description, starttime, match, urlpart, self.standings_url, self.schedule_url)
 
 
 class TelekomSportSportsTypeScreen(Screen):
@@ -836,7 +848,8 @@ class TelekomSportSportsTypeScreen(Screen):
 		self.session = session
 		self.main_title = title
 		self.url = url
-		self.standingsResultsUrl = ''
+		self.standings_url = ''
+		self.schedule_url = ''
 
 		self['title'] = Label(title)
 		self['subtitle'] = Label('')
@@ -883,10 +896,13 @@ class TelekomSportSportsTypeScreen(Screen):
 							self.eventLaneList.append(('', subtitle, title + ' - ' + subtitle, urlpart))
 			if 'navigation' in jsonData['data'] and 'header' in jsonData['data']['navigation']:
 				for header in jsonData['data']['navigation']['header']:
-					if header['target_type'] == 'data':
-						self.standingsResultsUrl = header['target'].encode('utf8')
-						self['buttonblue'].setText('Tabelle')
-						self['buttonblue'].show()
+					if header['target_type'] == 'standings':
+						self.standings_url = header['target'].encode('utf8')
+					if header['target_type'] == 'schedule':
+						self.schedule_url = header['target'].encode('utf8')
+				if self.standings_url or self.schedule_url:
+					self['buttonblue'].setText('Tabelle/Spielplan')
+					self['buttonblue'].show()
 		except Exception as e:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportSportsTypeScreen ' + str(e))
 			return
@@ -899,16 +915,16 @@ class TelekomSportSportsTypeScreen(Screen):
 			title = self['list'].getCurrent()[2]
 			urlpart = self['list'].getCurrent()[3]
 			if urlpart != '':
-				self.session.open(TelekomSportEventLaneScreen, self.main_title, title, urlpart, self.standingsResultsUrl)
+				self.session.open(TelekomSportEventLaneScreen, self.main_title, title, urlpart, self.standings_url, self.schedule_url)
 
 	def showTableResults(self):
-		if self.standingsResultsUrl:
-			self.session.open(TelekomSportStandingsResultsScreen, self.main_title, self.standingsResultsUrl)
+		if self.standings_url or self.schedule_url:
+			self.session.open(TelekomSportStandingsResultsScreen, self.main_title, self.standings_url, self.schedule_url)
 
 
 class TelekomSportMainScreen(Screen):
 
-	base_url = 'https://www.telekomsport.de/api/v1'
+	base_url = 'https://www.telekomsport.de/api/v2'
 	main_page = '/navigation'
 
 	if getDesktop(0).size().width() <= 1280:

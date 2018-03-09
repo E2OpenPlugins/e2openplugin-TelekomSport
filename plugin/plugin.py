@@ -199,6 +199,10 @@ class TelekomSportStandingsResultsScreen(Screen):
 									MultiContentEntryText(pos = (650, 0), size = (50, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
 									MultiContentEntryText(pos = (720, 0), size = (50, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
 								]),
+								"playoff": (65,[
+									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title
+									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # teams + wins
+								]),
 								"schedule": (65,[
 									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
 									MultiContentEntryText(pos = (620, 0), size = (240, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
@@ -246,6 +250,10 @@ class TelekomSportStandingsResultsScreen(Screen):
 									MultiContentEntryText(pos = (990, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
 									MultiContentEntryText(pos = (1060, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
 								]),
+								"playoff": (90,[
+									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title
+									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # teams + wins
+								]),
 								"schedule": (90,[
 									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
 									MultiContentEntryText(pos = (925, 0), size = (360, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
@@ -288,9 +296,10 @@ class TelekomSportStandingsResultsScreen(Screen):
 		self['status_schedule'].hide()
 
 		self.standingsList = []
+		self.playoffStandingsList = []
 		self.scheduleList = []
 		self['list'] = List()
-		self.curr = 'standings'
+		self.curr = 'schedule'
 
 		self['buttonblue'] = Label('')
 
@@ -319,7 +328,6 @@ class TelekomSportStandingsResultsScreen(Screen):
 		self['status_standings'].hide()
 		self.toogleStandingsVisibility(False)
 		self['subtitle'].setText('Spielplan')
-		self['buttonblue'].setText('Tabelle')
 		if self['status_schedule'].getText() == '':
 			self['list'].style = 'schedule'
 			self['list'].setList(self.scheduleList)
@@ -329,7 +337,6 @@ class TelekomSportStandingsResultsScreen(Screen):
 	def showStandings(self):
 		self['status_schedule'].hide()
 		self['subtitle'].setText('Tabelle')
-		self['buttonblue'].setText('Spielplan')
 		if self['status_standings'].getText() == '' or self['status_standings'].getText() == 'Lade Daten...':
 			self.toogleStandingsVisibility(True)
 			self['status_standings'].hide()
@@ -338,12 +345,35 @@ class TelekomSportStandingsResultsScreen(Screen):
 		else:
 			self['status_standings'].show()
 
+	def showPlayoff(self):
+		self['status_schedule'].hide()
+		self['subtitle'].setText('Tabelle - Playoffs')
+		if self['status_standings'].getText() == '' or self['status_standings'].getText() == 'Lade Daten...':
+			self.toogleStandingsVisibility(False)
+			self['list'].style = 'playoff'
+			self['list'].setList(self.playoffStandingsList)
+		else:
+			self['status_standings'].show()
+
 	def switchList(self):
-		if self.curr == 'standings':
+		if self.curr == 'standings' and self.playoffStandingsList:
+			self.curr = 'playoff'
+			self['buttonblue'].setText('Spielplan')
+			self.showPlayoff()
+		elif self.curr == 'standings' and not self.playoffStandingsList:
 			self.curr = 'schedule'
+			self['buttonblue'].setText('Tabelle')
+			self.showSchedule()
+		elif self.curr == 'playoff':
+			self.curr = 'schedule'
+			self['buttonblue'].setText('Tabelle')
 			self.showSchedule()
 		elif self.curr == 'schedule':
 			self.curr = 'standings'
+			if self.playoffStandingsList:
+				self['buttonblue'].setText('Tabelle - Playoffs')
+			else:
+				self['buttonblue'].setText('Spielplan')
 			self.showStandings()
 
 	def loadNormalStandings(self, url):
@@ -371,6 +401,32 @@ class TelekomSportStandingsResultsScreen(Screen):
 			return False
 		return True
 
+	def loadPlayoffStandings(self, url):
+		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
+		if not result:
+			self['status_standings'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
+			return False
+
+		try:
+			title = jsonData['data']['title'].encode('utf8')
+			for round in jsonData['data']['rounds']:
+				subtitle = round['title'].encode('utf8')
+				for enc in round['encounters']:
+					home_team = enc['home']['title_mini'].encode('utf8')
+					home_wins = str(enc['home']['wins'])
+					away_team = enc['away']['title_mini'].encode('utf8')
+					away_wins = str(enc['away']['wins'])
+					if home_wins == 'None':
+						home_wins = ' '
+					if away_wins == 'None':
+						away_wins = ' '
+					encounters = home_team + '  ' + home_wins + ' - ' + away_wins + ' ' + away_team
+					self.playoffStandingsList.append((subtitle, encounters))
+		except Exception as e:
+			self['status_standings'].setText('Aktuell steht die Playoff Tabelle nicht zur Verfügung. Bitte versuchen sie es später noch einmal.'+str(e))
+			return False
+		return True
+
 	def loadStandings(self, url):
 		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
 		if not result:
@@ -378,15 +434,21 @@ class TelekomSportStandingsResultsScreen(Screen):
 			return False
 
 		normal_standings_url = ''
+		playoff_standings_url = ''
 		try:
 			for g in jsonData['data']['content'][0]['group_elements']:
 				if g['type'] == 'standings':
 					normal_standings_url = g['data']['urls']['standings_url'].encode('utf8')
+				elif g['type'] == 'playoffTree':
+					playoff_standings_url = g['data']['url'].encode('utf8')
 		except Exception as e:
 			self['status_standings'].setText('Aktuell steht die Tabelle nicht zur Verfügung. Bitte versuchen sie es später noch einmal.')
 			return False
 
-		return self.loadNormalStandings(normal_standings_url)
+		if normal_standings_url:
+			self.loadNormalStandings(normal_standings_url)
+		if playoff_standings_url:
+			self.loadPlayoffStandings(playoff_standings_url)
 
 	def loadSchedule(self, url):
 		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
@@ -429,7 +491,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 		self.loadSchedule(self.schedule_url)
 		self.loadStandings(self.standings_url)
 
-		self.showStandings()
+		self.switchList()
 
 
 class TelekomSportEventScreen(Screen):

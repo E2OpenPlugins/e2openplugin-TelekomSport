@@ -461,7 +461,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 				for g in c['group_elements']:
 					for d in g['data']['days']:
 						for ev in d['events']:
-							if ev['type'] == 'skyConferenceEvent':
+							if ev['type'] in ('skyConferenceEvent', 'conferenceEvent'):
 								continue
 							description = ev['metadata']['description_bold'].encode('utf8')
 							sub_description = ev['metadata']['description_regular'].encode('utf8')

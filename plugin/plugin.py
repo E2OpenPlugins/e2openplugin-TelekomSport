@@ -11,6 +11,7 @@ from Components.Label import Label
 from Components.MultiContent import MultiContentEntryText
 from Components.ConfigList import ConfigListScreen
 from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo, ConfigSelection, NoSave
+from Tools.BoundFunction import boundFunction
 
 from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceReference, getDesktop
 
@@ -22,6 +23,9 @@ import json
 import base64
 from itertools import cycle, izip
 from datetime import datetime
+from twisted.web.client import getPage
+import twisted.web.error as twistedWebError
+import twisted.python.failure as twistedFailure
 
 
 config.plugins.telekomsport = ConfigSubsection()
@@ -45,16 +49,30 @@ def encode(x):
 def decode(x):
 	return ''.join(chr(ord(c) ^ ord(k)) for c, k in izip(base64.decodestring(x), cycle('password protection')))
 
-def downloadJson(url):
+def loadTelekomSportJsonData(screen, statusField, buildListFunc, data):
 	try:
-		response = urllib.urlopen(url).read()
-		jsonResult = json.loads(response)
+		jsonResult = json.loads(data)
 
 		if 'status' not in jsonResult or jsonResult['status'] != 'success':
-			return (False, None, 'Status nicht success')
-		return (True, jsonResult, '')
+			statusField.setText(screen + ': Fehler beim Laden der JSON Daten: "Status ist nicht success"')
+			return
+		buildListFunc(jsonResult)
 	except Exception as e:
-		return (False, None, str(e))
+		statusField.setText(screen + ': Fehler beim Laden der JSON Daten "' + str(e) + '"')
+
+def handleTelekomSportDownloadError(screen, statusField, err):
+	try:
+		err.trap(twistedWebError.Error)
+		statusField.setText(screen + ': Fehler beim Download "' + err.getErrorMessage() + '"')
+	except twistedFailure.Failure as e:
+		statusField.setText(screen + ': Fehler beim Download "' + e.getErrorMessage() + '"')
+	except Exception as e:
+		statusField.setText(screen + ': Fehler beim Download "' + str(e) + '"')
+
+def downloadTelekomSportJson(url, callback, errorCallback):
+	d = getPage(url)
+	d.addCallback(callback)
+	d.addErrback(errorCallback)
 
 
 class TelekomSportConfigScreen(ConfigListScreen, Screen):
@@ -278,8 +296,6 @@ class TelekomSportStandingsResultsScreen(Screen):
 	def __init__(self, session, title, standings_url, schedule_url):
 		Screen.__init__(self, session)
 		self.session = session
-		self.standings_url = standings_url
-		self.schedule_url = schedule_url
 
 		self['title'] = Label(title)
 		self['subtitle'] = Label('Tabelle')
@@ -309,10 +325,9 @@ class TelekomSportStandingsResultsScreen(Screen):
 			'ok': self.close,
 			'blue': self.switchList,
 		})
-
-		self.delay = eTimer()
-		self.delay.callback.append(self.buildScreen)
-		self.delay.start(0, True)
+		self.toogleStandingsVisibility(False)
+		downloadTelekomSportJson(TelekomSportMainScreen.base_url + schedule_url, boundFunction(loadTelekomSportJsonData, 'Schedule', self['status_schedule'], self.loadSchedule), boundFunction(handleTelekomSportDownloadError, 'Schedule', self['status_schedule']))
+		downloadTelekomSportJson(TelekomSportMainScreen.base_url + standings_url, boundFunction(loadTelekomSportJsonData, 'Standings', self['status_standings'], self.loadStandings), boundFunction(handleTelekomSportDownloadError, 'Standings', self['status_standings']))
 
 	def toogleStandingsVisibility(self, show):
 		self['table_header_team'].setVisible(show)
@@ -376,12 +391,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 				self['buttonblue'].setText('Spielplan')
 			self.showStandings()
 
-	def loadNormalStandings(self, url):
-		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
-		if not result:
-			self['status_standings'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
-			return False
-
+	def loadNormalStandings(self, jsonData):
 		try:
 			for team in jsonData['data']['standing'][0]['ranking']:
 				rank = team['rank']
@@ -396,17 +406,13 @@ class TelekomSportStandingsResultsScreen(Screen):
 				points = str(team['points'])
 				self.standingsList.append((str(rank), team_title, played, win, draw, loss, goals_for + ':' + goals_against, goal_diff, points, rank))
 			self.standingsList = sorted(self.standingsList, key = lambda entry: entry[9])
+			self.switchList()
 		except Exception as e:
 			self['status_standings'].setText('Aktuell steht die Tabelle nicht zur Verfügung. Bitte versuchen sie es später noch einmal.')
 			return False
 		return True
 
-	def loadPlayoffStandings(self, url):
-		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
-		if not result:
-			self['status_standings'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
-			return False
-
+	def loadPlayoffStandings(self, jsonData):
 		try:
 			title = jsonData['data']['title'].encode('utf8')
 			for round in jsonData['data']['rounds']:
@@ -427,12 +433,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 			return False
 		return True
 
-	def loadStandings(self, url):
-		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
-		if not result:
-			self['status_standings'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
-			return False
-
+	def loadStandings(self, jsonData):
 		normal_standings_url = ''
 		playoff_standings_url = ''
 		try:
@@ -446,16 +447,11 @@ class TelekomSportStandingsResultsScreen(Screen):
 			return False
 
 		if normal_standings_url:
-			self.loadNormalStandings(normal_standings_url)
+			downloadTelekomSportJson(TelekomSportMainScreen.base_url + normal_standings_url, boundFunction(loadTelekomSportJsonData, 'NormalStandings', self['status_standings'], self.loadNormalStandings), boundFunction(handleTelekomSportDownloadError, 'NormalStandings', self['status_standings']))
 		if playoff_standings_url:
-			self.loadPlayoffStandings(playoff_standings_url)
+			downloadTelekomSportJson(TelekomSportMainScreen.base_url + playoff_standings_url, boundFunction(loadTelekomSportJsonData, 'PlayoffStandings', self['status_standings'], self.loadPlayoffStandings), boundFunction(handleTelekomSportDownloadError, 'PlayoffStandings', self['status_standings']))
 
-	def loadSchedule(self, url):
-		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + url)
-		if not result:
-			self['status_schedule'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
-			return False
-
+	def loadSchedule(self, jsonData):
 		try:
 			for c in jsonData['data']['content']:
 				for g in c['group_elements']:
@@ -485,13 +481,6 @@ class TelekomSportStandingsResultsScreen(Screen):
 			self['status_schedule'].setText('Bitte Pluginentwickler informieren:\nTelekomSportStandingsResultsScreen ' + str(e))
 			return False
 		return True
-
-	def buildScreen(self):
-		self.toogleStandingsVisibility(False)
-		self.loadSchedule(self.schedule_url)
-		self.loadStandings(self.standings_url)
-
-		self.switchList()
 
 
 class TelekomSportEventScreen(Screen):
@@ -557,7 +546,6 @@ class TelekomSportEventScreen(Screen):
 		Screen.__init__(self, session)
 		self.session = session
 		self.starttime = starttime
-		self.url = url
 		self.standings_url = standings_url
 		self.schedule_url = schedule_url
 		self.match = match
@@ -576,10 +564,7 @@ class TelekomSportEventScreen(Screen):
 			'cancel': self.close,
 			'ok': self.ok,
 		})
-
-		self.delay = eTimer()
-		self.delay.callback.append(self.buildScreen)
-		self.delay.start(0, True)
+		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'Event', self['status'], self.buildScreen), boundFunction(handleTelekomSportDownloadError, 'Event', self['status']))
 
 	def login(self, account, username, password, config_token, config_token_expiration_time):
 		err = ''
@@ -698,12 +683,8 @@ class TelekomSportEventScreen(Screen):
 							title += ' *'
 						self.videoList.append((title, element['data'][0]['title'].encode('utf8'), str(element['data'][0]['videoID']), str(element['data'][0]['pay'])))
 
-	def buildScreen(self):
+	def buildScreen(self, jsonData):
 		self.videoList = []
-		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + self.url)
-		if not result:
-			self['status'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
-			return
 
 		if not jsonData['data'] or not jsonData['data']['content'] or not jsonData['data']['metadata']:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportEventScreen')
@@ -789,7 +770,6 @@ class TelekomSportEventLaneScreen(Screen):
 	def __init__(self, session, main_title, title, url, standings_url, schedule_url):
 		Screen.__init__(self, session)
 		self.session = session
-		self.url = url
 		self.standings_url = standings_url
 		self.schedule_url = schedule_url
 
@@ -805,17 +785,9 @@ class TelekomSportEventLaneScreen(Screen):
 			'cancel': self.close,
 			'ok': self.ok,
 		})
+		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'EventLane', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'EventLane', self['status']))
 
-		self.delay = eTimer()
-		self.delay.callback.append(self.buildList)
-		self.delay.start(0, True)
-
-	def buildList(self):
-		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + self.url)
-		if not result:
-			self['status'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
-			return
-
+	def buildList(self, jsonData):
 		try:
 			for events in jsonData['data']['data']:
 				if events['target_type'] and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
@@ -909,7 +881,6 @@ class TelekomSportSportsTypeScreen(Screen):
 		Screen.__init__(self, session)
 		self.session = session
 		self.main_title = title
-		self.url = url
 		self.standings_url = ''
 		self.schedule_url = ''
 
@@ -929,17 +900,9 @@ class TelekomSportSportsTypeScreen(Screen):
 			'ok': self.ok,
 			'blue': self.showTableResults,
 		})
+		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'SportsType', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'SportsType', self['status']))
 
-		self.delay = eTimer()
-		self.delay.callback.append(self.buildList)
-		self.delay.start(0, True)
-
-	def buildList(self):
-		result, jsonData, err = downloadJson(TelekomSportMainScreen.base_url + self.url)
-		if not result:
-			self['status'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
-			return
-
+	def buildList(self, jsonData):
 		try:
 			title = ''
 			for content in jsonData['data']['content']:
@@ -1061,17 +1024,10 @@ class TelekomSportMainScreen(Screen):
 			'ok': self.ok,
 			'blue': self.showSetup,
 		})
+		downloadTelekomSportJson(self.base_url + self.main_page, boundFunction(loadTelekomSportJsonData, 'Main', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'Main', self['status']))
 
-		self.delay = eTimer()
-		self.delay.callback.append(self.buildList)
-		self.delay.start(0, True)
-
-	def buildList(self):
+	def buildList(self, jsonData):
 		default_section_choicelist = [('', 'Default')]
-		result, jsonData, err = downloadJson(self.base_url + self.main_page)
-		if not result:
-			self['status'].setText('Fehler beim Download "' + err + '"\n Vielleicht keine Internetverbindung vorhanden.')
-			return
 
 		try:
 			for sports in jsonData['data']['filter']:

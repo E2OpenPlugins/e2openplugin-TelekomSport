@@ -468,12 +468,12 @@ class TelekomSportStandingsResultsScreen(Screen):
 							starttime_str = starttime.strftime('%d.%m.%Y %H:%M')
 							home_team = ev['metadata']['details']['home']['name_full'].encode('utf8')
 							away_team = ev['metadata']['details']['away']['name_full'].encode('utf8')
-							if ev['metadata']['details']['encounter']['state'] == 'pre':
-								home_goals = ' '
-								away_goals = ' '
-							else:
+							if 'result' in ev['metadata']['details']['encounter']:
 								home_goals = str(ev['metadata']['details']['encounter']['result']['home']).encode('utf8')
 								away_goals = str(ev['metadata']['details']['encounter']['result']['away']).encode('utf8')
+							else:
+								home_goals = ' '
+								away_goals = ' '
 							match = home_team + '  ' + home_goals + ' - ' + away_goals + '  ' + away_team
 
 							self.scheduleList.append((description, starttime_str, match))

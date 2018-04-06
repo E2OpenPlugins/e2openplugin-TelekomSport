@@ -418,6 +418,8 @@ class TelekomSportStandingsResultsScreen(Screen):
 			for round in jsonData['data']['rounds']:
 				subtitle = round['title'].encode('utf8')
 				for enc in round['encounters']:
+					if not enc:
+						continue
 					home_team = enc['home']['title_mini'].encode('utf8')
 					home_wins = str(enc['home']['wins'])
 					away_team = enc['away']['title_mini'].encode('utf8')

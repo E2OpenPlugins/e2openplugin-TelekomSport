@@ -655,7 +655,7 @@ class TelekomSportEventScreen(Screen):
 			if content['group_elements']:
 				for element in content['group_elements']:
 					if element['type'] == 'noVideo':
-						if element['data']['metadata']['pay']:
+						if 'pay' in element['data']['metadata'] and element['data']['metadata']['pay']:
 							pay = ' *'
 		if self.starttime.date() == datetime.today().date():
 			self['subdescription'].setText('Die Übertragung startet heute um ' + self.starttime.strftime('%H:%M') + pay)
@@ -693,11 +693,11 @@ class TelekomSportEventScreen(Screen):
 			return
 
 		try:
-			if jsonData['data']['metadata']['title'] == 'Event Page Pre':
+			if jsonData['data']['metadata']['title'].startswith('Event Page Pre'):
 				self.buildPreEventScreen(jsonData)
-			elif jsonData['data']['metadata']['title'] == 'Event Page Post':
+			elif jsonData['data']['metadata']['title'].startswith('Event Page Post'):
 				self.buildPostEventScreen(jsonData)
-			elif jsonData['data']['metadata']['title'] == 'Event Page Live':
+			elif jsonData['data']['metadata']['title'].startswith('Event Page Live'):
 				self.buildLiveEventScreen(jsonData)
 		except Exception as e:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportEventScreen ' + str(e))
@@ -801,7 +801,7 @@ class TelekomSportEventLaneScreen(Screen):
 					urlpart = events['target'].encode('utf8')
 					if subdescription:
 						description = description + ' - ' + subdescription
-					if 'home' in events['metadata']['details']:
+					if 'home' in events['metadata']['details'] and events['metadata']['details']['home']['name_full'].encode('utf8') <> '':
 						home = events['metadata']['details']['home']['name_full'].encode('utf8')
 						away = events['metadata']['details']['away']['name_full'].encode('utf8')
 						self.eventList.append((description, starttime_str, home + ' - ' + away, urlpart, starttime))

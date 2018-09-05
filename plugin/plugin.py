@@ -21,11 +21,28 @@ import urllib
 import urllib2
 import json
 import base64
+import re
 from itertools import cycle, izip
 from datetime import datetime
 from twisted.web.client import getPage
 import twisted.web.error as twistedWebError
 import twisted.python.failure as twistedFailure
+
+
+try:
+	from enigma import eMediaDatabase
+	telekomsport_isDreamOS = True
+
+	import ssl
+	try:
+		_create_unverified_https_context = ssl._create_unverified_context
+	except AttributeError:
+		pass
+	else:
+		ssl._create_default_https_context = _create_unverified_https_context
+
+except:
+	telekomsport_isDreamOS = False
 
 
 config.plugins.telekomsport = ConfigSubsection()
@@ -41,6 +58,9 @@ config.plugins.telekomsport.hide_unplayable = ConfigYesNo(default=False)
 # Use 2 config variables as workaround as empty ConfigSelection is not initialized with the stored value after e2 restart
 config.plugins.telekomsport.default_section = ConfigText(default = '', fixed_size = False)
 config.plugins.telekomsport.default_section_chooser = NoSave(ConfigSelection([], default = None))
+# Some images like DreamOS need streams with fix quality
+config.plugins.telekomsport.fix_stream_quality = ConfigYesNo(default = telekomsport_isDreamOS)
+config.plugins.telekomsport.stream_quality = ConfigSelection(default = "1000000", choices = [("350000", _("sehr gering")), ("600000", _("gering")), ("1000000", _("mittel")), ("1700000", _("hoch")), ("3000000", _("sehr hoch"))])
 
 
 def encode(x):
@@ -77,21 +97,26 @@ def downloadTelekomSportJson(url, callback, errorCallback):
 
 class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
+	ts_font_str = ""
 	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="470,320" flags="wfNoBorder">
+		if not telekomsport_isDreamOS:
+			ts_font_str = 'font="Regular;20"'
+		skin = '''<screen position="center,center" size="470,370" flags="wfNoBorder">
 					<ePixmap position="center,10" size="450,45" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="config" position="10,70" size="460,200" font="Regular;20" scrollbarMode="showOnDemand" />
-					<widget name="buttonred" position="10,280" size="120,35" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
-					<widget name="buttongreen" position="165,280" size="120,35" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
-					<widget name="buttonblue" position="320,280" size="135,35" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="config" position="10,70" size="460,250" ''' + ts_font_str + ''' scrollbarMode="showOnDemand" />
+					<widget name="buttonred" position="10,330" size="120,35" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="buttongreen" position="165,330" size="120,35" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="buttonblue" position="320,330" size="135,35" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
 				</screen>'''
 	else:
-		skin = '''<screen position="center,center" size="670,520" flags="wfNoBorder">
+		if not telekomsport_isDreamOS:
+			ts_font_str = 'font="Regular;32"'
+		skin = '''<screen position="center,center" size="670,600" flags="wfNoBorder">
 					<ePixmap position="center,15" size="640,59" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="config" position="15,100" size="650,340" font="Regular;32" itemHeight="42" scrollbarMode="showOnDemand" />
-					<widget name="buttonred" position="15,460" size="180,50" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
-					<widget name="buttongreen" position="225,460" size="180,50" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
-					<widget name="buttonblue" position="440,460" size="215,50" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
+					<widget name="config" position="15,100" size="650,420" ''' + ts_font_str + ''' itemHeight="42" scrollbarMode="showOnDemand" />
+					<widget name="buttonred" position="15,540" size="180,50" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
+					<widget name="buttongreen" position="225,540" size="180,50" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
+					<widget name="buttonblue" position="440,540" size="215,50" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
 				</screen>'''
 
 	def __init__(self, session):
@@ -114,6 +139,10 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		self.list.append(self.config_hide_unplayable)
 		self.config_default_section_chooser = getConfigListEntry('Default Abschnitt', config.plugins.telekomsport.default_section_chooser)
 		self.list.append(self.config_default_section_chooser)
+		self.config_fix_stream_quality = getConfigListEntry('Feste Stream Qualität verwenden', config.plugins.telekomsport.fix_stream_quality)
+		self.list.append(self.config_fix_stream_quality)
+		self.config_stream_quality = getConfigListEntry('Stream Qualität', config.plugins.telekomsport.stream_quality)
+		self.list.append(self.config_stream_quality)
 
 		ConfigListScreen.__init__(self, self.list)
 		self['buttonred'] = Label(_('Cancel'))
@@ -626,6 +655,34 @@ class TelekomSportEventScreen(Screen):
 		except urllib2.HTTPError as e:
 			return '', e.code
 
+	def readExtXStreamInfLine(self, line, attributeListPattern):
+		line = line.replace('#EXT-X-STREAM-INF:', '')
+		for param in attributeListPattern.split(line)[1::2]:
+			if param.startswith('BANDWIDTH='):
+				return param.strip().split('=')[1]
+		return ''
+
+	def getFixQualtiyStreamUrl(self, m3u8_url):
+		try:
+			attributeListPattern = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
+			streams = []
+			lines = urllib2.urlopen(m3u8_url).readlines()
+			if len(lines) > 0 and lines[0] == '#EXTM3U\n':
+				i = 1
+				count_lines = len(lines)
+				while i < len(lines) - 1:
+					if lines[i].startswith('#EXT-X-STREAM-INF:'):
+						bandwith = self.readExtXStreamInfLine(lines[i], attributeListPattern)
+						if bandwith and i + 1 < count_lines:
+							streams.append((bandwith, lines[i+1].strip()))
+					i += 1
+				if streams:
+					# return stream URL which bandwidth is closest to the user chosen bandwidth
+					return min(streams, key=lambda x:abs(int(x[0]) - int(config.plugins.telekomsport.stream_quality.value)))[1]
+			return ''
+		except:
+			return ''
+
 	def playVideo(self, videoid, pay, title):
 		# login if necessary
 		if pay:
@@ -643,6 +700,11 @@ class TelekomSportEventScreen(Screen):
 			self['status'].setText('Es wird ein Abo benötigt um den Inhalt anzuzeigen!')
 			self['status'].show()
 			return
+
+		if config.plugins.telekomsport.fix_stream_quality.value:
+			url = self.getFixQualtiyStreamUrl(playlisturl)
+			if url:
+				playlisturl = url
 
 		ref = eServiceReference(4097, 0, playlisturl)
 		ref.setName(title)

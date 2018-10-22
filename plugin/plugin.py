@@ -1013,7 +1013,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	base_url = 'https://www.telekomsport.de/api/v2'
+	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'
 
 	if getDesktop(0).size().width() <= 1280:

@@ -592,10 +592,14 @@ class TelekomSportEventScreen(Screen):
 
 		self['actions'] = ActionMap(['SetupActions', 'DirectionActions'],
 		{
+			'menu': self.closeRecursive,
 			'cancel': self.close,
 			'ok': self.ok,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'Event', self['status'], self.buildScreen), boundFunction(handleTelekomSportDownloadError, 'Event', self['status']))
+
+	def closeRecursive(self):
+		self.close(True)
 
 	def login(self, account, username, password, config_token, config_token_expiration_time):
 		err = ''
@@ -846,10 +850,14 @@ class TelekomSportEventLaneScreen(Screen):
 
 		self['actions'] = ActionMap(['SetupActions', 'DirectionActions'],
 		{
+			'menu': self.closeRecursive,
 			'cancel': self.close,
 			'ok': self.ok,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'EventLane', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'EventLane', self['status']))
+
+	def closeRecursive(self):
+		self.close(True)
 
 	def buildList(self, jsonData):
 		try:
@@ -883,7 +891,11 @@ class TelekomSportEventLaneScreen(Screen):
 			match = self['list'].getCurrent()[2]
 			urlpart = self['list'].getCurrent()[3]
 			starttime = self['list'].getCurrent()[4]
-			self.session.open(TelekomSportEventScreen, description, starttime, match, urlpart, self.standings_url, self.schedule_url)
+			self.session.openWithCallback(self.recursiveClose, TelekomSportEventScreen, description, starttime, match, urlpart, self.standings_url, self.schedule_url)
+
+	def recursiveClose(self, *retVal):
+		if retVal:
+			self.close(True)
 
 
 class TelekomSportSportsTypeScreen(Screen):
@@ -960,11 +972,15 @@ class TelekomSportSportsTypeScreen(Screen):
 
 		self['actions'] = ActionMap(['SetupActions', 'DirectionActions', 'ColorActions'],
 		{
+			'menu': self.closeRecursive,
 			'cancel': self.close,
 			'ok': self.ok,
 			'blue': self.showTableResults,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'SportsType', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'SportsType', self['status']))
+
+	def closeRecursive(self):
+		self.close(True)
 
 	def buildList(self, jsonData):
 		try:
@@ -1004,7 +1020,11 @@ class TelekomSportSportsTypeScreen(Screen):
 			title = self['list'].getCurrent()[2]
 			urlpart = self['list'].getCurrent()[3]
 			if urlpart != '':
-				self.session.open(TelekomSportEventLaneScreen, self.main_title, title, urlpart, self.standings_url, self.schedule_url)
+				self.session.openWithCallback(self.recursiveClose, TelekomSportEventLaneScreen, self.main_title, title, urlpart, self.standings_url, self.schedule_url)
+
+	def recursiveClose(self, *retVal):
+		if retVal:
+			self.close(True)
 
 	def showTableResults(self):
 		if self.standings_url or self.schedule_url:
@@ -1117,7 +1137,11 @@ class TelekomSportMainScreen(Screen):
 		if self['list'].getCurrent():
 			title = self['list'].getCurrent()[2]
 			urlpart = self['list'].getCurrent()[3]
-			self.session.open(TelekomSportSportsTypeScreen, title, urlpart)
+			self.session.openWithCallback(self.recursiveClose, TelekomSportSportsTypeScreen, title, urlpart)
+
+	def recursiveClose(self, *retVal):
+		if retVal:
+			self.close()
 
 	def selectDefaultSportsType(self):
 		if config.plugins.telekomsport.default_section.value:
@@ -1129,7 +1153,7 @@ class TelekomSportMainScreen(Screen):
 		if item:
 			title = item[2]
 			urlpart = item[3]
-			self.session.open(TelekomSportSportsTypeScreen, title, urlpart)
+			self.session.openWithCallback(self.recursiveClose, TelekomSportSportsTypeScreen, title, urlpart)
 
 	def showSetup(self):
 		self.session.open(TelekomSportConfigScreen)

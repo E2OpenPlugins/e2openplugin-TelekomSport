@@ -590,7 +590,7 @@ class TelekomSportEventScreen(Screen):
 		self.videoList = []
 		self['list'] = List(self.videoList)
 
-		self['actions'] = ActionMap(['SetupActions', 'DirectionActions'],
+		self['actions'] = ActionMap(['MenuActions', 'SetupActions', 'DirectionActions'],
 		{
 			'menu': self.closeRecursive,
 			'cancel': self.close,
@@ -848,7 +848,7 @@ class TelekomSportEventLaneScreen(Screen):
 		self.eventList = []
 		self['list'] = List(self.eventList)
 
-		self['actions'] = ActionMap(['SetupActions', 'DirectionActions'],
+		self['actions'] = ActionMap(['MenuActions', 'SetupActions', 'DirectionActions'],
 		{
 			'menu': self.closeRecursive,
 			'cancel': self.close,
@@ -970,7 +970,7 @@ class TelekomSportSportsTypeScreen(Screen):
 		self['buttonblue'] = Label('')
 		self['buttonblue'].hide()
 
-		self['actions'] = ActionMap(['SetupActions', 'DirectionActions', 'ColorActions'],
+		self['actions'] = ActionMap(['MenuActions', 'SetupActions', 'DirectionActions', 'ColorActions'],
 		{
 			'menu': self.closeRecursive,
 			'cancel': self.close,

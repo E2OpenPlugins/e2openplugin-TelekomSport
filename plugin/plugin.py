@@ -4,6 +4,7 @@ from Plugins.Plugin import PluginDescriptor
 from Screens.Screen import Screen
 from Screens.InfoBar import MoviePlayer
 from Screens.MessageBox import MessageBox
+from Screens.Standby import TryQuitMainloop
 from Screens.VirtualKeyBoard import VirtualKeyBoard
 from Components.ActionMap import ActionMap
 from Components.Sources.List import List
@@ -13,7 +14,7 @@ from Components.ConfigList import ConfigListScreen
 from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo, ConfigSelection, NoSave
 from Tools.BoundFunction import boundFunction
 
-from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceReference, getDesktop
+from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceReference, getDesktop, eConsoleAppContainer
 
 import xml.etree.ElementTree as ET
 import time
@@ -1033,6 +1034,8 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
+	version = 'v2.0.0'
+
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'
 
@@ -1056,6 +1059,7 @@ class TelekomSportMainScreen(Screen):
 					</widget>
 					<widget name="status" position="10,200" size="800,420" font="Regular;25" halign="center" zPosition="1" />
 					<widget name="buttonblue" position="15,630" size="140,35" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
+					<widget name="buttongreen" position="180,630" size="140,35" backgroundColor="green" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
 					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
 						<convert type="ClockToText">
 							Format:%d.%m.%Y %H:%M
@@ -1082,6 +1086,7 @@ class TelekomSportMainScreen(Screen):
 					</widget>
 					<widget name="status" position="15,300" size="1200,630" font="Regular;35" halign="center" zPosition="1" />
 					<widget name="buttonblue" position="35,955" size="220,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
+					<widget name="buttongreen" position="300,955" size="220,50" backgroundColor="green" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
 					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
 						<convert type="ClockToText">
 							Format:%d.%m.%Y %H:%M
@@ -1093,6 +1098,9 @@ class TelekomSportMainScreen(Screen):
 		Screen.__init__(self, session)
 		self.session = session
 
+		self.updateUrl = ''
+		self.updateText = ''
+
 		self['title'] = Label('')
 		self['subtitle'] = Label('')
 		self['status'] = Label('Lade Daten...')
@@ -1101,14 +1109,18 @@ class TelekomSportMainScreen(Screen):
 		self['list'] = List(self.sportslist)
 
 		self['buttonblue'] = Label('Einstellungen')
+		self['buttongreen'] = Label('Update')
+		self['buttongreen'].hide()
 
 		self['actions'] = ActionMap(['SetupActions', 'DirectionActions', 'ColorActions'],
 		{
 			'cancel': self.close,
 			'ok': self.ok,
 			'blue': self.showSetup,
+			'green': self.update,
 		})
 		downloadTelekomSportJson(self.base_url + self.main_page, boundFunction(loadTelekomSportJsonData, 'Main', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'Main', self['status']))
+		self.onLayoutFinish.append(self.checkForUpdate)
 
 	def buildList(self, jsonData):
 		default_section_choicelist = [('', 'Default')]
@@ -1157,6 +1169,59 @@ class TelekomSportMainScreen(Screen):
 
 	def showSetup(self):
 		self.session.open(TelekomSportConfigScreen)
+
+	def checkForUpdate(self):
+		url = 'https://api.github.com/repos/E2OpenPlugins/e2openplugin-TelekomSport/releases'
+		header = { 'Accept' : 'application/vnd.github.v3+json' }
+		req = urllib2.Request(url, None, header)
+		try:
+			response = urllib2.urlopen(req)
+			jsonData = json.loads(response.read())
+
+			for rel in jsonData:
+				if rel['target_commitish'] != 'master':
+					continue
+				if self.version < rel['tag_name']:
+					self.updateText = rel['body'].encode('utf8')
+					for asset in rel['assets']:
+						if telekomsport_isDreamOS and asset['name'].endswith('.deb'):
+							self.updateUrl = asset['browser_download_url']
+							self['buttongreen'].show()
+							break
+						elif (not telekomsport_isDreamOS) and asset['name'].endswith('.ipk'):
+							self.updateUrl = asset['browser_download_url']
+							self['buttongreen'].show()
+							break
+				if self.version >= rel['tag_name'] or self.updateUrl != '':
+					break
+
+		except Exception as e:
+			pass
+
+	def update(self):
+		if self.updateUrl:
+			self.session.openWithCallback(self.updateConfirmed, MessageBox, 'Ein Update ist verfügbar. Wollen sie es installieren?\nInformationen:\n' + self.updateText, MessageBox.TYPE_YESNO, default = False)
+
+	def updateConfirmed(self, answer):
+		if answer:
+			self.container = eConsoleAppContainer()
+			self.container.appClosed.append(self.finishedUpdate)
+			if telekomsport_isDreamOS:
+				self.container.execute('wget -O /tmp/%s %s; dpkg -i /tmp/%s' % ('enigma2-plugin-extensions-telekomsport.deb', self.updateUrl, 'enigma2-plugin-extensions-telekomsport.deb'))
+			else:
+				self.container.execute('opkg update; opkg install ' + self.updateUrl)
+
+	def finishedUpdate(self, retval):
+		self['buttongreen'].hide()
+		self.updateUrl = ''
+		if retval == 0:
+			self.session.openWithCallback(self.restartE2, MessageBox, 'Das Telekom Sport Plugin wurde erfolgreich installiert!\nSoll das E2 GUI neugestartet werden?', MessageBox.TYPE_YESNO, default = False)
+		else:
+			self.session.open(MessageBox, 'Bei der Installation ist ein Problem aufgetreten.', MessageBox.TYPE_ERROR)
+
+	def restartE2(self, answer):
+		if answer:
+			self.session.open(TryQuitMainloop, 3)
 
 
 def main(session, **kwargs):

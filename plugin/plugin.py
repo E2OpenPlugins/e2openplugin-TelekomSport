@@ -222,7 +222,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 
 	if getDesktop(0).size().width() <= 1280:
 		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="800,100" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
 					<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
 					<widget name="table_header_team" position="40,200" size="100,20" font="Regular;18" zPosition="1" />
@@ -273,7 +273,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 				</screen>'''
 	else:
 		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1200,150" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
 					<widget name="subtitle" position="15,235" size="1200,50" font="Regular;38" zPosition="1" />
 					<widget name="table_header_team" position="60,300" size="100,40" font="Regular;30" zPosition="1" />
@@ -519,7 +519,7 @@ class TelekomSportEventScreen(Screen):
 
 	if getDesktop(0).size().width() <= 1280:
 		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="800,100" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="description" position="10,150" size="800,40" font="Regular;25" zPosition="1" />
 					<widget name="match" position="10,200" size="800,45" noWrap="1" halign="center" font="Regular;35" zPosition="1" />
 					<widget name="subdescription" position="10,270" size="800,90" font="Regular;25" zPosition="1" />
@@ -545,7 +545,7 @@ class TelekomSportEventScreen(Screen):
 				</screen>'''
 	else:
 		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1200,150" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="description" position="15,230" size="1200,50" font="Regular;35" zPosition="1" />
 					<widget name="match" position="15,290" size="1200,65" noWrap="1" halign="center" font="Regular;50" zPosition="1" />
 					<widget name="subdescription" position="15,370" size="1200,130" font="Regular;35" zPosition="1" />
@@ -785,7 +785,7 @@ class TelekomSportEventLaneScreen(Screen):
 
 	if getDesktop(0).size().width() <= 1280:
 		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="800,100" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
 					<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
 					<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
@@ -811,7 +811,7 @@ class TelekomSportEventLaneScreen(Screen):
 				</screen>'''
 	else:
 		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1200,150" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
 					<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
 					<widget source="list" render="Listbox" position="15,300" size="1200,630" scrollbarMode="showOnDemand">
@@ -903,7 +903,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 	if getDesktop(0).size().width() <= 1280:
 		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="800,100" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
 					<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
 					<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
@@ -929,7 +929,7 @@ class TelekomSportSportsTypeScreen(Screen):
 				</screen>'''
 	else:
 		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1200,150" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
 					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
 					<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
 					<widget source="list" render="Listbox" position="15,300" size="1200,630" scrollbarMode="showOnDemand">
@@ -1034,14 +1034,15 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.0.0'
+	version = 'v2.0.1'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'
 
 	if getDesktop(0).size().width() <= 1280:
 		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="800,100" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
 					<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
 					<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
 					<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
@@ -1068,7 +1069,8 @@ class TelekomSportMainScreen(Screen):
 				</screen>'''
 	else:
 		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1200,150" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="version" position="1150,127" size="90,35" font="Regular;26" zPosition="2" />
 					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
 					<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
 					<widget source="list" render="Listbox" position="15,300" size="1200,630" scrollbarMode="showOnDemand">
@@ -1104,6 +1106,7 @@ class TelekomSportMainScreen(Screen):
 		self['title'] = Label('')
 		self['subtitle'] = Label('')
 		self['status'] = Label('Lade Daten...')
+		self['version'] = Label(self.version)
 
 		self.sportslist = []
 		self['list'] = List(self.sportslist)

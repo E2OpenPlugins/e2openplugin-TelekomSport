@@ -237,7 +237,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (25,[
-									MultiContentEntryText(pos = (0, 0), size = (25, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
+									MultiContentEntryText(pos = (3, 0), size = (25, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
 									MultiContentEntryText(pos = (30, 0), size = (370, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # team
 									MultiContentEntryText(pos = (400, 0), size = (50, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # count matches
 									MultiContentEntryText(pos = (440, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # count wins
@@ -245,16 +245,19 @@ class TelekomSportStandingsResultsScreen(Screen):
 									MultiContentEntryText(pos = (510, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 5), # count losses
 									MultiContentEntryText(pos = (555, 0), size = (95, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
 									MultiContentEntryText(pos = (650, 0), size = (50, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
-									MultiContentEntryText(pos = (720, 0), size = (50, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
+									MultiContentEntryText(pos = (710, 0), size = (60, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
+									MultiContentEntryText(pos = (0, 0), size = (800, 25), border_width=1, border_color=0x424242, font=0, text = ""), # border
 								]),
 								"playoff": (65,[
 									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title
 									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # teams + wins
+									MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""), # border
 								]),
 								"schedule": (65,[
 									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
 									MultiContentEntryText(pos = (620, 0), size = (240, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
 									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # teams + result
+									MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""), # border
 								]),
 								},
 								"fonts": [gFont("Regular", 20), gFont("Regular", 24)],
@@ -277,18 +280,18 @@ class TelekomSportStandingsResultsScreen(Screen):
 					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
 					<widget name="subtitle" position="15,235" size="1200,50" font="Regular;38" zPosition="1" />
 					<widget name="table_header_team" position="60,300" size="100,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_matches" position="580,300" size="80,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_matches" position="585,300" size="80,40" font="Regular;30" zPosition="1" />
 					<widget name="table_header_wins" position="690,300" size="25,40" font="Regular;30" zPosition="1" />
 					<widget name="table_header_draws" position="740,300" size="25,40" font="Regular;30" zPosition="1" />
 					<widget name="table_header_losses" position="785,300" size="25,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_goals" position="855,300" size="70,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_goaldiff" position="995,300" size="60,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_points" position="1055,300" size="100,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_goals" position="865,300" size="70,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_goaldiff" position="1005,300" size="60,40" font="Regular;30" zPosition="1" />
+					<widget name="table_header_points" position="1065,300" size="100,40" font="Regular;30" zPosition="1" />
 					<widget source="list" render="Listbox" position="15,340" size="1200,610" scrollbarMode="showOnDemand">
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (40,[
-									MultiContentEntryText(pos = (0, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
+									MultiContentEntryText(pos = (2, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
 									MultiContentEntryText(pos = (45, 0), size = (555, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # team
 									MultiContentEntryText(pos = (600, 0), size = (50, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # count matches
 									MultiContentEntryText(pos = (650, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # count wins
@@ -296,16 +299,19 @@ class TelekomSportStandingsResultsScreen(Screen):
 									MultiContentEntryText(pos = (755, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 5), # count losses
 									MultiContentEntryText(pos = (835, 0), size = (150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
 									MultiContentEntryText(pos = (990, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
-									MultiContentEntryText(pos = (1060, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
+									MultiContentEntryText(pos = (1060, 0), size = (80, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
+									MultiContentEntryText(pos = (0, 0), size = (1200, 40), border_width=1, border_color=0x424242, font=0, text = 0), # rank
 								]),
 								"playoff": (90,[
 									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title
 									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # teams + wins
+									MultiContentEntryText(pos = (0, 0), size = (1200, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
 								]),
 								"schedule": (90,[
 									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
 									MultiContentEntryText(pos = (925, 0), size = (360, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
 									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # teams + result
+									MultiContentEntryText(pos = (0, 0), size = (1200, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
 								]),
 								},
 								"fonts": [gFont("Regular", 32), gFont("Regular", 36)],
@@ -795,6 +801,7 @@ class TelekomSportEventLaneScreen(Screen):
 									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
 									MultiContentEntryText(pos = (620, 0), size = (240, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
 									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2),
+									MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""),
 								]),
 								},
 								"fonts": [gFont("Regular", 24),gFont("Regular", 20)],
@@ -821,6 +828,7 @@ class TelekomSportEventLaneScreen(Screen):
 									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
 									MultiContentEntryText(pos = (925, 0), size = (360, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
 									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2),
+									MultiContentEntryText(pos = (0, 0), size = (1180, 90), border_width=1, border_color=0x424242, font=0, text = ""),
 								]),
 								},
 								"fonts": [gFont("Regular", 36),gFont("Regular", 32)],
@@ -910,8 +918,9 @@ class TelekomSportSportsTypeScreen(Screen):
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (30,[
-									MultiContentEntryText(pos = (0, 0), size = (750, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
+									MultiContentEntryText(pos = (5, 0), size = (750, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
 									MultiContentEntryText(pos = (50, 0), size = (750, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
+									MultiContentEntryText(pos = (0, 0), size = (800, 30), border_width=1, border_color=0x424242, font=0, text = ""),
 								]),
 								},
 								"fonts": [gFont("Regular", 20)],
@@ -936,8 +945,9 @@ class TelekomSportSportsTypeScreen(Screen):
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (45,[
-									MultiContentEntryText(pos = (0, 0), size = (1180, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
+									MultiContentEntryText(pos = (5, 0), size = (1180, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
 									MultiContentEntryText(pos = (50, 0), size = (1140, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
+									MultiContentEntryText(pos = (0, 0), size = (1180, 45), border_width=1, border_color=0x424242, font=0, text = ""),
 								]),
 								},
 								"fonts": [gFont("Regular", 32)],
@@ -1034,7 +1044,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.0.1'
+	version = 'v2.0.2'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'
@@ -1049,8 +1059,9 @@ class TelekomSportMainScreen(Screen):
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (30,[
-									MultiContentEntryText(pos = (0, 0), size = (750, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-									MultiContentEntryText(pos = (50, 0), size = (750, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
+									MultiContentEntryText(pos = (5, 0), size = (750, 28), border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
+									MultiContentEntryText(pos = (50, 0), size = (750, 28), border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
+									MultiContentEntryText(pos = (0, 0), size = (800, 30), border_width=1, border_color=0x424242, font=0, text = ""),
 								]),
 								},
 								"fonts": [gFont("Regular", 20)],
@@ -1077,8 +1088,9 @@ class TelekomSportMainScreen(Screen):
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (45,[
-									MultiContentEntryText(pos = (0, 0), size = (1180, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
+									MultiContentEntryText(pos = (5, 0), size = (1180, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
 									MultiContentEntryText(pos = (50, 0), size = (1140, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
+									MultiContentEntryText(pos = (0, 0), size = (1180, 45), border_width=1, border_color=0x424242, font=0, text = ""),
 								]),
 								},
 								"fonts": [gFont("Regular", 32)],

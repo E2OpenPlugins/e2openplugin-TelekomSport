@@ -13,6 +13,7 @@ from Components.MultiContent import MultiContentEntryText
 from Components.ConfigList import ConfigListScreen
 from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo, ConfigSelection, NoSave
 from Tools.BoundFunction import boundFunction
+from downloader import TelekomSportDownloadWithProgress
 
 from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceReference, getDesktop, eConsoleAppContainer
 
@@ -1044,7 +1045,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.0.2'
+	version = 'v2.0.3'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'
@@ -1114,6 +1115,7 @@ class TelekomSportMainScreen(Screen):
 
 		self.updateUrl = ''
 		self.updateText = ''
+		self.filename = ''
 
 		self['title'] = Label('')
 		self['subtitle'] = Label('')
@@ -1200,11 +1202,13 @@ class TelekomSportMainScreen(Screen):
 					self.updateText = rel['body'].encode('utf8')
 					for asset in rel['assets']:
 						if telekomsport_isDreamOS and asset['name'].endswith('.deb'):
-							self.updateUrl = asset['browser_download_url']
+							self.updateUrl = asset['browser_download_url'].encode('utf8')
+							self.filename = '/tmp/enigma2-plugin-extensions-telekomsport.deb'
 							self['buttongreen'].show()
 							break
 						elif (not telekomsport_isDreamOS) and asset['name'].endswith('.ipk'):
-							self.updateUrl = asset['browser_download_url']
+							self.updateUrl = asset['browser_download_url'].encode('utf8')
+							self.filename = '/tmp/enigma2-plugin-extensions-telekomsport.ipk'
 							self['buttongreen'].show()
 							break
 				if self.version >= rel['tag_name'] or self.updateUrl != '':
@@ -1219,14 +1223,24 @@ class TelekomSportMainScreen(Screen):
 
 	def updateConfirmed(self, answer):
 		if answer:
-			self.container = eConsoleAppContainer()
-			self.container.appClosed.append(self.finishedUpdate)
-			if telekomsport_isDreamOS:
-				self.container.execute('wget -O /tmp/%s %s; dpkg -i /tmp/%s' % ('enigma2-plugin-extensions-telekomsport.deb', self.updateUrl, 'enigma2-plugin-extensions-telekomsport.deb'))
-			else:
-				self.container.execute('opkg update; opkg install ' + self.updateUrl)
+			self.downloader = TelekomSportDownloadWithProgress(self.updateUrl, self.filename)
+			self.downloader.addError(self.updateFailed)
+			self.downloader.addEnd(self.downloadFinished)
+			self.downloader.start()
 
-	def finishedUpdate(self, retval):
+	def downloadFinished(self):
+		self.downloader.stop()
+		self.container = eConsoleAppContainer()
+		self.container.appClosed.append(self.updateFinished)
+		if telekomsport_isDreamOS:
+			self.container.execute('dpkg -i ' + self.filename)
+		else:
+			self.container.execute('opkg update; opkg install ' + self.filename)
+
+	def updateFailed(self, reason, status):
+		self.updateFinished(1)
+
+	def updateFinished(self, retval):
 		self['buttongreen'].hide()
 		self.updateUrl = ''
 		if retval == 0:

@@ -301,7 +301,7 @@ class TelekomSportStandingsResultsScreen(Screen):
 									MultiContentEntryText(pos = (835, 0), size = (150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
 									MultiContentEntryText(pos = (990, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
 									MultiContentEntryText(pos = (1060, 0), size = (80, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
-									MultiContentEntryText(pos = (0, 0), size = (1200, 40), border_width=1, border_color=0x424242, font=0, text = 0), # rank
+									MultiContentEntryText(pos = (0, 0), size = (1200, 40), border_width=1, border_color=0x424242, font=0, text = ""), # border
 								]),
 								"playoff": (90,[
 									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title

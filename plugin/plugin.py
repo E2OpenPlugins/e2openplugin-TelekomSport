@@ -2,11 +2,12 @@
 
 from Plugins.Plugin import PluginDescriptor
 from Screens.Screen import Screen
-from Screens.InfoBar import MoviePlayer
+from Screens.InfoBarGenerics import InfoBarMenu, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport
 from Screens.MessageBox import MessageBox
 from Screens.Standby import TryQuitMainloop
 from Screens.VirtualKeyBoard import VirtualKeyBoard
 from Components.ActionMap import ActionMap
+from Components.ServiceEventTracker import InfoBarBase
 from Components.Sources.List import List
 from Components.Label import Label
 from Components.MultiContent import MultiContentEntryText
@@ -196,16 +197,53 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 			self['config'].invalidate(self['config'].getCurrent())
 
 
-class TelekomSportMoviePlayer(MoviePlayer):
+class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport):
 
 	def __init__(self, session, service, standings_url, schedule_url):
-		MoviePlayer.__init__(self, session, service)
+		Screen.__init__(self, session)
 		self.skinName = 'MoviePlayer'
+
+		InfoBarMenu.__init__(self)
+		InfoBarBase.__init__(self)
+		InfoBarNotifications.__init__(self)
+		InfoBarServiceNotifications.__init__(self)
+		InfoBarShowHide.__init__(self)
+		InfoBarSimpleEventView.__init__(self)
+		InfoBarSeek.__init__(self)
+		InfoBarServiceErrorPopupSupport.__init__(self)
+
+		self.service = service
+		self.lastservice = self.session.nav.getCurrentlyPlayingServiceReference()
 		self.standings_url = standings_url
 		self.schedule_url = schedule_url
 
+		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions'],
+		{
+			'leavePlayer' : self.leavePlayer,
+			'leavePlayerOnExit' : self.leavePlayerOnExit,
+			'blue' : self.openEventView,
+			'yellow' : self.openEventView,
+			'red' : self.openEventView,
+			'green' : self.openEventView,
+		}, -2)
+		self.onFirstExecBegin.append(self.playStream)
+		self.onClose.append(self.stopPlayback)
+
+	def playStream(self):
+		self.session.nav.playService(self.service)
+
+	def stopPlayback(self):
+		if self.lastservice:
+			self.session.nav.playService(self.lastservice)
+		else:
+			self.session.nav.stopService()
+
 	def leavePlayer(self):
 		self.session.openWithCallback(self.leavePlayerConfirmed, MessageBox, 'Abspielen beenden?')
+
+	def leavePlayerOnExit(self):
+		if config.usage.leave_movieplayer_onExit.value != 'no':
+			self.leavePlayer()
 
 	def leavePlayerConfirmed(self, answer):
 		if answer:
@@ -1045,7 +1083,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.0.3'
+	version = 'v2.1.0'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'

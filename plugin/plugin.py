@@ -10,7 +10,7 @@ from Components.ActionMap import ActionMap
 from Components.ServiceEventTracker import InfoBarBase
 from Components.Sources.List import List
 from Components.Label import Label
-from Components.MultiContent import MultiContentEntryText
+from Components.MultiContent import MultiContentEntryText, MultiContentEntryProgress
 from Components.ConfigList import ConfigListScreen
 from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo, ConfigSelection, NoSave
 from Tools.BoundFunction import boundFunction
@@ -199,7 +199,7 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
 class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport):
 
-	def __init__(self, session, service, standings_url, schedule_url):
+	def __init__(self, session, service, standings_url, schedule_url, statistics_url, boxscore_url):
 		Screen.__init__(self, session)
 		self.skinName = 'MoviePlayer'
 
@@ -216,15 +216,17 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		self.lastservice = self.session.nav.getCurrentlyPlayingServiceReference()
 		self.standings_url = standings_url
 		self.schedule_url = schedule_url
+		self.statistics_url = statistics_url
+		self.boxscore_url = boxscore_url
 
 		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions'],
 		{
 			'leavePlayer' : self.leavePlayer,
 			'leavePlayerOnExit' : self.leavePlayerOnExit,
-			'blue' : self.openEventView,
+			'red'    : self.openEventView,
+			'green'  : self.showStatistics,
 			'yellow' : self.openEventView,
-			'red' : self.openEventView,
-			'green' : self.openEventView,
+			'blue'   : self.openEventView,
 		}, -2)
 		self.onFirstExecBegin.append(self.playStream)
 		self.onClose.append(self.stopPlayback)
@@ -253,8 +255,134 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		if self.standings_url:
 			self.session.open(TelekomSportStandingsResultsScreen, '', self.standings_url, self.schedule_url)
 
+	def showStatistics(self):
+		if self.statistics_url:
+			self.session.open(TelekomSportStatisticsScreen, self.statistics_url)
+
 	def showMovies(self):
 		pass
+
+
+class TelekomSportStatisticsScreen(Screen):
+
+	if getDesktop(0).size().width() <= 1280:
+		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
+					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="title" position="10,140" size="800,40" font="Regular;34" zPosition="1" />
+					<widget name="match" position="10,190" size="800,40" noWrap="1" halign="center" font="Regular;32" zPosition="1" />
+					<widget source="list" render="Listbox" position="10,260" size="800,355" scrollbarMode="showOnDemand">
+						<convert type="TemplatedMultiContent">
+							{"templates":
+								{"default": (50,[
+									MultiContentEntryText(pos = (20, 0), size = (130, 28), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 0), # home
+									MultiContentEntryText(pos = (0, 0), size = (800, 28), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 1), # stat name
+									MultiContentEntryText(pos = (630, 0), size = (130, 28), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 2), # away
+									MultiContentEntryProgress(pos = (10, 32), size = (780, 10), percent = -3), # percent
+								]),
+								},
+								"fonts": [gFont("Regular", 24)],
+								"itemHeight": 50
+							}
+						</convert>
+					</widget>
+					<widget name="status" position="10,370" size="800,250" font="Regular;25" halign="center" zPosition="1" />
+					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+						<convert type="ClockToText">
+							Format:%d.%m.%Y %H:%M
+						</convert>
+					</widget>
+				</screen>'''
+	else:
+		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
+					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="title" position="15,210" size="1200,50" font="Regular;45" zPosition="1" />
+					<widget name="match" position="15,280" size="1200,65" noWrap="1" halign="center" font="Regular;42" zPosition="1" />
+					<widget source="list" render="Listbox" position="40,380" size="1150,570" scrollbarMode="showOnDemand">
+						<convert type="TemplatedMultiContent">
+							{"templates":
+								{"default": (80,[
+									MultiContentEntryText(pos = (50, 0), size = (200, 40), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 0), # home
+									MultiContentEntryText(pos = (0, 0), size = (1150, 40), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 1), # stat name
+									MultiContentEntryText(pos = (900, 0), size = (200, 40), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 2), # away
+									MultiContentEntryProgress(pos = (25, 40), size = (1100, 15), percent = -3), # percent
+								]),
+								},
+								"fonts": [gFont("Regular", 32)],
+								"itemHeight": 75
+							}
+						</convert>
+					</widget>
+					<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
+					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+						<convert type="ClockToText">
+							Format:%d.%m.%Y %H:%M
+						</convert>
+					</widget>
+				</screen>'''
+
+	def __init__(self, session, statistics_url):
+		Screen.__init__(self, session)
+		self.session = session
+
+		self['status'] = Label('Lade Daten...')
+		self['match'] = Label()
+		self['title'] = Label('Spielstatistiken')
+		self.statList = []
+		self['list'] = List(self.statList)
+
+		self['actions'] = ActionMap(['OkCancelActions'],
+		{
+			'ok' : self.close,
+			'cancel' : self.close,
+		})
+		downloadTelekomSportJson(TelekomSportMainScreen.base_url + statistics_url, boundFunction(loadTelekomSportJsonData, 'Statistic', self['status'], self.loadStatistics), boundFunction(handleTelekomSportDownloadError, 'Statistics', self['status']))
+
+	def loadStatistics(self, jsonData):
+		if not jsonData['data']:
+			return
+
+		try:
+			for ev in jsonData['data']:
+				self['match'].setText(jsonData['data'][ev]['name'].encode('utf8'))
+				for stat in jsonData['data'][ev]['statistics']:
+					stat_name = stat['name'].encode('utf8')
+					if stat['data']['type'] == 'ratio':
+						home_prop = stat['data']['home']['proportion']
+						home_total = stat['data']['home']['total']
+						away_prop = stat['data']['away']['proportion']
+						away_total = stat['data']['away']['total']
+						if home_total == 0:
+							home_percent = 0
+						else:
+							home_percent = float(home_prop) / home_total * 100
+						if away_total == 0:
+							away_percent = 0
+						else:
+							away_percent = float(away_prop) / away_total * 100
+						if home_percent == 0 and away_percent == 0:
+							percent = 50
+						else:
+							percent = int(home_percent / (home_percent + away_percent) * 100)
+						home_value_str = str(int(home_percent)) + '% (' + str(home_prop) + '/' + str(home_total) + ')'
+						away_value_str = str(int(away_percent)) + '% (' + str(away_prop) + '/' + str(away_total) + ')'
+					elif stat['data']['type'] == 'single':
+						home_value = stat['data']['home']['value']
+						away_value = stat['data']['away']['value']
+						if home_value == 0 and away_value == 0:
+							percent = 50
+						else:
+							percent = int(float(home_value) / (home_value + away_value) * 100)
+						home_value_str = str(home_value).encode('utf8')
+						away_value_str = str(away_value).encode('utf8')
+					else:
+						continue
+					self.statList.append((home_value_str, stat_name, away_value_str, percent))
+		except Exception as e:
+			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportStatisticsScreen ' + str(e))
+			return
+
+		self['list'].setList(self.statList)
+		self['status'].hide()
 
 
 class TelekomSportStandingsResultsScreen(Screen):
@@ -627,6 +755,9 @@ class TelekomSportEventScreen(Screen):
 		self.schedule_url = schedule_url
 		self.match = match
 
+		self.statistics_url = ''
+		self.boxscore_url = ''
+
 		self['match'] = Label(match)
 		self['description'] = Label(description)
 		self['subdescription'] = Label('')
@@ -759,7 +890,7 @@ class TelekomSportEventScreen(Screen):
 		ref = eServiceReference(4097, 0, playlisturl)
 		ref.setName(title)
 
-		self.session.open(TelekomSportMoviePlayer, ref, self.standings_url, self.schedule_url)
+		self.session.open(TelekomSportMoviePlayer, ref, self.standings_url, self.schedule_url, self.statistics_url, self.boxscore_url)
 
 	def buildPreEventScreen(self, jsonData):
 		pay = ''
@@ -785,6 +916,10 @@ class TelekomSportEventScreen(Screen):
 							if videos['pay']:
 								title += ' *'
 							self.videoList.append((title, self.match + ' - ' + videos['title'].encode('utf8'), str(videos['videoID']), str(videos['pay'])))
+					elif element['type'] == 'statistics':
+						self.statistics_url = element['data']['url'].encode('utf8')
+					elif element['type'] == 'boxScore':
+						self.boxscore_url = element['data_url'].encode('utf8')
 
 	def buildLiveEventScreen(self, jsonData):
 		self['subdescription'].setText('Übertragung vom ' + self.starttime.strftime('%d.%m.%Y %H:%M') + '\n\nVideos:')
@@ -796,6 +931,10 @@ class TelekomSportEventScreen(Screen):
 						if element['data'][0]['pay']:
 							title += ' *'
 						self.videoList.append((title, element['data'][0]['title'].encode('utf8'), str(element['data'][0]['videoID']), str(element['data'][0]['pay'])))
+					elif element['type'] == 'statistics':
+						self.statistics_url = element['data']['url'].encode('utf8')
+					elif element['type'] == 'boxScore':
+						self.boxscore_url = element['data_url'].encode('utf8')
 
 	def buildScreen(self, jsonData):
 		self.videoList = []
@@ -1083,7 +1222,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.1.0'
+	version = 'v2.2.0'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'

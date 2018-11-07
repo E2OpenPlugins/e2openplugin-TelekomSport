@@ -835,6 +835,10 @@ class TelekomSportEventScreen(Screen):
 			return playlisturl, 0
 		except urllib2.HTTPError as e:
 			return '', e.code
+		except urllib2.URLError as e2:
+			if 'CERTIFICATE_VERIFY_FAILED' in str(e2.reason):
+				return '', -2
+			return '', -1
 
 	def readExtXStreamInfLine(self, line, attributeListPattern):
 		line = line.replace('#EXT-X-STREAM-INF:', '')
@@ -879,6 +883,14 @@ class TelekomSportEventScreen(Screen):
 			playlisturl, errorCode = self.getStreamUrl(videoid, config.plugins.telekomsport.token2.value)
 		if errorCode == 403:
 			self['status'].setText('Es wird ein Abo benötigt um den Inhalt anzuzeigen!')
+			self['status'].show()
+			return
+		elif errorCode == -2:
+			self['status'].setText('Bitte stellen sie das Datum ein!')
+			self['status'].show()
+			return
+		elif errorCode == -1:
+			self['status'].setText('Es ist ein Fehler aufgetreten. Der Stream kann nicht abgespielt werden!')
 			self['status'].show()
 			return
 

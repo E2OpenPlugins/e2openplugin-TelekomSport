@@ -617,7 +617,10 @@ class TelekomSportStandingsResultsScreen(Screen):
 
 	def loadPlayoffStandings(self, jsonData):
 		try:
-			title = jsonData['data']['title'].encode('utf8')
+			if 'title' in jsonData['data']:
+				title = jsonData['data']['title'].encode('utf8')
+			else:
+				title = ''
 			for round in jsonData['data']['rounds']:
 				subtitle = round['title'].encode('utf8')
 				for enc in round['encounters']:

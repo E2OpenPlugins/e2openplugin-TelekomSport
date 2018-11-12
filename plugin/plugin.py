@@ -1338,7 +1338,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.3.0'
+	version = 'v2.3.1'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'
@@ -1526,8 +1526,10 @@ class TelekomSportMainScreen(Screen):
 		self.container = eConsoleAppContainer()
 		self.container.appClosed.append(self.updateFinished)
 		if telekomsport_isDreamOS:
+			self.container.appClosed_conn = self.container.appClosed.connect(self.updateFinished)
 			self.container.execute('dpkg -i ' + self.filename)
 		else:
+			self.container.appClosed.append(self.updateFinished)
 			self.container.execute('opkg update; opkg install ' + self.filename)
 
 	def updateFailed(self, reason, status):

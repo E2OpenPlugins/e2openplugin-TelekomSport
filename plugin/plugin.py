@@ -1092,10 +1092,10 @@ class TelekomSportEventLaneScreen(Screen):
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (65,[
-									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-									MultiContentEntryText(pos = (620, 0), size = (240, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
-									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2),
-									MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""),
+									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
+									MultiContentEntryText(pos = (615, 0), size = (240, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # starttime
+									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # title
+									MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""), # border
 								]),
 								},
 								"fonts": [gFont("Regular", 24),gFont("Regular", 20)],
@@ -1119,10 +1119,10 @@ class TelekomSportEventLaneScreen(Screen):
 						<convert type="TemplatedMultiContent">
 							{"templates":
 								{"default": (90,[
-									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-									MultiContentEntryText(pos = (925, 0), size = (360, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
-									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2),
-									MultiContentEntryText(pos = (0, 0), size = (1180, 90), border_width=1, border_color=0x424242, font=0, text = ""),
+									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
+									MultiContentEntryText(pos = (920, 0), size = (360, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # starttime
+									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # title
+									MultiContentEntryText(pos = (0, 0), size = (1180, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
 								]),
 								},
 								"fonts": [gFont("Regular", 36),gFont("Regular", 32)],
@@ -1338,7 +1338,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.3.1'
+	version = 'v2.3.2'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'

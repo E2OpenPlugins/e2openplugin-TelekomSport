@@ -1338,7 +1338,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.3.2'
+	version = 'v2.3.3'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'
@@ -1383,8 +1383,8 @@ class TelekomSportMainScreen(Screen):
 							{"templates":
 								{"default": (45,[
 									MultiContentEntryText(pos = (5, 0), size = (1180, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-									MultiContentEntryText(pos = (50, 0), size = (1140, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
-									MultiContentEntryText(pos = (0, 0), size = (1180, 45), border_width=1, border_color=0x424242, font=0, text = ""),
+									MultiContentEntryText(pos = (50, 0), size = (1130, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
+									MultiContentEntryText(pos = (0, 0), size = (1200, 45), border_width=1, border_color=0x424242, font=0, text = ""),
 								]),
 								},
 								"fonts": [gFont("Regular", 32)],

@@ -223,7 +223,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		{
 			'leavePlayer' : self.leavePlayer,
 			'leavePlayerOnExit' : self.leavePlayerOnExit,
-			'red'    : self.openEventView,
+			'red'    : self.showBoxScore,
 			'green'  : self.showStatistics,
 			'yellow' : self.openEventView,
 			'blue'   : self.openEventView,
@@ -255,6 +255,10 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		if self.standings_url:
 			self.session.open(TelekomSportStandingsResultsScreen, '', self.standings_url, self.schedule_url)
 
+	def showBoxScore(self):
+		if self.boxscore_url:
+			self.session.open(TelekomSportBoxScoreScreen, self.boxscore_url)
+
 	def showStatistics(self):
 		if self.statistics_url:
 			self.session.open(TelekomSportStatisticsScreen, self.statistics_url)
@@ -263,12 +267,109 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		pass
 
 
+class TelekomSportBoxScoreScreen(Screen):
+
+	if getDesktop(0).size().width() <= 1280:
+		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
+					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="title" position="10,140" size="800,45" font="Regular;38" zPosition="1" />
+					<widget name="match_home" position="15,200" size="395,40" noWrap="1" halign="left" font="Regular;32" zPosition="1" />
+					<widget name="match_away" position="410,200" size="395,40" noWrap="1" halign="right" font="Regular;32" zPosition="1" />
+					<widget name="endResult" position="10,260" size="810,40" noWrap="1" halign="center" font="Regular;32" zPosition="1" />
+					<widget source="list" render="Listbox" position="290,330" size="250,300" scrollbarMode="showOnDemand">
+						<convert type="TemplatedMultiContent">
+							{"templates":
+								{"default": (35,[
+									MultiContentEntryText(pos = (40, 0), size = (250, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # period
+								]),
+								},
+								"fonts": [gFont("Regular", 24)],
+								"itemHeight": 35
+							}
+						</convert>
+					</widget>
+					<widget name="status" position="10,370" size="800,250" font="Regular;25" halign="center" zPosition="1" />
+					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+						<convert type="ClockToText">
+							Format:%d.%m.%Y %H:%M
+						</convert>
+					</widget>
+				</screen>'''
+	else:
+		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
+					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="title" position="15,200" size="1200,60" font="Regular;48" zPosition="1" />
+					<widget name="match_home" position="30,280" size="585,60" noWrap="1" halign="left" font="Regular;42" zPosition="1" />
+					<widget name="match_away" position="615,280" size="585,60" noWrap="1" halign="right" font="Regular;42" zPosition="1" />
+					<widget name="endResult" position="15,360" size="1200,60" noWrap="1" halign="center" font="Regular;42" zPosition="1" />
+					<widget source="list" render="Listbox" position="475,480" size="275,450" scrollbarMode="showOnDemand">
+						<convert type="TemplatedMultiContent">
+							{"templates":
+								{"default": (50,[
+									MultiContentEntryText(pos = (25, 0), size = (250, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # period
+								]),
+								},
+								"fonts": [gFont("Regular", 32)],
+								"itemHeight": 50
+							}
+						</convert>
+					</widget>
+					<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
+					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+						<convert type="ClockToText">
+							Format:%d.%m.%Y %H:%M
+						</convert>
+					</widget>
+				</screen>'''
+
+	def __init__(self, session, boxscore_url):
+		Screen.__init__(self, session)
+		self.session = session
+
+		self['status'] = Label('Lade Daten...')
+		self['title'] = Label('Ergebnis')
+		self['match_home'] = Label()
+		self['match_away'] = Label()
+		self['endResult'] = Label()
+		self.resultList = []
+		self['list'] = List(self.resultList)
+
+		self['actions'] = ActionMap(['OkCancelActions'],
+		{
+			'ok' : self.close,
+			'cancel' : self.close,
+		})
+		downloadTelekomSportJson(TelekomSportMainScreen.base_url + boxscore_url, boundFunction(loadTelekomSportJsonData, 'BoxScore', self['status'], self.loadBoxScore), boundFunction(handleTelekomSportDownloadError, 'BoxScore', self['status']))
+
+	def loadBoxScore(self, jsonData):
+		if not jsonData['data'] or not jsonData['data']['data'] or not jsonData['data']['data']['results'] or not jsonData['data']['type'] == 'boxScore':
+			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportBoxScoreScreen BoxScore')
+			return
+
+		try:
+			home = jsonData['data']['data']['teams']['home']['name'].encode('utf8')
+			away = jsonData['data']['data']['teams']['away']['name'].encode('utf8')
+			result_home = str(jsonData['data']['data']['results']['home']).encode('utf8')
+			result_away = str(jsonData['data']['data']['results']['away']).encode('utf8')
+			self['match_home'].setText(home)
+			self['match_away'].setText(away)
+			self['endResult'].setText(result_home + ' : ' + result_away)
+			for period in jsonData['data']['data']['results']['periods']:
+				self.resultList.append((period['name'].encode('utf8') + '  ' + period['value'].encode('utf8'), ''))
+		except Exception as e:
+			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportBoxScoreScreen BoxScore ' + str(e))
+			return
+
+		self['list'].setList(self.resultList)
+		self['status'].hide()
+
+
 class TelekomSportStatisticsScreen(Screen):
 
 	if getDesktop(0).size().width() <= 1280:
 		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
 					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="10,140" size="800,40" font="Regular;34" zPosition="1" />
+					<widget name="title" position="10,140" size="800,45" font="Regular;38" zPosition="1" />
 					<widget name="match" position="10,190" size="800,40" noWrap="1" halign="center" font="Regular;32" zPosition="1" />
 					<widget source="list" render="Listbox" position="10,260" size="800,355" scrollbarMode="showOnDemand">
 						<convert type="TemplatedMultiContent">
@@ -295,7 +396,7 @@ class TelekomSportStatisticsScreen(Screen):
 	else:
 		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
 					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="15,210" size="1200,50" font="Regular;45" zPosition="1" />
+					<widget name="title" position="15,200" size="1200,60" font="Regular;48" zPosition="1" />
 					<widget name="match" position="15,280" size="1200,65" noWrap="1" halign="center" font="Regular;42" zPosition="1" />
 					<widget source="list" render="Listbox" position="40,380" size="1150,570" scrollbarMode="showOnDemand">
 						<convert type="TemplatedMultiContent">
@@ -1237,7 +1338,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.2.0'
+	version = 'v2.3.0'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'

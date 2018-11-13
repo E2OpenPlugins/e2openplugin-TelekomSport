@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from skin import loadSkin
 from Plugins.Plugin import PluginDescriptor
 from Screens.Screen import Screen
 from Screens.InfoBarGenerics import InfoBarMenu, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport
@@ -14,6 +15,7 @@ from Components.MultiContent import MultiContentEntryText, MultiContentEntryProg
 from Components.ConfigList import ConfigListScreen
 from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo, ConfigSelection, NoSave
 from Tools.BoundFunction import boundFunction
+from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from downloader import TelekomSportDownloadWithProgress
 
 from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceReference, getDesktop, eConsoleAppContainer
@@ -31,6 +33,11 @@ from twisted.web.client import getPage
 import twisted.web.error as twistedWebError
 import twisted.python.failure as twistedFailure
 
+
+if getDesktop(0).size().width() <= 1280:
+	loadSkin(resolveFilename(SCOPE_PLUGINS) + "Extensions/TelekomSport/skin_hd.xml")
+else:
+	loadSkin(resolveFilename(SCOPE_PLUGINS) + "Extensions/TelekomSport/skin_fhd.xml")
 
 try:
 	from enigma import eMediaDatabase
@@ -277,59 +284,6 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 
 class TelekomSportBoxScoreScreen(Screen):
 
-	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="10,140" size="800,45" font="Regular;38" zPosition="1" />
-					<widget name="match_home" position="15,200" size="395,40" noWrap="1" halign="left" font="Regular;32" zPosition="1" />
-					<widget name="match_away" position="410,200" size="395,40" noWrap="1" halign="right" font="Regular;32" zPosition="1" />
-					<widget name="endResult" position="10,260" size="810,40" noWrap="1" halign="center" font="Regular;32" zPosition="1" />
-					<widget source="list" render="Listbox" position="290,330" size="250,300" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (35,[
-									MultiContentEntryText(pos = (40, 0), size = (250, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # period
-								]),
-								},
-								"fonts": [gFont("Regular", 24)],
-								"itemHeight": 35
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="10,370" size="800,250" font="Regular;25" halign="center" zPosition="1" />
-					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-	else:
-		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="15,200" size="1200,60" font="Regular;48" zPosition="1" />
-					<widget name="match_home" position="30,280" size="585,60" noWrap="1" halign="left" font="Regular;42" zPosition="1" />
-					<widget name="match_away" position="615,280" size="585,60" noWrap="1" halign="right" font="Regular;42" zPosition="1" />
-					<widget name="endResult" position="15,360" size="1200,60" noWrap="1" halign="center" font="Regular;42" zPosition="1" />
-					<widget source="list" render="Listbox" position="475,480" size="275,450" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (50,[
-									MultiContentEntryText(pos = (25, 0), size = (250, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # period
-								]),
-								},
-								"fonts": [gFont("Regular", 32)],
-								"itemHeight": 50
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
-					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-
 	def __init__(self, session, boxscore_url):
 		Screen.__init__(self, session)
 		self.session = session
@@ -373,61 +327,6 @@ class TelekomSportBoxScoreScreen(Screen):
 
 
 class TelekomSportStatisticsScreen(Screen):
-
-	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="10,140" size="800,45" font="Regular;38" zPosition="1" />
-					<widget name="match" position="10,190" size="800,40" noWrap="1" halign="center" font="Regular;32" zPosition="1" />
-					<widget source="list" render="Listbox" position="10,260" size="800,355" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (50,[
-									MultiContentEntryText(pos = (20, 0), size = (130, 28), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 0), # home
-									MultiContentEntryText(pos = (0, 0), size = (800, 28), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 1), # stat name
-									MultiContentEntryText(pos = (630, 0), size = (130, 28), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 2), # away
-									MultiContentEntryProgress(pos = (10, 32), size = (780, 10), percent = -3), # percent
-								]),
-								},
-								"fonts": [gFont("Regular", 24)],
-								"itemHeight": 50
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="10,370" size="800,250" font="Regular;25" halign="center" zPosition="1" />
-					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-	else:
-		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="15,200" size="1200,60" font="Regular;48" zPosition="1" />
-					<widget name="match" position="15,280" size="1200,65" noWrap="1" halign="center" font="Regular;42" zPosition="1" />
-					<widget source="list" render="Listbox" position="40,380" size="1150,570" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (80,[
-									MultiContentEntryText(pos = (50, 0), size = (200, 40), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 0), # home
-									MultiContentEntryText(pos = (0, 0), size = (1150, 40), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 1), # stat name
-									MultiContentEntryText(pos = (900, 0), size = (200, 40), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 2), # away
-									MultiContentEntryProgress(pos = (25, 40), size = (1100, 15), percent = -3), # percent
-								]),
-								},
-								"fonts": [gFont("Regular", 32)],
-								"itemHeight": 75
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
-					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
 
 	def __init__(self, session, statistics_url):
 		Screen.__init__(self, session)
@@ -496,61 +395,6 @@ class TelekomSportStatisticsScreen(Screen):
 
 class TelekomSportScheduleScreen(Screen):
 
-	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
-					<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
-					<widget source="list" render="Listbox" position="10,210" size="800,415" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (65,[
-									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
-									MultiContentEntryText(pos = (620, 0), size = (240, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
-									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # teams + result
-									MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""), # border
-								]),
-								},
-								"fonts": [gFont("Regular", 20), gFont("Regular", 24)],
-								"itemHeight": 65
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
-					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-	else:
-		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-					<widget name="subtitle" position="15,235" size="1200,50" font="Regular;38" zPosition="1" />
-					<widget source="list" render="Listbox" position="15,300" size="1200,640" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (90,[
-									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
-									MultiContentEntryText(pos = (925, 0), size = (360, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
-									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # teams + result
-									MultiContentEntryText(pos = (0, 0), size = (1200, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
-								]),
-								},
-								"fonts": [gFont("Regular", 32), gFont("Regular", 36)],
-								"itemHeight": 40
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
-					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-
 	def __init__(self, session, schedule_url):
 		Screen.__init__(self, session)
 		self.session = session
@@ -605,101 +449,6 @@ class TelekomSportScheduleScreen(Screen):
 
 
 class TelekomSportStandingsScreen(Screen):
-
-	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
-					<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
-					<widget name="table_header_team" position="40,200" size="100,20" font="Regular;18" zPosition="1" />
-					<widget name="table_header_matches" position="395,200" size="60,20" font="Regular;18" zPosition="1" />
-					<widget name="table_header_wins" position="460,200" size="30,20" font="Regular;18" zPosition="1" />
-					<widget name="table_header_draws" position="495,200" size="30,20" font="Regular;18" zPosition="1" />
-					<widget name="table_header_losses" position="530,200" size="30,20" font="Regular;18" zPosition="1" />
-					<widget name="table_header_goals" position="570,200" size="70,20" font="Regular;18" zPosition="1" />
-					<widget name="table_header_goaldiff" position="685,200" size="70,20" font="Regular;18" zPosition="1" />
-					<widget name="table_header_points" position="730,200" size="100,20" font="Regular;18" zPosition="1" />
-					<widget source="list" render="Listbox" position="10,230" size="800,390" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (25,[
-									MultiContentEntryText(pos = (3, 0), size = (25, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
-									MultiContentEntryText(pos = (30, 0), size = (370, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # team
-									MultiContentEntryText(pos = (400, 0), size = (50, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # count matches
-									MultiContentEntryText(pos = (440, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # count wins
-									MultiContentEntryText(pos = (475, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 4), # count draws
-									MultiContentEntryText(pos = (510, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 5), # count losses
-									MultiContentEntryText(pos = (555, 0), size = (95, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
-									MultiContentEntryText(pos = (650, 0), size = (50, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
-									MultiContentEntryText(pos = (710, 0), size = (60, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
-									MultiContentEntryText(pos = (0, 0), size = (800, 25), border_width=1, border_color=0x424242, font=0, text = ""), # border
-								]),
-								"playoff": (65,[
-									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title
-									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # teams + wins
-									MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""), # border
-								]),
-								},
-								"fonts": [gFont("Regular", 20), gFont("Regular", 24)],
-								"itemHeight": 65
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
-					<widget name="buttonblue" position="15,630" size="160,35" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
-					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-	else:
-		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-					<widget name="subtitle" position="15,235" size="1200,50" font="Regular;38" zPosition="1" />
-					<widget name="table_header_team" position="60,300" size="100,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_matches" position="585,300" size="80,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_wins" position="690,300" size="25,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_draws" position="740,300" size="25,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_losses" position="785,300" size="25,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_goals" position="865,300" size="70,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_goaldiff" position="1005,300" size="60,40" font="Regular;30" zPosition="1" />
-					<widget name="table_header_points" position="1065,300" size="100,40" font="Regular;30" zPosition="1" />
-					<widget source="list" render="Listbox" position="15,340" size="1200,610" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (40,[
-									MultiContentEntryText(pos = (2, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
-									MultiContentEntryText(pos = (45, 0), size = (555, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # team
-									MultiContentEntryText(pos = (600, 0), size = (50, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # count matches
-									MultiContentEntryText(pos = (650, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # count wins
-									MultiContentEntryText(pos = (700, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 4), # count draws
-									MultiContentEntryText(pos = (755, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 5), # count losses
-									MultiContentEntryText(pos = (835, 0), size = (150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
-									MultiContentEntryText(pos = (990, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
-									MultiContentEntryText(pos = (1060, 0), size = (80, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
-									MultiContentEntryText(pos = (0, 0), size = (1200, 40), border_width=1, border_color=0x424242, font=0, text = ""), # border
-								]),
-								"playoff": (90,[
-									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title
-									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # teams + wins
-									MultiContentEntryText(pos = (0, 0), size = (1200, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
-								]),
-								},
-								"fonts": [gFont("Regular", 32), gFont("Regular", 36)],
-								"itemHeight": 40
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
-					<widget name="buttonblue" position="35,955" size="240,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
-					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
 
 	def __init__(self, session, standings_url):
 		Screen.__init__(self, session)
@@ -849,59 +598,6 @@ class TelekomSportStandingsScreen(Screen):
 
 
 class TelekomSportEventScreen(Screen):
-
-	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="description" position="10,150" size="800,40" font="Regular;25" zPosition="1" />
-					<widget name="match" position="10,200" size="800,45" noWrap="1" halign="center" font="Regular;35" zPosition="1" />
-					<widget name="subdescription" position="10,270" size="800,90" font="Regular;25" zPosition="1" />
-					<widget source="list" render="Listbox" position="10,370" size="800,250" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (30,[
-									MultiContentEntryText(pos = (20, 0), size = (750, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-								]),
-								},
-								"fonts": [gFont("Regular", 24),gFont("Regular", 20)],
-								"itemHeight": 30
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="10,370" size="800,250" font="Regular;25" halign="center" zPosition="1" />
-					<widget name="pay" position="15,630" size="200,35" valign="center" halign="center" zPosition="2" font="Regular;20"/>
-					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-	else:
-		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="description" position="15,230" size="1200,50" font="Regular;35" zPosition="1" />
-					<widget name="match" position="15,290" size="1200,65" noWrap="1" halign="center" font="Regular;50" zPosition="1" />
-					<widget name="subdescription" position="15,370" size="1200,130" font="Regular;35" zPosition="1" />
-					<widget source="list" render="Listbox" position="15,500" size="1200,400" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (45,[
-									MultiContentEntryText(pos = (20, 0), size = (1100, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-								]),
-								},
-								"fonts": [gFont("Regular", 32)],
-								"itemHeight": 45
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
-					<widget name="pay" position="35,955" size="250,50" valign="center" halign="center" zPosition="2" font="Regular;32"/>
-					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
 
 	oauth_url = 'https://accounts.login.idm.telekom.com/oauth2/tokens'
 	jwt_url = 'https://www.telekomsport.de/service/auth/app/login/jwt'
@@ -1139,61 +835,6 @@ class TelekomSportEventScreen(Screen):
 
 class TelekomSportEventLaneScreen(Screen):
 
-	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
-					<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
-					<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (65,[
-									MultiContentEntryText(pos = (20, 0), size = (500, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
-									MultiContentEntryText(pos = (615, 0), size = (240, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # starttime
-									MultiContentEntryText(pos = (20, 30), size = (750, 30), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # title
-									MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""), # border
-								]),
-								},
-								"fonts": [gFont("Regular", 24),gFont("Regular", 20)],
-								"itemHeight": 65
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="10,200" size="800,420" font="Regular;25" halign="center" zPosition="1" />
-					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-	else:
-		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-					<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
-					<widget source="list" render="Listbox" position="15,300" size="1200,630" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (90,[
-									MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
-									MultiContentEntryText(pos = (920, 0), size = (360, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # starttime
-									MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # title
-									MultiContentEntryText(pos = (0, 0), size = (1180, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
-								]),
-								},
-								"fonts": [gFont("Regular", 36),gFont("Regular", 32)],
-								"itemHeight": 90
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="15,300" size="1200,630" font="Regular;35" halign="center" zPosition="1" />
-					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-
 	def __init__(self, session, main_title, title, url, standings_url, schedule_url):
 		Screen.__init__(self, session)
 		self.session = session
@@ -1258,61 +899,6 @@ class TelekomSportEventLaneScreen(Screen):
 
 
 class TelekomSportSportsTypeScreen(Screen):
-
-	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
-					<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
-					<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (30,[
-									MultiContentEntryText(pos = (5, 0), size = (750, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-									MultiContentEntryText(pos = (50, 0), size = (750, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
-									MultiContentEntryText(pos = (0, 0), size = (800, 30), border_width=1, border_color=0x424242, font=0, text = ""),
-								]),
-								},
-								"fonts": [gFont("Regular", 20)],
-								"itemHeight": 30
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="10,200" size="800,420" font="Regular;25" halign="center" zPosition="1" />
-					<widget name="buttonblue" position="15,630" size="160,35" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
-					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-	else:
-		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-					<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
-					<widget source="list" render="Listbox" position="15,300" size="1200,630" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (45,[
-									MultiContentEntryText(pos = (5, 0), size = (1180, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-									MultiContentEntryText(pos = (50, 0), size = (1140, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
-									MultiContentEntryText(pos = (0, 0), size = (1180, 45), border_width=1, border_color=0x424242, font=0, text = ""),
-								]),
-								},
-								"fonts": [gFont("Regular", 32)],
-								"itemHeight": 45
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="15,300" size="1200,630" font="Regular;35" halign="center" zPosition="1" />
-					<widget name="buttonblue" position="35,955" size="240,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
-					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
 
 	def __init__(self, session, title, url):
 		Screen.__init__(self, session)
@@ -1393,69 +979,10 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.4.0'
+	version = 'v2.4.1'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'
-
-	if getDesktop(0).size().width() <= 1280:
-		skin = '''<screen position="center,center" size="820,680" flags="wfNoBorder">
-					<ePixmap position="center,25" size="700,87" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
-					<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
-					<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
-					<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (30,[
-									MultiContentEntryText(pos = (5, 0), size = (750, 28), border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-									MultiContentEntryText(pos = (50, 0), size = (750, 28), border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
-									MultiContentEntryText(pos = (0, 0), size = (800, 30), border_width=1, border_color=0x424242, font=0, text = ""),
-								]),
-								},
-								"fonts": [gFont("Regular", 20)],
-								"itemHeight": 30
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="10,200" size="800,420" font="Regular;25" halign="center" zPosition="1" />
-					<widget name="buttonblue" position="15,630" size="140,35" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
-					<widget name="buttongreen" position="180,630" size="140,35" backgroundColor="green" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
-					<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
-	else:
-		skin = '''<screen position="center,center" size="1230,1020" flags="wfNoBorder">
-					<ePixmap position="center,25" size="1070,134" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="version" position="1150,127" size="90,35" font="Regular;26" zPosition="2" />
-					<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-					<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
-					<widget source="list" render="Listbox" position="15,300" size="1200,630" scrollbarMode="showOnDemand">
-						<convert type="TemplatedMultiContent">
-							{"templates":
-								{"default": (45,[
-									MultiContentEntryText(pos = (5, 0), size = (1180, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
-									MultiContentEntryText(pos = (50, 0), size = (1130, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
-									MultiContentEntryText(pos = (0, 0), size = (1200, 45), border_width=1, border_color=0x424242, font=0, text = ""),
-								]),
-								},
-								"fonts": [gFont("Regular", 32)],
-								"itemHeight": 45
-							}
-						</convert>
-					</widget>
-					<widget name="status" position="15,300" size="1200,630" font="Regular;35" halign="center" zPosition="1" />
-					<widget name="buttonblue" position="35,955" size="220,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
-					<widget name="buttongreen" position="300,955" size="220,50" backgroundColor="green" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
-					<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
-						<convert type="ClockToText">
-							Format:%d.%m.%Y %H:%M
-						</convert>
-					</widget>
-				</screen>'''
 
 	def __init__(self, session, args = None):
 		Screen.__init__(self, session)

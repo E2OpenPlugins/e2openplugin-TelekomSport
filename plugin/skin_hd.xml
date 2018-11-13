@@ -1,0 +1,238 @@
+<skin>
+	<screen name="TelekomSportMainScreen" position="center,center" size="820,680" flags="wfNoBorder">
+		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
+		<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
+		<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
+		<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
+			<convert type="TemplatedMultiContent">
+				{"templates":
+					{"default": (30,[
+						MultiContentEntryText(pos = (5, 0), size = (750, 28), border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
+						MultiContentEntryText(pos = (50, 0), size = (750, 28), border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
+						MultiContentEntryText(pos = (0, 0), size = (800, 30), border_width=1, border_color=0x424242, font=0, text = ""),
+					]),
+					},
+					"fonts": [gFont("Regular", 20)],
+					"itemHeight": 30
+				}
+			</convert>
+		</widget>
+		<widget name="status" position="10,200" size="800,420" font="Regular;25" halign="center" zPosition="1" />
+		<widget name="buttonblue" position="15,630" size="140,35" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
+		<widget name="buttongreen" position="180,630" size="140,35" backgroundColor="green" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
+		<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+			<convert type="ClockToText">
+				Format:%d.%m.%Y %H:%M
+			</convert>
+		</widget>
+	</screen>
+
+	<screen name="TelekomSportSportsTypeScreen" position="center,center" size="820,680" flags="wfNoBorder">
+		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
+		<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
+		<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
+			<convert type="TemplatedMultiContent">
+				{"templates":
+					{"default": (30,[
+						MultiContentEntryText(pos = (5, 0), size = (750, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
+						MultiContentEntryText(pos = (50, 0), size = (750, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
+						MultiContentEntryText(pos = (0, 0), size = (800, 30), border_width=1, border_color=0x424242, font=0, text = ""),
+					]),
+					},
+					"fonts": [gFont("Regular", 20)],
+					"itemHeight": 30
+				}
+			</convert>
+		</widget>
+		<widget name="status" position="10,200" size="800,420" font="Regular;25" halign="center" zPosition="1" />
+		<widget name="buttonblue" position="15,630" size="160,35" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
+		<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+			<convert type="ClockToText">
+				Format:%d.%m.%Y %H:%M
+			</convert>
+		</widget>
+	</screen>
+
+	<screen name="TelekomSportEventLaneScreen" position="center,center" size="820,680" flags="wfNoBorder">
+		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
+		<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
+		<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
+			<convert type="TemplatedMultiContent">
+				{"templates":
+					{"default": (65,[
+						MultiContentEntryText(pos = (20, 0), size = (500, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
+						MultiContentEntryText(pos = (615, 0), size = (240, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # starttime
+						MultiContentEntryText(pos = (20, 30), size = (750, 30), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # title
+						MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""), # border
+					]),
+					},
+					"fonts": [gFont("Regular", 24),gFont("Regular", 20)],
+					"itemHeight": 65
+				}
+			</convert>
+		</widget>
+		<widget name="status" position="10,200" size="800,420" font="Regular;25" halign="center" zPosition="1" />
+		<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+			<convert type="ClockToText">
+				Format:%d.%m.%Y %H:%M
+			</convert>
+		</widget>
+	</screen>
+
+	<screen name="TelekomSportEventScreen" position="center,center" size="820,680" flags="wfNoBorder">
+		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="description" position="10,150" size="800,40" font="Regular;25" zPosition="1" />
+		<widget name="match" position="10,200" size="800,45" noWrap="1" halign="center" font="Regular;35" zPosition="1" />
+		<widget name="subdescription" position="10,270" size="800,90" font="Regular;25" zPosition="1" />
+		<widget source="list" render="Listbox" position="10,370" size="800,250" scrollbarMode="showOnDemand">
+			<convert type="TemplatedMultiContent">
+				{"templates":
+					{"default": (30,[
+						MultiContentEntryText(pos = (20, 0), size = (750, 28), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
+					]),
+					},
+					"fonts": [gFont("Regular", 24),gFont("Regular", 20)],
+					"itemHeight": 30
+				}
+			</convert>
+		</widget>
+		<widget name="status" position="10,370" size="800,250" font="Regular;25" halign="center" zPosition="1" />
+		<widget name="pay" position="15,630" size="200,35" valign="center" halign="center" zPosition="2" font="Regular;20"/>
+		<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+			<convert type="ClockToText">
+				Format:%d.%m.%Y %H:%M
+			</convert>
+		</widget>
+	</screen>
+
+	<screen name="TelekomSportBoxScoreScreen" position="center,center" size="820,680" flags="wfNoBorder">
+		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="title" position="10,140" size="800,45" font="Regular;38" zPosition="1" />
+		<widget name="match_home" position="15,200" size="395,40" noWrap="1" halign="left" font="Regular;32" zPosition="1" />
+		<widget name="match_away" position="410,200" size="395,40" noWrap="1" halign="right" font="Regular;32" zPosition="1" />
+		<widget name="endResult" position="10,260" size="810,40" noWrap="1" halign="center" font="Regular;32" zPosition="1" />
+		<widget source="list" render="Listbox" position="290,330" size="250,300" scrollbarMode="showOnDemand">
+			<convert type="TemplatedMultiContent">
+				{"templates":
+					{"default": (35,[
+						MultiContentEntryText(pos = (40, 0), size = (250, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # period
+					]),
+					},
+					"fonts": [gFont("Regular", 24)],
+					"itemHeight": 35
+				}
+			</convert>
+		</widget>
+		<widget name="status" position="10,370" size="800,250" font="Regular;25" halign="center" zPosition="1" />
+		<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+			<convert type="ClockToText">
+				Format:%d.%m.%Y %H:%M
+			</convert>
+		</widget>
+	</screen>
+
+	<screen name="TelekomSportStatisticsScreen" position="center,center" size="820,680" flags="wfNoBorder">
+		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="title" position="10,140" size="800,45" font="Regular;38" zPosition="1" />
+		<widget name="match" position="10,190" size="800,40" noWrap="1" halign="center" font="Regular;32" zPosition="1" />
+		<widget source="list" render="Listbox" position="10,260" size="800,355" scrollbarMode="showOnDemand">
+			<convert type="TemplatedMultiContent">
+				{"templates":
+					{"default": (50,[
+						MultiContentEntryText(pos = (20, 0), size = (130, 28), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 0), # home
+						MultiContentEntryText(pos = (0, 0), size = (800, 28), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 1), # stat name
+						MultiContentEntryText(pos = (630, 0), size = (130, 28), font=0, flags = RT_HALIGN_CENTER|RT_VALIGN_CENTER, text = 2), # away
+						MultiContentEntryProgress(pos = (10, 32), size = (780, 10), percent = -3), # percent
+					]),
+					},
+					"fonts": [gFont("Regular", 24)],
+					"itemHeight": 50
+				}
+			</convert>
+		</widget>
+		<widget name="status" position="10,370" size="800,250" font="Regular;25" halign="center" zPosition="1" />
+		<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+			<convert type="ClockToText">
+				Format:%d.%m.%Y %H:%M
+			</convert>
+		</widget>
+	</screen>
+
+	<screen name="TelekomSportScheduleScreen" position="center,center" size="820,680" flags="wfNoBorder">
+		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
+		<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
+		<widget source="list" render="Listbox" position="10,210" size="800,415" scrollbarMode="showOnDemand">
+			<convert type="TemplatedMultiContent">
+				{"templates":
+					{"default": (65,[
+						MultiContentEntryText(pos = (20, 0), size = (500, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
+						MultiContentEntryText(pos = (620, 0), size = (240, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
+						MultiContentEntryText(pos = (20, 30), size = (750, 30), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # teams + result
+						MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""), # border
+					]),
+					},
+					"fonts": [gFont("Regular", 20), gFont("Regular", 24)],
+					"itemHeight": 65
+				}
+			</convert>
+		</widget>
+		<widget name="status" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
+		<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+			<convert type="ClockToText">
+				Format:%d.%m.%Y %H:%M
+			</convert>
+		</widget>
+	</screen>
+
+	<screen name="TelekomSportStandingsScreen" position="center,center" size="820,680" flags="wfNoBorder">
+		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
+		<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
+		<widget name="table_header_team" position="40,200" size="100,20" font="Regular;18" zPosition="1" />
+		<widget name="table_header_matches" position="395,200" size="60,20" font="Regular;18" zPosition="1" />
+		<widget name="table_header_wins" position="460,200" size="30,20" font="Regular;18" zPosition="1" />
+		<widget name="table_header_draws" position="495,200" size="30,20" font="Regular;18" zPosition="1" />
+		<widget name="table_header_losses" position="530,200" size="30,20" font="Regular;18" zPosition="1" />
+		<widget name="table_header_goals" position="570,200" size="70,20" font="Regular;18" zPosition="1" />
+		<widget name="table_header_goaldiff" position="685,200" size="70,20" font="Regular;18" zPosition="1" />
+		<widget name="table_header_points" position="730,200" size="100,20" font="Regular;18" zPosition="1" />
+		<widget source="list" render="Listbox" position="10,230" size="800,390" scrollbarMode="showOnDemand">
+			<convert type="TemplatedMultiContent">
+				{"templates":
+					{"default": (25,[
+						MultiContentEntryText(pos = (3, 0), size = (25, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
+						MultiContentEntryText(pos = (30, 0), size = (370, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # team
+						MultiContentEntryText(pos = (400, 0), size = (50, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # count matches
+						MultiContentEntryText(pos = (440, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # count wins
+						MultiContentEntryText(pos = (475, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 4), # count draws
+						MultiContentEntryText(pos = (510, 0), size = (30, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 5), # count losses
+						MultiContentEntryText(pos = (555, 0), size = (95, 25), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
+						MultiContentEntryText(pos = (650, 0), size = (50, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
+						MultiContentEntryText(pos = (710, 0), size = (60, 25), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
+						MultiContentEntryText(pos = (0, 0), size = (800, 25), border_width=1, border_color=0x424242, font=0, text = ""), # border
+					]),
+					"playoff": (65,[
+						MultiContentEntryText(pos = (20, 0), size = (500, 28), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title
+						MultiContentEntryText(pos = (20, 30), size = (750, 30), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # teams + wins
+						MultiContentEntryText(pos = (0, 0), size = (800, 65), border_width=1, border_color=0x424242, font=0, text = ""), # border
+					]),
+					},
+					"fonts": [gFont("Regular", 20), gFont("Regular", 24)],
+					"itemHeight": 65
+				}
+			</convert>
+		</widget>
+		<widget name="status" position="10,230" size="800,400" font="Regular;25" halign="center" zPosition="1" />
+		<widget name="buttonblue" position="15,630" size="160,35" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;20"/>
+		<widget foregroundColor="white" font="Regular;20" position="640,630" render="Label" size="200,35" valign="center" source="global.CurrentTime">
+			<convert type="ClockToText">
+				Format:%d.%m.%Y %H:%M
+			</convert>
+		</widget>
+	</screen>
+
+</skin>

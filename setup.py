@@ -11,5 +11,5 @@ setup (name = 'enigma2-plugin-extensions-telekomsport',
        author_email='betacentauri@arcor.de',
        packages = [pkg],
        package_dir = {pkg: 'plugin'},
-       package_data={pkg: ['*.png']}
+       package_data={pkg: ['*.png', '*.xml']}
 )

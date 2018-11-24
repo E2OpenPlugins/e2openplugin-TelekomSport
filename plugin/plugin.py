@@ -1106,7 +1106,6 @@ class TelekomSportMainScreen(Screen):
 	def downloadFinished(self):
 		self.downloader.stop()
 		self.container = eConsoleAppContainer()
-		self.container.appClosed.append(self.updateFinished)
 		if telekomsport_isDreamOS:
 			self.container.appClosed_conn = self.container.appClosed.connect(self.updateFinished)
 			self.container.execute('dpkg -i ' + self.filename)

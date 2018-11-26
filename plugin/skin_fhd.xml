@@ -38,7 +38,7 @@
 					{"default": (45,[
 						MultiContentEntryText(pos = (5, 0), size = (1180, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0),
 						MultiContentEntryText(pos = (50, 0), size = (1140, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1),
-						MultiContentEntryText(pos = (0, 0), size = (1180, 45), border_width=1, border_color=0x424242, font=0, text = ""),
+						MultiContentEntryText(pos = (0, 0), size = (1200, 45), border_width=1, border_color=0x424242, font=0, text = ""),
 					]),
 					},
 					"fonts": [gFont("Regular", 32)],
@@ -66,7 +66,7 @@
 						MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
 						MultiContentEntryText(pos = (920, 0), size = (360, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # starttime
 						MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # title
-						MultiContentEntryText(pos = (0, 0), size = (1180, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
+						MultiContentEntryText(pos = (0, 0), size = (1200, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
 					]),
 					},
 					"fonts": [gFont("Regular", 36),gFont("Regular", 32)],

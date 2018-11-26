@@ -979,7 +979,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.4.1'
+	version = 'v2.4.2'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'

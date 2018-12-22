@@ -812,11 +812,11 @@ class TelekomSportEventScreen(Screen):
 			return
 
 		try:
-			if jsonData['data']['metadata']['title'].startswith('Event Page Pre'):
+			if jsonData['data']['metadata']['state'] == 'pre':
 				self.buildPreEventScreen(jsonData)
-			elif jsonData['data']['metadata']['title'].startswith('Event Page Post'):
+			elif jsonData['data']['metadata']['state'] == 'post':
 				self.buildPostEventScreen(jsonData)
-			elif jsonData['data']['metadata']['title'].startswith('Event Page Live'):
+			elif jsonData['data']['metadata']['state'] == 'live':
 				self.buildLiveEventScreen(jsonData)
 		except Exception as e:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportEventScreen ' + str(e))
@@ -979,7 +979,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.4.2'
+	version = 'v2.4.3'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'

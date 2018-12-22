@@ -778,7 +778,9 @@ class TelekomSportEventScreen(Screen):
 		for content in jsonData['data']['content']:
 			if content['group_elements']:
 				for element in content['group_elements']:
-					if element['type'] == 'eventVideos':
+					if element['type'] in ('eventVideos', 'player'):
+						if element['type'] == 'eventVideos':	# remove all previous player videolist entries. This is needed for Bayern.TV
+							self.videoList = []
 						for videos in element['data']:
 							title = videos['title'].encode('utf8')
 							if videos['pay']:
@@ -979,7 +981,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.4.3'
+	version = 'v2.4.4'
 
 	base_url = 'https://www.telekomsport.de/api/v2/mobile'
 	main_page = '/navigation'

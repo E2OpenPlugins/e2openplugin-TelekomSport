@@ -29,9 +29,9 @@ import base64
 import re
 from itertools import cycle, izip
 from datetime import datetime
-from twisted.web.client import getPage
-import twisted.web.error as twistedWebError
-import twisted.python.failure as twistedFailure
+from twisted.web.client import Agent, readBody
+from twisted.internet import reactor
+from twisted.web.http_headers import Headers
 
 
 if getDesktop(0).size().width() <= 1280:
@@ -90,18 +90,18 @@ def loadTelekomSportJsonData(screen, statusField, buildListFunc, data):
 	except Exception as e:
 		statusField.setText(screen + ': Fehler beim Laden der JSON Daten "' + str(e) + '"')
 
+def handleTelekomSportWebsiteResponse(callback, response):
+	d = readBody(response)
+	d.addCallback(callback)
+	return d
+
 def handleTelekomSportDownloadError(screen, statusField, err):
-	try:
-		err.trap(twistedWebError.Error)
-		statusField.setText(screen + ': Fehler beim Download "' + err.getErrorMessage() + '"')
-	except twistedFailure.Failure as e:
-		statusField.setText(screen + ': Fehler beim Download "' + e.getErrorMessage() + '"')
-	except Exception as e:
-		statusField.setText(screen + ': Fehler beim Download "' + str(e) + '"')
+	statusField.setText(screen + ': Fehler beim Download "' + str(err) + '"')
 
 def downloadTelekomSportJson(url, callback, errorCallback):
-	d = getPage(url)
-	d.addCallback(callback)
+	agent = Agent(reactor)
+	d = agent.request('GET', url, Headers({'user-agent': ['Twisted']}))
+	d.addCallback(boundFunction(handleTelekomSportWebsiteResponse, callback))
 	d.addErrback(errorCallback)
 
 
@@ -174,7 +174,7 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		self.onLayoutFinish.append(self.setWindowTitle)
 
 	def setWindowTitle(self):
-		self.setTitle('Setup Telekom Sport Accounts')
+		self.setTitle('Setup Magenta Sport Accounts')
 
 	def save(self):
 		config.plugins.telekomsport.password1.value = encode(config.plugins.telekomsport.password1.value)
@@ -981,9 +981,9 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.4.4'
+	version = 'v2.5.0'
 
-	base_url = 'https://www.telekomsport.de/api/v2/mobile'
+	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'
 
 	def __init__(self, session, args = None):
@@ -1122,7 +1122,7 @@ class TelekomSportMainScreen(Screen):
 		self['buttongreen'].hide()
 		self.updateUrl = ''
 		if retval == 0:
-			self.session.openWithCallback(self.restartE2, MessageBox, 'Das Telekom Sport Plugin wurde erfolgreich installiert!\nSoll das E2 GUI neugestartet werden?', MessageBox.TYPE_YESNO, default = False)
+			self.session.openWithCallback(self.restartE2, MessageBox, 'Das Magenta Sport Plugin wurde erfolgreich installiert!\nSoll das E2 GUI neugestartet werden?', MessageBox.TYPE_YESNO, default = False)
 		else:
 			self.session.open(MessageBox, 'Bei der Installation ist ein Problem aufgetreten.', MessageBox.TYPE_ERROR)
 
@@ -1135,4 +1135,4 @@ def main(session, **kwargs):
 	session.open(TelekomSportMainScreen)
 
 def Plugins(**kwargs):
-	return PluginDescriptor(name='Telekom Sport', description=_('Telekom Sport Plugin'), where = PluginDescriptor.WHERE_PLUGINMENU, icon='plugin.png', fnc=main)
+	return PluginDescriptor(name='Magenta Sport', description=_('Magenta Sport Plugin'), where = PluginDescriptor.WHERE_PLUGINMENU, icon='plugin.png', fnc=main)

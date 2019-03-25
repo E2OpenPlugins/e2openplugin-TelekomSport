@@ -98,12 +98,36 @@ def handleTelekomSportWebsiteResponse(callback, response):
 def handleTelekomSportDownloadError(screen, statusField, err):
 	statusField.setText(screen + ': Fehler beim Download "' + str(err) + '"')
 
-def downloadTelekomSportJson(url, callback, errorCallback):
-	agent = Agent(reactor)
-	d = agent.request('GET', url, Headers({'user-agent': ['Twisted']}))
-	d.addCallback(boundFunction(handleTelekomSportWebsiteResponse, callback))
-	d.addErrback(errorCallback)
+def downloadTelekomSportJson_timer(url, callback, errorCallback):
 
+	global downloadTimer
+	global downloadTimer_conn
+
+	downloadTimer.stop()
+	downloadTimer = None
+	downloadTimer_conn = None
+
+	from ssl import SSLContext as ssl_SSLContext
+	from ssl import PROTOCOL_TLSv1_2 as ssl_PROTOCOL_TLSv1_2
+	from urllib2 import urlopen as urllib2_urlopen
+
+	ctx = ssl_SSLContext(ssl_PROTOCOL_TLSv1_2) #force TLSv1.2
+	response = urllib2_urlopen(url, context=ctx).read()
+	callback(response)
+
+def downloadTelekomSportJson(url, callback, errorCallback):
+	if telekomsport_isDreamOS == False:
+		agent = Agent(reactor)
+		d = agent.request('GET', url, Headers({'user-agent': ['Twisted']}))
+		d.addCallback(boundFunction(handleTelekomSportWebsiteResponse, callback))
+		d.addErrback(errorCallback)
+	else:
+		global downloadTimer
+		global downloadTimer_conn
+
+		downloadTimer = eTimer()
+		downloadTimer_conn = downloadTimer.timeout.connect(boundFunction(downloadTelekomSportJson_timer,url, callback, errorCallback))
+		downloadTimer.start(50)
 
 class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
@@ -981,7 +1005,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.5.0'
+	version = 'v2.5.1'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

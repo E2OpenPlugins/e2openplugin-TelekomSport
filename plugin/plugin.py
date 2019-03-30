@@ -675,11 +675,12 @@ class TelekomSportStandingsScreen(Screen):
 		self.playoff_standings_url = ''
 		try:
 			self['title'].setText(jsonData['data']['metadata']['parent_title'].encode('utf8'))
-			for g in jsonData['data']['content'][0]['group_elements']:
-				if g['type'] == 'standings':
-					self.normal_standings_url = g['data']['urls']['standings_url'].encode('utf8')
-				elif g['type'] == 'playoffTree':
-					self.playoff_standings_url = g['data']['url'].encode('utf8')
+			for c in jsonData['data']['content']:
+				for g in c['group_elements']:
+					if g['type'] == 'standings':
+						self.normal_standings_url = g['data']['urls']['standings_url'].encode('utf8')
+					elif g['type'] == 'playoffTree':
+						self.playoff_standings_url = g['data']['url'].encode('utf8')
 		except Exception as e:
 			self['status'].setText('Aktuell steht die Tabelle nicht zur Verfügung. Bitte versuchen sie es später noch einmal.')
 			return
@@ -1127,7 +1128,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.5.3'
+	version = 'v2.5.4'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

@@ -54,6 +54,15 @@ try:
 except:
 	telekomsport_isDreamOS = False
 
+#==== workaround for TLSv1_2 with DreamOS =======
+from OpenSSL import SSL
+from twisted.internet.ssl import ClientContextFactory
+try:
+	# available since twisted 14.0
+	from twisted.internet._sslverify import ClientTLSOptions
+except ImportError:
+	ClientTLSOptions = None
+#================================================
 
 config.plugins.telekomsport = ConfigSubsection()
 config.plugins.telekomsport.username1 = ConfigText(default = '', fixed_size = False)
@@ -98,36 +107,30 @@ def handleTelekomSportWebsiteResponse(callback, response):
 def handleTelekomSportDownloadError(screen, statusField, err):
 	statusField.setText(screen + ': Fehler beim Download "' + str(err) + '"')
 
-def downloadTelekomSportJson_timer(url, callback, errorCallback):
-
-	global downloadTimer
-	global downloadTimer_conn
-
-	downloadTimer.stop()
-	downloadTimer = None
-	downloadTimer_conn = None
-
-	from ssl import SSLContext as ssl_SSLContext
-	from ssl import PROTOCOL_TLSv1_2 as ssl_PROTOCOL_TLSv1_2
-	from urllib2 import urlopen as urllib2_urlopen
-
-	ctx = ssl_SSLContext(ssl_PROTOCOL_TLSv1_2) #force TLSv1.2
-	response = urllib2_urlopen(url, context=ctx).read()
-	callback(response)
-
 def downloadTelekomSportJson(url, callback, errorCallback):
 	if telekomsport_isDreamOS == False:
 		agent = Agent(reactor)
-		d = agent.request('GET', url, Headers({'user-agent': ['Twisted']}))
-		d.addCallback(boundFunction(handleTelekomSportWebsiteResponse, callback))
-		d.addErrback(errorCallback)
 	else:
-		global downloadTimer
-		global downloadTimer_conn
+		class WebClientContextFactory(ClientContextFactory):
+			"A SSL context factory which is more permissive against SSL bugs."
 
-		downloadTimer = eTimer()
-		downloadTimer_conn = downloadTimer.timeout.connect(boundFunction(downloadTelekomSportJson_timer,url, callback, errorCallback))
-		downloadTimer.start(50)
+			def __init__(self):
+				self.method = SSL.SSLv23_METHOD
+
+			def getContext(self, hostname=None, port=None):
+				ctx = ClientContextFactory.getContext(self)
+				# Enable all workarounds to SSL bugs as documented by
+				# http://www.openssl.org/docs/ssl/SSL_CTX_set_options.html
+				ctx.set_options(SSL.OP_ALL)
+				if hostname and ClientTLSOptions is not None: # workaround for TLS SNI
+					ClientTLSOptions(hostname, ctx)
+				return ctx
+
+		contextFactory = WebClientContextFactory()
+		agent = Agent(reactor, contextFactory)
+	d = agent.request('GET', url, Headers({'user-agent': ['Twisted']}))
+	d.addCallback(boundFunction(handleTelekomSportWebsiteResponse, callback))
+	d.addErrback(errorCallback)
 
 class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
@@ -1005,7 +1008,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.5.1'
+	version = 'v2.5.2'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

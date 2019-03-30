@@ -7,6 +7,7 @@ from Screens.InfoBarGenerics import InfoBarMenu, InfoBarSeek, InfoBarNotificatio
 from Screens.MessageBox import MessageBox
 from Screens.Standby import TryQuitMainloop
 from Screens.VirtualKeyBoard import VirtualKeyBoard
+from Screens.Setup import SetupSummary
 from Components.ActionMap import ActionMap
 from Components.ServiceEventTracker import InfoBarBase
 from Components.Sources.List import List
@@ -132,6 +133,23 @@ def downloadTelekomSportJson(url, callback, errorCallback):
 	d.addCallback(boundFunction(handleTelekomSportWebsiteResponse, callback))
 	d.addErrback(errorCallback)
 
+
+class TelekomSportMainScreenSummary(SetupSummary):
+
+	def __init__(self, session, parent):
+		SetupSummary.__init__(self, session, parent = parent)
+		self.skinName = 'SetupSummary'
+		self.onShow.append(self.addWatcher)
+		self.onHide.append(self.removeWatcher)
+
+	def addWatcher(self):
+		self.parent['list'].onSelectionChanged.append(self.selectionChanged)
+		self.selectionChanged()
+
+	def removeWatcher(self):
+		self.parent['list'].onSelectionChanged.remove(self.selectionChanged)
+
+
 class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
 	ts_font_str = ""
@@ -201,7 +219,7 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		self.onLayoutFinish.append(self.setWindowTitle)
 
 	def setWindowTitle(self):
-		self.setTitle('Setup Magenta Sport Accounts')
+		self.setTitle(TelekomSportMainScreen.title + ' Einstellungen')
 
 	def save(self):
 		config.plugins.telekomsport.password1.value = encode(config.plugins.telekomsport.password1.value)
@@ -230,12 +248,19 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 			self['config'].getCurrent()[1].value = callback
 			self['config'].invalidate(self['config'].getCurrent())
 
+	# for summary
+	def createSummary(self):
+		from Screens.SimpleSummary import SimpleSummary
+		return SimpleSummary
+
 
 class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport):
 
 	def __init__(self, session, service, standings_url, schedule_url, statistics_url, boxscore_url):
 		Screen.__init__(self, session)
 		self.skinName = 'MoviePlayer'
+
+		self.title = service.getName()
 
 		InfoBarMenu.__init__(self)
 		InfoBarBase.__init__(self)
@@ -308,12 +333,19 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 	def showMovies(self):
 		pass
 
+	# for summary
+	def createSummary(self):
+		from Screens.SimpleSummary import SimpleSummary
+		return SimpleSummary
+
 
 class TelekomSportBoxScoreScreen(Screen):
 
 	def __init__(self, session, boxscore_url):
 		Screen.__init__(self, session)
 		self.session = session
+
+		self.setup_title = TelekomSportMainScreen.title
 
 		self['status'] = Label('Lade Daten...')
 		self['title'] = Label('Ergebnis')
@@ -352,12 +384,24 @@ class TelekomSportBoxScoreScreen(Screen):
 		self['list'].setList(self.resultList)
 		self['status'].hide()
 
+	# for summary
+	def getCurrentEntry(self):
+		return self['title'].getText()
+
+	def getCurrentValue(self):
+		return self['endResult'].getText()
+
+	def createSummary(self):
+		return TelekomSportMainScreenSummary
+
 
 class TelekomSportStatisticsScreen(Screen):
 
 	def __init__(self, session, statistics_url):
 		Screen.__init__(self, session)
 		self.session = session
+
+		self.setup_title = TelekomSportMainScreen.title
 
 		self['status'] = Label('Lade Daten...')
 		self['match'] = Label()
@@ -419,12 +463,24 @@ class TelekomSportStatisticsScreen(Screen):
 		self['list'].setList(self.statList)
 		self['status'].hide()
 
+	# for summary
+	def getCurrentEntry(self):
+		return self['title'].getText()
+
+	def getCurrentValue(self):
+		return self['match'].getText()
+
+	def createSummary(self):
+		return TelekomSportMainScreenSummary
+
 
 class TelekomSportScheduleScreen(Screen):
 
 	def __init__(self, session, schedule_url):
 		Screen.__init__(self, session)
 		self.session = session
+
+		self.setup_title = TelekomSportMainScreen.title
 
 		self['title'] = Label()
 		self['subtitle'] = Label('Spielplan')
@@ -474,12 +530,24 @@ class TelekomSportScheduleScreen(Screen):
 		self['list'].setList(self.scheduleList)
 		self['status'].hide()
 
+	# for summary
+	def getCurrentEntry(self):
+		return self['title'].getText()
+
+	def getCurrentValue(self):
+		return self['subtitle'].getText()
+
+	def createSummary(self):
+		return TelekomSportMainScreenSummary
+
 
 class TelekomSportStandingsScreen(Screen):
 
 	def __init__(self, session, standings_url):
 		Screen.__init__(self, session)
 		self.session = session
+
+		self.setup_title = TelekomSportMainScreen.title
 
 		self['title'] = Label()
 		self['subtitle'] = Label('Tabelle')
@@ -623,6 +691,16 @@ class TelekomSportStandingsScreen(Screen):
 		if self.normal_standings_url and self.playoff_standings_url:
 			self['buttonblue'].show()
 
+	# for summary
+	def getCurrentEntry(self):
+		return self['title'].getText()
+
+	def getCurrentValue(self):
+		return self['subtitle'].getText()
+
+	def createSummary(self):
+		return TelekomSportMainScreenSummary
+
 
 class TelekomSportEventScreen(Screen):
 
@@ -640,6 +718,8 @@ class TelekomSportEventScreen(Screen):
 
 		self.statistics_url = ''
 		self.boxscore_url = ''
+
+		self.setup_title = TelekomSportMainScreen.title
 
 		self['match'] = Label(match)
 		self['description'] = Label(description)
@@ -861,6 +941,18 @@ class TelekomSportEventScreen(Screen):
 			pay = self['list'].getCurrent()[3]
 			self.playVideo(videoid, pay == 'True', title)
 
+	# for summary
+	def getCurrentEntry(self):
+		if self['list'].getCurrent():
+			return self['list'].getCurrent()[1]
+		return self['match'].getText()
+
+	def getCurrentValue(self):
+		return ''
+
+	def createSummary(self):
+		return TelekomSportMainScreenSummary
+
 
 class TelekomSportEventLaneScreen(Screen):
 
@@ -869,6 +961,8 @@ class TelekomSportEventLaneScreen(Screen):
 		self.session = session
 		self.standings_url = standings_url
 		self.schedule_url = schedule_url
+
+		self.setup_title = TelekomSportMainScreen.title
 
 		self['title'] = Label(main_title)
 		self['subtitle'] = Label(title)
@@ -926,6 +1020,18 @@ class TelekomSportEventLaneScreen(Screen):
 		if retVal:
 			self.close(True)
 
+	# for summary
+	def getCurrentEntry(self):
+		if self['list'].getCurrent():
+			return self['list'].getCurrent()[0]
+
+	def getCurrentValue(self):
+		if self['list'].getCurrent():
+			return self['list'].getCurrent()[2]
+
+	def createSummary(self):
+		return TelekomSportMainScreenSummary
+
 
 class TelekomSportSportsTypeScreen(Screen):
 
@@ -935,6 +1041,8 @@ class TelekomSportSportsTypeScreen(Screen):
 		self.main_title = title
 		self.standings_url = ''
 		self.schedule_url = ''
+
+		self.setup_title = TelekomSportMainScreen.title
 
 		self['title'] = Label(title)
 		self['subtitle'] = Label('')
@@ -1005,13 +1113,25 @@ class TelekomSportSportsTypeScreen(Screen):
 		if self.standings_url:
 			self.session.open(TelekomSportStandingsScreen, self.standings_url)
 
+	# for summary
+	def getCurrentEntry(self):
+		return self['title'].getText()
+
+	def getCurrentValue(self):
+		if self['list'].getCurrent():
+			return self['list'].getCurrent()[2]
+
+	def createSummary(self):
+		return TelekomSportMainScreenSummary
+
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.5.2'
+	version = 'v2.5.3'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'
+	title = 'Magenta Sport'
 
 	def __init__(self, session, args = None):
 		Screen.__init__(self, session)
@@ -1020,6 +1140,8 @@ class TelekomSportMainScreen(Screen):
 		self.updateUrl = ''
 		self.updateText = ''
 		self.filename = ''
+
+		self.setup_title = TelekomSportMainScreen.title
 
 		self['title'] = Label('')
 		self['subtitle'] = Label('')
@@ -1091,6 +1213,18 @@ class TelekomSportMainScreen(Screen):
 	def showSetup(self):
 		self.session.open(TelekomSportConfigScreen)
 
+	# for summary
+	def getCurrentEntry(self):
+		if self['list'].getCurrent():
+			return self['list'].getCurrent()[2]
+
+	def getCurrentValue(self):
+		return ''
+
+	def createSummary(self):
+		return TelekomSportMainScreenSummary
+
+	# for update
 	def checkForUpdate(self):
 		url = 'https://api.github.com/repos/E2OpenPlugins/e2openplugin-TelekomSport/releases'
 		header = { 'Accept' : 'application/vnd.github.v3+json' }

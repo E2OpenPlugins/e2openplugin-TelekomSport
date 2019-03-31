@@ -30,6 +30,7 @@
 
 	<screen name="TelekomSportSportsTypeScreen" position="center,center" size="820,680" flags="wfNoBorder">
 		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
 		<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
 		<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
 		<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
@@ -57,6 +58,7 @@
 
 	<screen name="TelekomSportEventLaneScreen" position="center,center" size="820,680" flags="wfNoBorder">
 		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
 		<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
 		<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
 		<widget source="list" render="Listbox" position="10,200" size="800,420" scrollbarMode="showOnDemand">
@@ -84,6 +86,7 @@
 
 	<screen name="TelekomSportEventScreen" position="center,center" size="820,680" flags="wfNoBorder">
 		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
 		<widget name="description" position="10,150" size="800,40" font="Regular;25" zPosition="1" />
 		<widget name="match" position="10,200" size="800,45" noWrap="1" halign="center" font="Regular;35" zPosition="1" />
 		<widget name="subdescription" position="10,270" size="800,90" font="Regular;25" zPosition="1" />
@@ -110,6 +113,7 @@
 
 	<screen name="TelekomSportBoxScoreScreen" position="center,center" size="820,680" flags="wfNoBorder">
 		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
 		<widget name="title" position="10,140" size="800,45" font="Regular;38" zPosition="1" />
 		<widget name="match_home" position="15,200" size="395,40" noWrap="1" halign="left" font="Regular;32" zPosition="1" />
 		<widget name="match_away" position="410,200" size="395,40" noWrap="1" halign="right" font="Regular;32" zPosition="1" />
@@ -136,6 +140,7 @@
 
 	<screen name="TelekomSportStatisticsScreen" position="center,center" size="820,680" flags="wfNoBorder">
 		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
 		<widget name="title" position="10,140" size="800,45" font="Regular;38" zPosition="1" />
 		<widget name="match" position="10,190" size="800,40" noWrap="1" halign="center" font="Regular;32" zPosition="1" />
 		<widget source="list" render="Listbox" position="10,260" size="800,355" scrollbarMode="showOnDemand">
@@ -163,6 +168,7 @@
 
 	<screen name="TelekomSportScheduleScreen" position="center,center" size="820,680" flags="wfNoBorder">
 		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
 		<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
 		<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
 		<widget source="list" render="Listbox" position="10,210" size="800,415" scrollbarMode="showOnDemand">
@@ -190,6 +196,7 @@
 
 	<screen name="TelekomSportStandingsScreen" position="center,center" size="820,680" flags="wfNoBorder">
 		<ePixmap position="center,25" size="700,87" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
+		<widget name="version" position="760,89" size="75,20" font="Regular;18" zPosition="2" />
 		<widget name="title" position="10,125" size="800,40" font="Regular;30" zPosition="1" />
 		<widget name="subtitle" position="10,165" size="800,35" font="Regular;25" zPosition="1" />
 		<widget name="table_header_team" position="40,200" size="100,20" font="Regular;18" zPosition="1" />

@@ -352,6 +352,8 @@ class TelekomSportBoxScoreScreen(Screen):
 		self['match_home'] = Label()
 		self['match_away'] = Label()
 		self['endResult'] = Label()
+		self['version'] = Label(TelekomSportMainScreen.version)
+
 		self.resultList = []
 		self['list'] = List(self.resultList)
 
@@ -406,6 +408,8 @@ class TelekomSportStatisticsScreen(Screen):
 		self['status'] = Label('Lade Daten...')
 		self['match'] = Label()
 		self['title'] = Label('Spielstatistiken')
+		self['version'] = Label(TelekomSportMainScreen.version)
+
 		self.statList = []
 		self['list'] = List(self.statList)
 
@@ -485,6 +489,7 @@ class TelekomSportScheduleScreen(Screen):
 		self['title'] = Label()
 		self['subtitle'] = Label('Spielplan')
 		self['status'] = Label('Lade Daten...')
+		self['version'] = Label(TelekomSportMainScreen.version)
 
 		self.scheduleList = []
 		self['list'] = List()
@@ -560,6 +565,7 @@ class TelekomSportStandingsScreen(Screen):
 		self['table_header_goaldiff'] = Label('Diff')
 		self['table_header_points'] = Label('Punkte')
 		self['status'] = Label('Lade Daten...')
+		self['version'] = Label(TelekomSportMainScreen.version)
 
 		self.standingsList = []
 		self.playoffStandingsList = []
@@ -727,6 +733,7 @@ class TelekomSportEventScreen(Screen):
 		self['subdescription'] = Label('')
 		self['status'] = Label('Lade Daten...')
 		self['pay'] = Label('* = Abo benötigt')
+		self['version'] = Label(TelekomSportMainScreen.version)
 
 		self.videoList = []
 		self['list'] = List(self.videoList)
@@ -968,6 +975,7 @@ class TelekomSportEventLaneScreen(Screen):
 		self['title'] = Label(main_title)
 		self['subtitle'] = Label(title)
 		self['status'] = Label('Lade Daten...')
+		self['version'] = Label(TelekomSportMainScreen.version)
 
 		self.eventList = []
 		self['list'] = List(self.eventList)
@@ -1048,6 +1056,7 @@ class TelekomSportSportsTypeScreen(Screen):
 		self['title'] = Label(title)
 		self['subtitle'] = Label('')
 		self['status'] = Label('Lade Daten...')
+		self['version'] = Label(TelekomSportMainScreen.version)
 
 		self.eventLaneList = []
 		self['list'] = List(self.eventLaneList)
@@ -1128,7 +1137,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.5.4'
+	version = 'v2.5.5'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

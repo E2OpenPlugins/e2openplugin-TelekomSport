@@ -19,9 +19,9 @@
 			</convert>
 		</widget>
 		<widget name="status" position="15,300" size="1200,630" font="Regular;35" halign="center" zPosition="1" />
-		<widget name="buttonblue" position="35,955" size="220,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
+		<widget name="buttonblue" position="35,955" size="240,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
 		<widget name="buttongreen" position="300,955" size="220,50" backgroundColor="green" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
-		<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>
@@ -49,7 +49,7 @@
 		</widget>
 		<widget name="status" position="15,300" size="1200,630" font="Regular;35" halign="center" zPosition="1" />
 		<widget name="buttonblue" position="35,955" size="240,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
-		<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>
@@ -66,7 +66,7 @@
 				{"templates":
 					{"default": (90,[
 						MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
-						MultiContentEntryText(pos = (920, 0), size = (360, 40), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # starttime
+						MultiContentEntryText(pos = (810, 0), size = (360, 40), font=1, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 1), # starttime
 						MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # title
 						MultiContentEntryText(pos = (0, 0), size = (1200, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
 					]),
@@ -77,7 +77,7 @@
 			</convert>
 		</widget>
 		<widget name="status" position="15,300" size="1200,630" font="Regular;35" halign="center" zPosition="1" />
-		<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>
@@ -104,7 +104,7 @@
 		</widget>
 		<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
 		<widget name="pay" position="35,955" size="250,50" valign="center" halign="center" zPosition="2" font="Regular;32"/>
-		<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>
@@ -131,7 +131,7 @@
 			</convert>
 		</widget>
 		<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
-		<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>
@@ -159,7 +159,7 @@
 			</convert>
 		</widget>
 		<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
-		<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>
@@ -176,7 +176,7 @@
 				{"templates":
 					{"default": (90,[
 						MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # description
-						MultiContentEntryText(pos = (925, 0), size = (360, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # start time
+						MultiContentEntryText(pos = (810, 0), size = (360, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 1), # start time
 						MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # teams + result
 						MultiContentEntryText(pos = (0, 0), size = (1200, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
 					]),
@@ -187,7 +187,7 @@
 			</convert>
 		</widget>
 		<widget name="status" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
-		<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>
@@ -206,7 +206,7 @@
 		<widget name="table_header_losses" position="785,300" size="25,40" font="Regular;30" zPosition="1" />
 		<widget name="table_header_goals" position="865,300" size="70,40" font="Regular;30" zPosition="1" />
 		<widget name="table_header_goaldiff" position="1005,300" size="60,40" font="Regular;30" zPosition="1" />
-		<widget name="table_header_points" position="1065,300" size="100,40" font="Regular;30" zPosition="1" />
+		<widget name="table_header_points" position="1085,300" size="110,40" font="Regular;30" zPosition="1" />
 		<widget source="list" render="Listbox" position="15,340" size="1200,610" scrollbarMode="showOnDemand">
 			<convert type="TemplatedMultiContent">
 				{"templates":
@@ -235,7 +235,7 @@
 		</widget>
 		<widget name="status" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
 		<widget name="buttonblue" position="35,955" size="240,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
-		<widget foregroundColor="white" font="Regular;32" position="920,955" render="Label" size="270,50" valign="center" source="global.CurrentTime">
+		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>

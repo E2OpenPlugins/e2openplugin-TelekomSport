@@ -278,9 +278,10 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		self.statistics_url = statistics_url
 		self.boxscore_url = boxscore_url
 
-		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions'],
+		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions'],
 		{
 			'leavePlayer' : self.leavePlayer,
+			'cancel'      : self.leavePlayer,
 			'leavePlayerOnExit' : self.leavePlayerOnExit,
 			'red'    : self.showBoxScore,
 			'green'  : self.showStatistics,
@@ -303,8 +304,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		self.session.openWithCallback(self.leavePlayerConfirmed, MessageBox, 'Abspielen beenden?')
 
 	def leavePlayerOnExit(self):
-		if config.usage.leave_movieplayer_onExit.value != 'no':
-			self.leavePlayer()
+		self.leavePlayer()
 
 	def leavePlayerConfirmed(self, answer):
 		if answer:
@@ -1137,7 +1137,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.5.5'
+	version = 'v2.5.6'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

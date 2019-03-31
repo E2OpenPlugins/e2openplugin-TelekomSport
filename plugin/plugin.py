@@ -1053,6 +1053,9 @@ class TelekomSportSportsTypeScreen(Screen):
 
 		self.setup_title = TelekomSportMainScreen.title
 
+		# for update
+		self.telekomSportMainScreen = session.current_dialog
+
 		self['title'] = Label(title)
 		self['subtitle'] = Label('')
 		self['status'] = Label('Lade Daten...')
@@ -1063,6 +1066,9 @@ class TelekomSportSportsTypeScreen(Screen):
 
 		self['buttonblue'] = Label('')
 		self['buttonblue'].hide()
+		self['buttongreen'] = Label('Update')
+		if self.telekomSportMainScreen.update_exist == False:
+			self['buttongreen'].hide()
 
 		self['actions'] = ActionMap(['MenuActions', 'SetupActions', 'DirectionActions', 'ColorActions'],
 		{
@@ -1070,8 +1076,13 @@ class TelekomSportSportsTypeScreen(Screen):
 			'cancel': self.close,
 			'ok': self.ok,
 			'blue': self.showTableResults,
+			'green': self.update,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'SportsType', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'SportsType', self['status']))
+
+	def update(self):
+		if self.telekomSportMainScreen.update_exist:
+			self.session.openWithCallback(self.telekomSportMainScreen.updateConfirmed, MessageBox, 'Ein Update ist verfügbar. Wollen sie es installieren?\nInformationen:\n' + self.telekomSportMainScreen.updateText, MessageBox.TYPE_YESNO, default = False)
 
 	def closeRecursive(self):
 		self.close(True)
@@ -1137,7 +1148,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.5.7'
+	version = 'v2.5.8'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'
@@ -1239,6 +1250,7 @@ class TelekomSportMainScreen(Screen):
 		url = 'https://api.github.com/repos/E2OpenPlugins/e2openplugin-TelekomSport/releases'
 		header = { 'Accept' : 'application/vnd.github.v3+json' }
 		req = urllib2.Request(url, None, header)
+		self.update_exist = False
 		try:
 			response = urllib2.urlopen(req)
 			jsonData = json.loads(response.read())
@@ -1253,11 +1265,13 @@ class TelekomSportMainScreen(Screen):
 							self.updateUrl = asset['browser_download_url'].encode('utf8')
 							self.filename = '/tmp/enigma2-plugin-extensions-telekomsport.deb'
 							self['buttongreen'].show()
+							self.update_exist = True
 							break
 						elif (not telekomsport_isDreamOS) and asset['name'].endswith('.ipk'):
 							self.updateUrl = asset['browser_download_url'].encode('utf8')
 							self.filename = '/tmp/enigma2-plugin-extensions-telekomsport.ipk'
 							self['buttongreen'].show()
+							self.update_exist = True
 							break
 				if self.version >= rel['tag_name'] or self.updateUrl != '':
 					break

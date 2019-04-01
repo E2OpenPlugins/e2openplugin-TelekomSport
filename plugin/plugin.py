@@ -956,7 +956,7 @@ class TelekomSportEventScreen(Screen):
 		return self['match'].getText()
 
 	def getCurrentValue(self):
-		return ''
+		return ' '
 
 	def createSummary(self):
 		return TelekomSportMainScreenSummary
@@ -1033,10 +1033,14 @@ class TelekomSportEventLaneScreen(Screen):
 	def getCurrentEntry(self):
 		if self['list'].getCurrent():
 			return self['list'].getCurrent()[0]
+		else:
+			return ' '
 
 	def getCurrentValue(self):
 		if self['list'].getCurrent():
 			return self['list'].getCurrent()[2]
+		else:
+			return ' '
 
 	def createSummary(self):
 		return TelekomSportMainScreenSummary
@@ -1141,6 +1145,8 @@ class TelekomSportSportsTypeScreen(Screen):
 	def getCurrentValue(self):
 		if self['list'].getCurrent():
 			return self['list'].getCurrent()[2]
+		else:
+			return ' '
 
 	def createSummary(self):
 		return TelekomSportMainScreenSummary
@@ -1238,9 +1244,11 @@ class TelekomSportMainScreen(Screen):
 	def getCurrentEntry(self):
 		if self['list'].getCurrent():
 			return self['list'].getCurrent()[2]
+		else:
+			return ' '
 
 	def getCurrentValue(self):
-		return ''
+		return ' '
 
 	def createSummary(self):
 		return TelekomSportMainScreenSummary

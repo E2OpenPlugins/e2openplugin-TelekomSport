@@ -80,7 +80,7 @@ config.plugins.telekomsport.default_section = ConfigText(default = '', fixed_siz
 config.plugins.telekomsport.default_section_chooser = NoSave(ConfigSelection([], default = None))
 # Some images like DreamOS need streams with fix quality
 config.plugins.telekomsport.fix_stream_quality = ConfigYesNo(default = telekomsport_isDreamOS)
-config.plugins.telekomsport.stream_quality = ConfigSelection(default = "1000000", choices = [("350000", _("sehr gering")), ("600000", _("gering")), ("1000000", _("mittel")), ("1700000", _("hoch")), ("3000000", _("sehr hoch"))])
+config.plugins.telekomsport.stream_quality = ConfigSelection(default = "2", choices = [("0", _("sehr gering")), ("1", _("gering")), ("2", _("mittel")), ("3", _("hoch")), ("4", _("sehr hoch"))])
 
 
 def encode(x):
@@ -830,11 +830,17 @@ class TelekomSportEventScreen(Screen):
 					if lines[i].startswith('#EXT-X-STREAM-INF:'):
 						bandwith = self.readExtXStreamInfLine(lines[i], attributeListPattern)
 						if bandwith and i + 1 < count_lines:
-							streams.append((bandwith, lines[i+1].strip()))
+							streams.append((int(bandwith), lines[i+1].strip()))
 					i += 1
 				if streams:
-					# return stream URL which bandwidth is closest to the user chosen bandwidth
-					return min(streams, key=lambda x:abs(int(x[0]) - int(config.plugins.telekomsport.stream_quality.value)))[1]
+					streams.sort(key = lambda x : x[0])
+					if len(streams) <> 5:
+						print 'Warning: %d streams in m3u8. 5 expected' % len(streams)
+						if int(config.plugins.telekomsport.stream_quality.value) < 3:
+							return streams[0][1]
+						else:
+							return streams[len(streams)-1][1]
+					return streams[int(config.plugins.telekomsport.stream_quality.value)][1]
 			return ''
 		except:
 			return ''
@@ -1154,7 +1160,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.5.9'
+	version = 'v2.6.0'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

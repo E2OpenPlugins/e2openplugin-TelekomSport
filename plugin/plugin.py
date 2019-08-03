@@ -156,22 +156,22 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 	if getDesktop(0).size().width() <= 1280:
 		if not telekomsport_isDreamOS:
 			ts_font_str = 'font="Regular;20"'
-		skin = '''<screen position="center,center" size="580,470" flags="wfNoBorder">
-					<ePixmap position="center,10" size="550,45" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="config" position="10,70" size="560,350" ''' + ts_font_str + ''' scrollbarMode="showOnDemand" />
-					<widget name="buttonred" position="10,430" size="120,35" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
-					<widget name="buttongreen" position="165,430" size="120,35" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
-					<widget name="buttonblue" position="320,430" size="135,35" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+		skin = '''<screen position="center,center" size="680,440" flags="wfNoBorder">
+					<ePixmap position="center,10" size="640,60" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="config" position="10,85" size="650,330" ''' + ts_font_str + ''' scrollbarMode="showOnDemand" />
+					<widget name="buttonred" position="10,395" size="120,35" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="buttongreen" position="155,395" size="120,35" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="buttonblue" position="300,395" size="135,35" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
 				</screen>'''
 	else:
 		if not telekomsport_isDreamOS:
 			ts_font_str = 'font="Regular;32"'
-		skin = '''<screen position="center,center" size="880,700" flags="wfNoBorder">
-					<ePixmap position="center,15" size="840,59" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
-					<widget name="config" position="15,100" size="850,520" ''' + ts_font_str + ''' itemHeight="42" scrollbarMode="showOnDemand" />
+		skin = '''<screen position="center,center" size="1020,700" flags="wfNoBorder">
+					<ePixmap position="center,15" size="980,90" scale="1" pixmap="''' + eEnv.resolve('${libdir}/enigma2/python/Plugins/Extensions/TelekomSport/TelekomSport-Logo.png') + '''" alphatest="blend" zPosition="1"/>
+					<widget name="config" position="15,120" size="990,500" ''' + ts_font_str + ''' itemHeight="42" scrollbarMode="showOnDemand" />
 					<widget name="buttonred" position="15,640" size="180,50" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
 					<widget name="buttongreen" position="225,640" size="180,50" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
-					<widget name="buttonblue" position="440,640" size="215,50" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
+					<widget name="buttonblue" position="435,640" size="215,50" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
 				</screen>'''
 
 	def __init__(self, session):
@@ -1160,7 +1160,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.6.0'
+	version = 'v2.6.1'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

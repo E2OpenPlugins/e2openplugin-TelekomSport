@@ -2,8 +2,8 @@
 	<screen name="TelekomSportMainScreen" position="center,center" size="1230,1020" flags="wfNoBorder">
 		<ePixmap position="center,25" size="1070,134" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
 		<widget name="version" position="1150,127" size="90,35" font="Regular;26" zPosition="2" />
-		<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-		<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
+		<widget name="title" position="15,175" size="1200,50" font="Regular;42" zPosition="1" />
+		<widget name="subtitle" position="15,225" size="1200,45" font="Regular;38" zPosition="1" />
 		<widget source="list" render="Listbox" position="15,300" size="1200,630" scrollbarMode="showOnDemand">
 			<convert type="TemplatedMultiContent">
 				{"templates":
@@ -31,8 +31,8 @@
 	<screen name="TelekomSportSportsTypeScreen" position="center,center" size="1230,1020" flags="wfNoBorder">
 		<ePixmap position="center,25" size="1070,134" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
 		<widget name="version" position="1150,127" size="90,35" font="Regular;26" zPosition="2" />
-		<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-		<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
+		<widget name="title" position="15,175" size="1200,50" font="Regular;42" zPosition="1" />
+		<widget name="subtitle" position="15,225" size="1200,45" font="Regular;38" zPosition="1" />
 		<widget source="list" render="Listbox" position="15,300" size="1200,630" scrollbarMode="showOnDemand">
 			<convert type="TemplatedMultiContent">
 				{"templates":
@@ -60,8 +60,8 @@
 	<screen name="TelekomSportEventLaneScreen" position="center,center" size="1230,1020" flags="wfNoBorder">
 		<ePixmap position="center,25" size="1070,134" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
 		<widget name="version" position="1150,127" size="90,35" font="Regular;26" zPosition="2" />
-		<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-		<widget name="subtitle" position="15,235" size="1200,45" font="Regular;38" zPosition="1" />
+		<widget name="title" position="15,175" size="1200,50" font="Regular;42" zPosition="1" />
+		<widget name="subtitle" position="15,225" size="1200,45" font="Regular;38" zPosition="1" />
 		<widget source="list" render="Listbox" position="15,300" size="1200,630" scrollbarMode="showOnDemand">
 			<convert type="TemplatedMultiContent">
 				{"templates":
@@ -170,8 +170,8 @@
 	<screen name="TelekomSportScheduleScreen" position="center,center" size="1230,1020" flags="wfNoBorder">
 		<ePixmap position="center,25" size="1070,134" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
 		<widget name="version" position="1150,127" size="90,35" font="Regular;26" zPosition="2" />
-		<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-		<widget name="subtitle" position="15,235" size="1200,50" font="Regular;38" zPosition="1" />
+		<widget name="title" position="15,175" size="1200,50" font="Regular;42" zPosition="1" />
+		<widget name="subtitle" position="15,225" size="1200,50" font="Regular;38" zPosition="1" />
 		<widget source="list" render="Listbox" position="15,300" size="1200,640" scrollbarMode="showOnDemand">
 			<convert type="TemplatedMultiContent">
 				{"templates":
@@ -195,48 +195,48 @@
 		</widget>
 	</screen>
 
-	<screen name="TelekomSportStandingsScreen" position="center,center" size="1230,1020" flags="wfNoBorder">
+	<screen name="TelekomSportStandingsScreen" position="center,center" size="1230,1080" flags="wfNoBorder">
 		<ePixmap position="center,25" size="1070,134" scale="1" pixmap="~/TelekomSport-Logo.png" alphatest="blend" zPosition="1"/>
 		<widget name="version" position="1150,127" size="90,35" font="Regular;26" zPosition="2" />
-		<widget name="title" position="15,185" size="1200,50" font="Regular;42" zPosition="1" />
-		<widget name="subtitle" position="15,235" size="1200,50" font="Regular;38" zPosition="1" />
-		<widget name="table_header_team" position="60,300" size="100,40" font="Regular;30" zPosition="1" />
-		<widget name="table_header_matches" position="585,300" size="80,40" font="Regular;30" zPosition="1" />
-		<widget name="table_header_wins" position="690,300" size="25,40" font="Regular;30" zPosition="1" />
-		<widget name="table_header_draws" position="740,300" size="25,40" font="Regular;30" zPosition="1" />
-		<widget name="table_header_losses" position="785,300" size="25,40" font="Regular;30" zPosition="1" />
-		<widget name="table_header_goals" position="865,300" size="70,40" font="Regular;30" zPosition="1" />
-		<widget name="table_header_goaldiff" position="1005,300" size="60,40" font="Regular;30" zPosition="1" />
-		<widget name="table_header_points" position="1085,300" size="110,40" font="Regular;30" zPosition="1" />
-		<widget source="list" render="Listbox" position="15,340" size="1200,610" scrollbarMode="showOnDemand">
+		<widget name="title" position="15,170" size="1200,50" font="Regular;42" zPosition="1" />
+		<widget name="subtitle" position="15,220" size="1200,50" font="Regular;38" zPosition="1" />
+		<widget name="table_header_team" position="60,270" size="100,40" font="Regular;30" zPosition="1" />
+		<widget name="table_header_matches" position="585,270" size="80,40" font="Regular;30" zPosition="1" />
+		<widget name="table_header_wins" position="690,270" size="25,40" font="Regular;30" zPosition="1" />
+		<widget name="table_header_draws" position="740,270" size="25,40" font="Regular;30" zPosition="1" />
+		<widget name="table_header_losses" position="785,270" size="25,40" font="Regular;30" zPosition="1" />
+		<widget name="table_header_goals" position="865,270" size="70,40" font="Regular;30" zPosition="1" />
+		<widget name="table_header_goaldiff" position="1005,270" size="60,40" font="Regular;30" zPosition="1" />
+		<widget name="table_header_points" position="1085,270" size="110,40" font="Regular;30" zPosition="1" />
+		<widget source="list" render="Listbox" position="15,310" size="1200,685" scrollbarMode="showOnDemand">
 			<convert type="TemplatedMultiContent">
 				{"templates":
-					{"default": (40,[
-						MultiContentEntryText(pos = (2, 0), size = (40, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
-						MultiContentEntryText(pos = (45, 0), size = (555, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # team
-						MultiContentEntryText(pos = (600, 0), size = (50, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # count matches
-						MultiContentEntryText(pos = (650, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # count wins
-						MultiContentEntryText(pos = (700, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 4), # count draws
-						MultiContentEntryText(pos = (755, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 5), # count losses
-						MultiContentEntryText(pos = (835, 0), size = (150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
-						MultiContentEntryText(pos = (990, 0), size = (50, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
-						MultiContentEntryText(pos = (1060, 0), size = (80, 40), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
-						MultiContentEntryText(pos = (0, 0), size = (1200, 40), border_width=1, border_color=0x424242, font=0, text = ""), # border
+					{"default": (38,[
+						MultiContentEntryText(pos = (2, 0), size = (40, 38), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # rank
+						MultiContentEntryText(pos = (45, 0), size = (555, 38), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # team
+						MultiContentEntryText(pos = (600, 0), size = (50, 38), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # count matches
+						MultiContentEntryText(pos = (650, 0), size = (50, 38), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 3), # count wins
+						MultiContentEntryText(pos = (700, 0), size = (50, 38), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 4), # count draws
+						MultiContentEntryText(pos = (755, 0), size = (50, 38), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 5), # count losses
+						MultiContentEntryText(pos = (835, 0), size = (150, 38), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 6), # goals
+						MultiContentEntryText(pos = (990, 0), size = (50, 38), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 7), # goal diff
+						MultiContentEntryText(pos = (1060, 0), size = (80, 38), font=0, flags = RT_HALIGN_RIGHT|RT_VALIGN_CENTER, text = 8), # points
+						MultiContentEntryText(pos = (0, 0), size = (1200, 38), border_width=1, border_color=0x424242, font=0, text = ""), # border
 					]),
 					"playoff": (90,[
-						MultiContentEntryText(pos = (20, 0), size = (1150, 40), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title
+						MultiContentEntryText(pos = (20, 0), size = (1150, 38), font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 0), # title
 						MultiContentEntryText(pos = (20, 42), size = (1150, 42), font=1, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # teams + wins
 						MultiContentEntryText(pos = (0, 0), size = (1200, 90), border_width=1, border_color=0x424242, font=0, text = ""), # border
 					]),
 					},
-					"fonts": [gFont("Regular", 32), gFont("Regular", 36)],
-					"itemHeight": 40
+					"fonts": [gFont("Regular", 31), gFont("Regular", 36)],
+					"itemHeight": 38
 				}
 			</convert>
 		</widget>
 		<widget name="status" position="15,340" size="1200,600" font="Regular;35" halign="center" zPosition="1" />
-		<widget name="buttonblue" position="35,955" size="240,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
-		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
+		<widget name="buttonblue" position="35,1015" size="240,50" backgroundColor="blue" valign="center" halign="center" zPosition="2" foregroundColor="white" font="Regular;32"/>
+		<widget foregroundColor="white" font="Regular;32" position="930,1020" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>

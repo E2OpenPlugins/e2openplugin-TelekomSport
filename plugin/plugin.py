@@ -93,9 +93,10 @@ def loadTelekomSportJsonData(screen, statusField, buildListFunc, data):
 	try:
 		jsonResult = json.loads(data)
 
-		if 'status' not in jsonResult or jsonResult['status'] != 'success':
-			statusField.setText(screen + ': Fehler beim Laden der JSON Daten: "Status ist nicht success"')
-			return
+		if statusField:
+			if 'status' not in jsonResult or jsonResult['status'] != 'success':
+				statusField.setText(screen + ': Fehler beim Laden der JSON Daten: "Status ist nicht success"')
+				return
 		buildListFunc(jsonResult)
 	except Exception as e:
 		statusField.setText(screen + ': Fehler beim Laden der JSON Daten "' + str(e) + '"')
@@ -106,7 +107,8 @@ def handleTelekomSportWebsiteResponse(callback, response):
 	return d
 
 def handleTelekomSportDownloadError(screen, statusField, err):
-	statusField.setText(screen + ': Fehler beim Download "' + str(err) + '"')
+	if statusField:
+		statusField.setText(screen + ': Fehler beim Download "' + str(err) + '"')
 
 def downloadTelekomSportJson(url, callback, errorCallback):
 	if telekomsport_isDreamOS == False:
@@ -254,12 +256,34 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		return SimpleSummary
 
 
+class TelekomSportConferenceAlarm(Screen):
+
+	def __init__(self, session, events, status):
+		Screen.__init__(self, session)
+		self.session = session
+
+		self['list'] = List(events)
+		self['status'] = Label(status)
+		if status is None:
+			self['status'].hide()
+
+		self['actions'] = ActionMap(['SetupActions', 'DirectionActions'],
+		{
+			'cancel': self.close,
+			'ok': self.close,
+		})
+		self.close_timer = eTimer()
+		self.close_timer.callback.append(self.close)
+		self.close_timer.start(8000, True)
+
+
 class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport):
 
-	def __init__(self, session, service, standings_url, schedule_url, statistics_url, boxscore_url):
+	conference_alarm_url = 'https://www.magentasport.de/api/v2/player/alert/history'
+
+	def __init__(self, session, service, standings_url, schedule_url, statistics_url, boxscore_url, conference_alarm_available, league_id, video_id):
 		Screen.__init__(self, session)
 		self.skinName = 'MoviePlayer'
-
 		self.title = service.getName()
 
 		InfoBarMenu.__init__(self)
@@ -278,11 +302,21 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		self.statistics_url = statistics_url
 		self.boxscore_url = boxscore_url
 
+		self.conference_alarm_available = conference_alarm_available
+		self.league_id = league_id
+		self.video_id = video_id
+
+		self.conference_alarm_timer = eTimer()
+		self.conference_alarm_timer.callback.append(self.checkAlarmHistory)
+		self.conference_complete_alarm_list = []
+		self.conference_new_alarm_list = []
+
 		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions'],
 		{
 			'leavePlayer' : self.leavePlayer,
 			'cancel'      : self.leavePlayer,
 			'leavePlayerOnExit' : self.leavePlayerOnExit,
+			'movePrev'    : self.showLastConfAlarm,
 			'red'    : self.showBoxScore,
 			'green'  : self.showStatistics,
 			'yellow' : self.showSchedule,
@@ -311,8 +345,14 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 			self.close()
 
 	def openEventView(self):
-		if self.standings_url:
-			self.session.open(TelekomSportStandingsScreen, self.standings_url)
+		if self.conference_alarm_available and not self.conference_alarm_timer.isActive():
+			self.conference_complete_alarm_list = []
+			self.conference_new_alarm_list = []
+			self.checkAlarmHistory(True)
+			self.conference_alarm_timer.start(20000, False)
+		elif self.conference_alarm_available and self.conference_alarm_timer.isActive():
+			self.conference_alarm_timer.stop()
+			self.session.open(TelekomSportConferenceAlarm, [], 'Konferenzalarm deaktiviert')
 
 	def showBoxScore(self):
 		if self.boxscore_url:
@@ -332,6 +372,55 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 
 	def showMovies(self):
 		pass
+
+	def checkAlarmHistory(self, showAll = False):
+		downloadTelekomSportJson(self.conference_alarm_url, boundFunction(loadTelekomSportJsonData, 'Player', None, boundFunction(self.checkForNewAlarm, showAll)), self.checkAlarmHistoryError)
+
+	def checkForNewAlarm(self, showAll, jsonData):
+		try:
+			new_alarms_list = []
+			complete_list = []
+			if 'leagues' in jsonData['data']:
+				for league in jsonData['data']['leagues']:
+					if self.league_id == league.encode('utf8'):
+						leagueEvents = jsonData['data']['leagues'][league]
+						for ev in leagueEvents['events']:
+							title = leagueEvents['events'][ev]['title'].encode('utf8')
+							text = leagueEvents['events'][ev]['text'].encode('utf8')
+							if leagueEvents['events'][ev]['imageRightAlt']:
+								match = leagueEvents['events'][ev]['imageLeftAlt'].encode('utf8') + ' : ' + leagueEvents['events'][ev]['imageRightAlt'].encode('utf8')
+							else:
+								match = leagueEvents['events'][ev]['imageLeftAlt'].encode('utf8')
+							eventid = leagueEvents['events'][ev]['eventid']
+							videoid = leagueEvents['events'][ev]['videoid']
+							# don't show events from current stream to avoid showing events before they are visible in the stream (playback may be behind live point)
+							if str(videoid) == self.video_id:
+								continue
+
+							complete_list.append((ev, match, title, text, eventid, videoid))
+
+							if (filter(lambda x: x[0] == ev, self.conference_complete_alarm_list) == []) or showAll: # event not found in the current list or conference alarm enabled -> show all events
+								new_alarms_list.append((ev, match, title, text, eventid, videoid))
+
+						self.conference_complete_alarm_list = complete_list
+			if len(new_alarms_list) > 0 or showAll:
+				new_alarms_list.sort(key=lambda x: x[0], reverse=True)
+				self.conference_new_alarm_list = new_alarms_list
+				if showAll:
+					self.session.open(TelekomSportConferenceAlarm, new_alarms_list, 'Konferenzalarm aktiviert')
+				else:
+					self.session.open(TelekomSportConferenceAlarm, new_alarms_list, None)
+		except Exception as e:
+			print "MagentaSport error checkForNewAlarm", e
+			self.conference_alarm_timer.stop()
+
+	def checkAlarmHistoryError(self, err):
+		print "MagentaSport checkAlarmHistoryError", err
+		self.conference_alarm_timer.stop()
+
+	def showLastConfAlarm(self):
+		if self.conference_alarm_available and self.conference_alarm_timer.isActive():
+			self.session.open(TelekomSportConferenceAlarm, self.conference_new_alarm_list, None)
 
 	# for summary
 	def createSummary(self):
@@ -725,6 +814,8 @@ class TelekomSportEventScreen(Screen):
 
 		self.statistics_url = ''
 		self.boxscore_url = ''
+		self.conference_alarm_available = False
+		self.league_id = ''
 
 		self.setup_title = TelekomSportMainScreen.title
 
@@ -733,6 +824,7 @@ class TelekomSportEventScreen(Screen):
 		self['subdescription'] = Label('')
 		self['status'] = Label('Lade Daten...')
 		self['pay'] = Label('* = Abo benötigt')
+		self['confalarm'] = Label('')
 		self['version'] = Label(TelekomSportMainScreen.version)
 
 		self.videoList = []
@@ -879,7 +971,7 @@ class TelekomSportEventScreen(Screen):
 		ref = eServiceReference(4097, 0, playlisturl)
 		ref.setName(title)
 
-		self.session.open(TelekomSportMoviePlayer, ref, self.standings_url, self.schedule_url, self.statistics_url, self.boxscore_url)
+		self.session.open(TelekomSportMoviePlayer, ref, self.standings_url, self.schedule_url, self.statistics_url, self.boxscore_url, self.conference_alarm_available, self.league_id, videoid)
 
 	def buildPreEventScreen(self, jsonData):
 		pay = ''
@@ -914,6 +1006,12 @@ class TelekomSportEventScreen(Screen):
 
 	def buildLiveEventScreen(self, jsonData):
 		self['subdescription'].setText('Übertragung vom ' + self.starttime.strftime('%d.%m.%Y %H:%M') + '\n\nVideos:')
+		if 'has_alerts' in jsonData['data']['metadata']['event_metadata']:
+			self.conference_alarm_available = jsonData['data']['metadata']['event_metadata']['has_alerts'] == True
+			if self.conference_alarm_available:
+				self['confalarm'].setText('Konferenzalarm ist verfügbar. Bitte Info/EPG Taste drücken um ihn zu aktivieren.')
+		if 'league_id' in jsonData['data']['metadata']['event_metadata']:
+			self.league_id = str(jsonData['data']['metadata']['event_metadata']['league_id'])
 		for content in jsonData['data']['content']:
 			if content['group_elements']:
 				for element in content['group_elements']:
@@ -1160,7 +1258,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.6.2'
+	version = 'v2.7.0'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

@@ -104,7 +104,8 @@
 			</convert>
 		</widget>
 		<widget name="status" position="15,500" size="1200,400" font="Regular;35" halign="center" zPosition="1" />
-		<widget name="pay" position="35,955" size="250,50" valign="center" halign="center" zPosition="2" font="Regular;32"/>
+		<widget name="confalarm" position="35,905" size="1200,50" font="Regular;32" halign="left" zPosition="1" />
+		<widget name="pay" position="35,955" size="250,50" valign="center" halign="left" zPosition="2" font="Regular;32"/>
 		<widget foregroundColor="white" font="Regular;32" position="930,960" render="Label" size="270,50" halign="right" valign="center" source="global.CurrentTime">
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
@@ -240,6 +241,26 @@
 			<convert type="ClockToText">
 				Format:%d.%m.%Y %H:%M
 			</convert>
+		</widget>
+	</screen>
+
+	<screen name="TelekomSportConferenceAlarm" position="1500,100" size="400,940" backgroundColor="transparent" flags="wfNoBorder">
+		<widget name="status" position="0,0" size="400,40" font="Regular;32" halign="center" zPosition="1" />
+		<widget source="list" render="Listbox" position="0,40" size="400,900" scrollbarMode="showOnDemand" backgroundColor="transparent">
+		<convert type="TemplatedMultiContent">
+			{"templates":
+				{"default": (80,[
+					MultiContentEntryText(pos = (0, 0), size = (5, 80), backcolor=0x402E2E2E, color_sel=0xFFFFFF, backcolor_sel=0x101F1F1F, border_color=0x402E2E2E, border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = ""), # Dummy
+					MultiContentEntryText(pos = (5, 0), size = (395, 40), backcolor=0x402E2E2E, color_sel=0xFFFFFF, backcolor_sel=0x101F1F1F, border_color=0x402E2E2E, border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 1), # Title
+					MultiContentEntryText(pos = (5, 40), size = (200, 40), backcolor=0x402E2E2E, color_sel=0xFFFFFF, backcolor_sel=0x101F1F1F, border_color=0x402E2E2E, border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 2), # Match
+					MultiContentEntryText(pos = (205, 40), size = (195, 40), backcolor=0x402E2E2E, color_sel=0xFFFFFF, backcolor_sel=0x101F1F1F, border_color=0x402E2E2E, border_width=0, font=0, flags = RT_HALIGN_LEFT|RT_VALIGN_CENTER, text = 3), # Text
+					MultiContentEntryText(pos = (0, 0), size = (400, 80), border_width=1, border_color=0x40424242, font=0, text = ""),
+					]),
+				},
+				"fonts": [gFont("Regular", 32)],
+				"itemHeight": 80
+			}
+		</convert>
 		</widget>
 	</screen>
 

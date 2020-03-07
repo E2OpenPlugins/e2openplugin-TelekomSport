@@ -262,6 +262,8 @@ class TelekomSportConferenceAlarm(Screen):
 		Screen.__init__(self, session)
 		self.session = session
 
+		self.setup_title = TelekomSportMainScreen.title
+
 		self['list'] = List(events)
 		self['status'] = Label(status)
 		if status is None:
@@ -278,6 +280,22 @@ class TelekomSportConferenceAlarm(Screen):
 		else:
 			self.close_timer.callback.append(self.close)
 		self.close_timer.start(8000, True)
+
+	# for summary
+	def getCurrentEntry(self):
+		if self['list'].getCurrent():
+			return self['list'].getCurrent()[1]
+		else:
+			return ' '
+
+	def getCurrentValue(self):
+		if self['list'].getCurrent():
+			return self['list'].getCurrent()[2]
+		else:
+			return ' '
+
+	def createSummary(self):
+		return TelekomSportMainScreenSummary
 
 
 class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport):
@@ -1264,7 +1282,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.7.0'
+	version = 'v2.7.2'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

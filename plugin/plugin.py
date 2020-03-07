@@ -273,7 +273,10 @@ class TelekomSportConferenceAlarm(Screen):
 			'ok': self.close,
 		})
 		self.close_timer = eTimer()
-		self.close_timer.callback.append(self.close)
+		if telekomsport_isDreamOS:
+			self.close_timer_conn = self.close_timer.timeout.connect(self.close)
+		else:
+			self.close_timer.callback.append(self.close)
 		self.close_timer.start(8000, True)
 
 
@@ -307,7 +310,10 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		self.video_id = video_id
 
 		self.conference_alarm_timer = eTimer()
-		self.conference_alarm_timer.callback.append(self.checkAlarmHistory)
+		if telekomsport_isDreamOS:
+			self.conference_alarm_timer_conn = self.conference_alarm_timer.timeout.connect(self.checkAlarmHistory)
+		else:
+			self.conference_alarm_timer.callback.append(self.checkAlarmHistory)
 		self.conference_complete_alarm_list = []
 		self.conference_new_alarm_list = []
 

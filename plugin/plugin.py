@@ -317,12 +317,12 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		self.conference_complete_alarm_list = []
 		self.conference_new_alarm_list = []
 
-		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions'],
+		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions', 'SetupActions'],
 		{
 			'leavePlayer' : self.leavePlayer,
 			'cancel'      : self.leavePlayer,
-			'leavePlayerOnExit' : self.leavePlayerOnExit,
-			'movePrev'    : self.showLastConfAlarm,
+			'leavePlayerOnExit': self.leavePlayerOnExit,
+			'deleteBackward'   : self.showLastConfAlarm,
 			'red'    : self.showBoxScore,
 			'green'  : self.showStatistics,
 			'yellow' : self.showSchedule,

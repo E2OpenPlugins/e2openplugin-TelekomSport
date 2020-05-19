@@ -13,6 +13,7 @@ from Components.ServiceEventTracker import InfoBarBase
 from Components.Sources.List import List
 from Components.Label import Label
 from Components.MultiContent import MultiContentEntryText, MultiContentEntryProgress
+from Components.Pixmap import Pixmap
 from Components.ConfigList import ConfigListScreen
 from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo, ConfigSelection, NoSave
 from Tools.BoundFunction import boundFunction
@@ -258,44 +259,35 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
 class TelekomSportConferenceAlarm(Screen):
 
-	def __init__(self, session, events, status):
+	def __init__(self, session):
 		Screen.__init__(self, session)
 		self.session = session
-
 		self.setup_title = TelekomSportMainScreen.title
+		self['list'] = List()
+		self['logo_on'] = Pixmap()
+		self['logo_off'] = Pixmap()
+		self['logo_off'].hide()
 
-		self['list'] = List(events)
-		self['status'] = Label(status)
-		if status is None:
-			self['status'].hide()
-
-		self['actions'] = ActionMap(['SetupActions', 'DirectionActions'],
-		{
-			'cancel': self.close,
-			'ok': self.close,
-		})
 		self.close_timer = eTimer()
 		if telekomsport_isDreamOS:
-			self.close_timer_conn = self.close_timer.timeout.connect(self.close)
+			self.close_timer_conn = self.close_timer.timeout.connect(self.hide_screen)
 		else:
-			self.close_timer.callback.append(self.close)
+			self.close_timer.callback.append(self.hide_screen)
+
+		self.onShow.append(self.startTimer)
+		self.onHide.append(self.stopTimer)
+
+	def startTimer(self):
+		if self.close_timer.isActive():
+			self.close_timer.stop()
 		self.close_timer.start(8000, True)
 
-	# for summary
-	def getCurrentEntry(self):
-		if self['list'].getCurrent():
-			return self['list'].getCurrent()[1]
-		else:
-			return ' '
+	def stopTimer(self):
+		if self.close_timer.isActive():
+			self.close_timer.stop()
 
-	def getCurrentValue(self):
-		if self['list'].getCurrent():
-			return self['list'].getCurrent()[2]
-		else:
-			return ' '
-
-	def createSummary(self):
-		return TelekomSportMainScreenSummary
+	def hide_screen(self):
+		self.hide()
 
 
 class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport):
@@ -316,6 +308,10 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		InfoBarSeek.__init__(self)
 		InfoBarServiceErrorPopupSupport.__init__(self)
 
+		# disable 2nd infobar as it calls openEventView
+		self.saved_show_second_infobar_value = config.usage.show_second_infobar.value
+		config.usage.show_second_infobar.value = '0'
+
 		self.service = service
 		self.lastservice = self.session.nav.getCurrentlyPlayingServiceReference()
 		self.standings_url = standings_url
@@ -335,6 +331,8 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		self.conference_complete_alarm_list = []
 		self.conference_new_alarm_list = []
 
+		self.conference_alarm_dialog = self.session.instantiateDialog(TelekomSportConferenceAlarm)
+
 		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions', 'SetupActions'],
 		{
 			'leavePlayer' : self.leavePlayer,
@@ -348,6 +346,11 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		}, -2)
 		self.onFirstExecBegin.append(self.playStream)
 		self.onClose.append(self.stopPlayback)
+		self.onLayoutFinish.append(self.onLayoutFinished)
+
+	def onLayoutFinished(self):
+		if self.conference_alarm_available:
+			self.conference_alarm_dialog.show()
 
 	def playStream(self):
 		self.session.nav.playService(self.service)
@@ -359,24 +362,35 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 			self.session.nav.stopService()
 
 	def leavePlayer(self):
-		self.session.openWithCallback(self.leavePlayerConfirmed, MessageBox, 'Abspielen beenden?')
+		if self.conference_alarm_dialog.shown:
+			self.conference_alarm_dialog.hide()
+		else:
+			self.session.openWithCallback(self.leavePlayerConfirmed, MessageBox, 'Abspielen beenden?')
 
 	def leavePlayerOnExit(self):
 		self.leavePlayer()
 
 	def leavePlayerConfirmed(self, answer):
 		if answer:
+			self.session.deleteDialog(self.conference_alarm_dialog)
+			self.conference_alarm_dialog = None
+			# restore old 2nd infobar config value
+			config.usage.show_second_infobar.value = self.saved_show_second_infobar_value
 			self.close()
 
 	def openEventView(self):
 		if self.conference_alarm_available and not self.conference_alarm_timer.isActive():
 			self.conference_complete_alarm_list = []
 			self.conference_new_alarm_list = []
+			self.conference_alarm_dialog['logo_on'].hide()
+			self.conference_alarm_dialog['logo_off'].hide()
 			self.checkAlarmHistory(True)
 			self.conference_alarm_timer.start(20000, False)
 		elif self.conference_alarm_available and self.conference_alarm_timer.isActive():
 			self.conference_alarm_timer.stop()
-			self.session.open(TelekomSportConferenceAlarm, [], 'Konferenzalarm deaktiviert')
+			self.conference_alarm_dialog['logo_off'].show()
+			self.conference_alarm_dialog['list'].setList([])
+			self.conference_alarm_dialog.show()
 
 	def showBoxScore(self):
 		if self.boxscore_url:
@@ -430,10 +444,9 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 			if len(new_alarms_list) > 0 or showAll:
 				new_alarms_list.sort(key=lambda x: x[0], reverse=True)
 				self.conference_new_alarm_list = new_alarms_list
-				if showAll:
-					self.session.open(TelekomSportConferenceAlarm, new_alarms_list, 'Konferenzalarm aktiviert')
-				else:
-					self.session.open(TelekomSportConferenceAlarm, new_alarms_list, None)
+				self.conference_alarm_dialog['list'].setList(new_alarms_list)
+				self.conference_alarm_dialog.show()
+
 		except Exception as e:
 			print "MagentaSport error checkForNewAlarm", e
 			self.conference_alarm_timer.stop()
@@ -444,7 +457,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 
 	def showLastConfAlarm(self):
 		if self.conference_alarm_available and self.conference_alarm_timer.isActive():
-			self.session.open(TelekomSportConferenceAlarm, self.conference_new_alarm_list, None)
+			self.conference_alarm_dialog.show()
 
 	# for summary
 	def createSummary(self):

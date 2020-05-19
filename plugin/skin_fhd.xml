@@ -244,9 +244,10 @@
 		</widget>
 	</screen>
 
-	<screen name="TelekomSportConferenceAlarm" position="1500,100" size="400,940" backgroundColor="transparent" flags="wfNoBorder">
-		<widget name="status" position="0,0" size="400,40" font="Regular;32" halign="center" zPosition="1" />
-		<widget source="list" render="Listbox" position="0,40" size="400,900" scrollbarMode="showOnDemand" backgroundColor="transparent">
+	<screen name="TelekomSportConferenceAlarm" position="1500,150" size="400,750" backgroundColor="transparent" flags="wfNoBorder">
+		<widget name="logo_on" pixmap="~/ConferenceAlarmOn.png" scale="1" position="300,0" size="100,100" alphatest="blend" zPosition="1"/>
+		<widget name="logo_off" pixmap="~/ConferenceAlarmOff.png" scale="1" position="300,0" size="100,100" alphatest="blend" zPosition="1"/>
+		<widget source="list" render="Listbox" position="0,0" size="400,750" scrollbarMode="showOnDemand" backgroundColor="transparent">
 		<convert type="TemplatedMultiContent">
 			{"templates":
 				{"default": (80,[

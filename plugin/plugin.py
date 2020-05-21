@@ -29,6 +29,7 @@ import urllib2
 import json
 import base64
 import re
+from os import path
 from itertools import cycle, izip
 from datetime import datetime
 from twisted.web.client import Agent, readBody
@@ -89,6 +90,28 @@ def encode(x):
 
 def decode(x):
 	return ''.join(chr(ord(c) ^ ord(k)) for c, k in izip(base64.decodestring(x), cycle('password protection')))
+
+def readPasswords(session):
+	try:
+		with open('/etc/enigma2/MagentaSport.cfg', 'rb') as f:
+			p1 = decode(f.readline())
+			p2 = decode(f.readline())
+		return p1, p2
+	except Exception as e:
+		session.open(MessageBox, 'Error reading passwords' + str(e), MessageBox.TYPE_ERROR)
+		print "Error reading MagentaSport.cfg", e
+		return '', ''
+
+def savePasswords(session, p1, p2):
+	try:
+		with open('/etc/enigma2/MagentaSport.cfg', 'wb') as f:
+			f.write(encode(p1) + '\n')
+			f.write(encode(p2))
+		return True
+	except Exception as e:
+		session.open(MessageBox, 'Error writing passwords' + str(e), MessageBox.TYPE_ERROR)
+		print "Error writing MagentaSport.cfg", e
+		return False
 
 def loadTelekomSportJsonData(screen, statusField, buildListFunc, data):
 	try:
@@ -179,6 +202,7 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
+		self.session = session
 
 		self.list = []
 		self.config_account1_text = getConfigListEntry('1. Account', ConfigNothing())
@@ -216,8 +240,9 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 			'ok': self.save,
 			'showVirtualKeyboard': self.virtualKeyboard,
 		}, -2)
-		config.plugins.telekomsport.password1.value = decode(config.plugins.telekomsport.password1.value)
-		config.plugins.telekomsport.password2.value = decode(config.plugins.telekomsport.password2.value)
+		p1, p2 = readPasswords(session)
+		config.plugins.telekomsport.password1.value = p1
+		config.plugins.telekomsport.password2.value = p2
 		config.plugins.telekomsport.default_section_chooser.value = config.plugins.telekomsport.default_section.value
 		self.onLayoutFinish.append(self.setWindowTitle)
 
@@ -225,10 +250,11 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		self.setTitle(TelekomSportMainScreen.title + ' Einstellungen')
 
 	def save(self):
-		config.plugins.telekomsport.password1.value = encode(config.plugins.telekomsport.password1.value)
+		savePasswords(self.session, config.plugins.telekomsport.password1.value, config.plugins.telekomsport.password2.value)
+		config.plugins.telekomsport.password1.value = ''
 		config.plugins.telekomsport.token1.value = ''
 		config.plugins.telekomsport.token1_expiration_time.value = 0
-		config.plugins.telekomsport.password2.value = encode(config.plugins.telekomsport.password2.value)
+		config.plugins.telekomsport.password2.value = ''
 		config.plugins.telekomsport.token2.value = ''
 		config.plugins.telekomsport.token2_expiration_time.value = 0
 		config.plugins.telekomsport.default_section.value = config.plugins.telekomsport.default_section_chooser.value
@@ -910,12 +936,13 @@ class TelekomSportEventScreen(Screen):
 
 	def loginAllAccounts(self):
 		if config.plugins.telekomsport.username1.value:
-			err = self.login(1, config.plugins.telekomsport.username1.value, decode(config.plugins.telekomsport.password1.value), config.plugins.telekomsport.token1, config.plugins.telekomsport.token1_expiration_time)
+			p1, p2 = readPasswords(self.session)
+			err = self.login(1, config.plugins.telekomsport.username1.value, p1, config.plugins.telekomsport.token1, config.plugins.telekomsport.token1_expiration_time)
 			if err:
 				return err
 			else:
 				if config.plugins.telekomsport.username2.value:
-					err = self.login(2, config.plugins.telekomsport.username2.value, decode(config.plugins.telekomsport.password2.value), config.plugins.telekomsport.token2, config.plugins.telekomsport.token2_expiration_time)
+					err = self.login(2, config.plugins.telekomsport.username2.value, p2, config.plugins.telekomsport.token2, config.plugins.telekomsport.token2_expiration_time)
 				return err
 		return 'Account bitte in den Einstellungen hinterlegen.'
 
@@ -1332,6 +1359,12 @@ class TelekomSportMainScreen(Screen):
 		})
 		downloadTelekomSportJson(self.base_url + self.main_page, boundFunction(loadTelekomSportJsonData, 'Main', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'Main', self['status']))
 		self.onLayoutFinish.append(self.checkForUpdate)
+		self.migrate_timer = eTimer()
+		if telekomsport_isDreamOS:
+			self.migrate_timer_conn = self.migrate_timer.timeout.connect(self.checkNewPasswordFileIsUsed)
+		else:
+			self.migrate_timer.callback.append(self.checkNewPasswordFileIsUsed)
+		self.migrate_timer.start(200, True)
 
 	def buildList(self, jsonData):
 		default_section_choicelist = [('', 'Default')]
@@ -1463,6 +1496,16 @@ class TelekomSportMainScreen(Screen):
 	def restartE2(self, answer):
 		if answer:
 			self.session.open(TryQuitMainloop, 3)
+
+	def checkNewPasswordFileIsUsed(self):
+		if not path.isfile('/etc/enigma2/MagentaSport.cfg'):
+			print 'Migrating passwords'
+			if savePasswords(self.session, decode(config.plugins.telekomsport.password1.value), decode(config.plugins.telekomsport.password2.value)):
+				config.plugins.telekomsport.password1.value = ''
+				config.plugins.telekomsport.password1.save()
+				config.plugins.telekomsport.password2.value = ''
+				config.plugins.telekomsport.password2.save()
+
 
 
 def main(session, **kwargs):

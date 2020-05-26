@@ -1322,7 +1322,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.7.2'
+	version = 'v2.8.0'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

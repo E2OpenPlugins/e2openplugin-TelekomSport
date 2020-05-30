@@ -314,6 +314,7 @@ class TelekomSportConferenceAlarm(Screen):
 
 	def hide_screen(self):
 		self.hide()
+		self.shown = False
 
 
 class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport):
@@ -359,7 +360,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		self.conference_new_alarm_list = []
 
 		self.conference_alarm_dialog = self.session.instantiateDialog(TelekomSportConferenceAlarm)
-		self.conference_alarm_dialog.hide()
+		self.conference_alarm_dialog.hide_screen()
 
 		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions', 'SetupActions'],
 		{
@@ -391,7 +392,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 
 	def leavePlayer(self):
 		if self.conference_alarm_dialog.shown:
-			self.conference_alarm_dialog.hide()
+			self.conference_alarm_dialog.hide_screen()
 		else:
 			self.session.openWithCallback(self.leavePlayerConfirmed, MessageBox, 'Abspielen beenden?')
 
@@ -1325,7 +1326,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.8.1'
+	version = 'v2.8.2'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

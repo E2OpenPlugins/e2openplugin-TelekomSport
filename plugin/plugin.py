@@ -335,8 +335,9 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		InfoBarServiceErrorPopupSupport.__init__(self)
 
 		# disable 2nd infobar as it calls openEventView
-		self.saved_show_second_infobar_value = config.usage.show_second_infobar.value
-		config.usage.show_second_infobar.value = '0'
+		if hasattr(config.usage,"show_second_infobar"):
+			self.saved_show_second_infobar_value = config.usage.show_second_infobar.value
+			config.usage.show_second_infobar.value = '0'
 
 		self.service = service
 		self.lastservice = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -358,6 +359,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		self.conference_new_alarm_list = []
 
 		self.conference_alarm_dialog = self.session.instantiateDialog(TelekomSportConferenceAlarm)
+		self.conference_alarm_dialog.hide()
 
 		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions', 'SetupActions'],
 		{
@@ -401,7 +403,8 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 			self.session.deleteDialog(self.conference_alarm_dialog)
 			self.conference_alarm_dialog = None
 			# restore old 2nd infobar config value
-			config.usage.show_second_infobar.value = self.saved_show_second_infobar_value
+			if hasattr(config.usage,"show_second_infobar"):
+				config.usage.show_second_infobar.value = self.saved_show_second_infobar_value
 			self.close()
 
 	def openEventView(self):
@@ -1322,7 +1325,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.8.0'
+	version = 'v2.8.1'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

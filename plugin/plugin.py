@@ -188,6 +188,7 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 					<widget name="buttonred" position="10,395" size="120,35" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
 					<widget name="buttongreen" position="155,395" size="120,35" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
 					<widget name="buttonblue" position="300,395" size="135,35" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;20"/>
+					<widget name="HelpWindow" position="0,0" size="1,1" zPosition="1" transparent="1" alphatest="on"/>
 				</screen>'''
 	else:
 		if not telekomsport_isDreamOS:
@@ -198,6 +199,7 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 					<widget name="buttonred" position="15,640" size="180,50" backgroundColor="red" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
 					<widget name="buttongreen" position="225,640" size="180,50" backgroundColor="green" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
 					<widget name="buttonblue" position="435,640" size="215,50" backgroundColor="blue" valign="center" halign="center" zPosition="2"  foregroundColor="white" font="Regular;32"/>
+					<widget name="HelpWindow" position="0,0" size="1,1" zPosition="1" transparent="1" alphatest="on"/>
 				</screen>'''
 
 	def __init__(self, session):
@@ -226,7 +228,7 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		self.config_stream_quality = getConfigListEntry('Stream Qualität', config.plugins.telekomsport.stream_quality)
 		self.list.append(self.config_stream_quality)
 
-		ConfigListScreen.__init__(self, self.list)
+		ConfigListScreen.__init__(self, self.list, session)
 		self['buttonred'] = Label(_('Cancel'))
 		self['buttongreen'] = Label(_('Ok'))
 		self['buttonblue'] = Label('virt. Tastatur')
@@ -244,6 +246,10 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		config.plugins.telekomsport.password1.value = p1
 		config.plugins.telekomsport.password2.value = p2
 		config.plugins.telekomsport.default_section_chooser.value = config.plugins.telekomsport.default_section.value
+
+		self["HelpWindow"] = Pixmap()
+		self["HelpWindow"].hide()
+
 		self.onLayoutFinish.append(self.setWindowTitle)
 
 	def setWindowTitle(self):
@@ -1326,7 +1332,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.8.2'
+	version = 'v2.8.3'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

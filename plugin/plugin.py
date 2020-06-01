@@ -83,6 +83,7 @@ config.plugins.telekomsport.default_section_chooser = NoSave(ConfigSelection([],
 # Some images like DreamOS need streams with fix quality
 config.plugins.telekomsport.fix_stream_quality = ConfigYesNo(default = telekomsport_isDreamOS)
 config.plugins.telekomsport.stream_quality = ConfigSelection(default = "2", choices = [("0", _("sehr gering")), ("1", _("gering")), ("2", _("mittel")), ("3", _("hoch")), ("4", _("sehr hoch"))])
+config.plugins.telekomsport.conf_alarm_duration = ConfigSelection(default = "8000", choices = [("4000", "4 Sekunden"), ("6000", "6 Sekunden"), ("8000", "8 Sekunden"), ("10000", "10 Sekunden"), ("12000", "12 Sekunden")])
 
 
 def encode(x):
@@ -227,6 +228,8 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 		self.list.append(self.config_fix_stream_quality)
 		self.config_stream_quality = getConfigListEntry('Stream Qualität', config.plugins.telekomsport.stream_quality)
 		self.list.append(self.config_stream_quality)
+		self.config_conf_alarm_duration = getConfigListEntry('Anzeigedauer Konferenzalarm', config.plugins.telekomsport.conf_alarm_duration)
+		self.list.append(self.config_conf_alarm_duration)
 
 		ConfigListScreen.__init__(self, self.list, session)
 		self['buttonred'] = Label(_('Cancel'))
@@ -312,7 +315,7 @@ class TelekomSportConferenceAlarm(Screen):
 	def startTimer(self):
 		if self.close_timer.isActive():
 			self.close_timer.stop()
-		self.close_timer.start(8000, True)
+		self.close_timer.start(int(config.plugins.telekomsport.conf_alarm_duration.value), True)
 
 	def stopTimer(self):
 		if self.close_timer.isActive():
@@ -1332,7 +1335,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.8.3'
+	version = 'v2.8.4'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

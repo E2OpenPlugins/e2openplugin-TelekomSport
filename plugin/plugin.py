@@ -366,7 +366,6 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		else:
 			self.conference_alarm_timer.callback.append(self.checkAlarmHistory)
 		self.conference_complete_alarm_list = []
-		self.conference_new_alarm_list = []
 
 		self.conference_alarm_dialog = self.session.instantiateDialog(TelekomSportConferenceAlarm)
 		self.conference_alarm_dialog.hide_screen()
@@ -420,7 +419,6 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 	def openEventView(self):
 		if self.conference_alarm_available and not self.conference_alarm_timer.isActive():
 			self.conference_complete_alarm_list = []
-			self.conference_new_alarm_list = []
 			self.conference_alarm_dialog['logo_on'].hide()
 			self.conference_alarm_dialog['logo_off'].hide()
 			self.checkAlarmHistory(True)
@@ -482,7 +480,6 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 						self.conference_complete_alarm_list = complete_list
 			if len(new_alarms_list) > 0 or showAll:
 				new_alarms_list.sort(key=lambda x: x[0], reverse=True)
-				self.conference_new_alarm_list = new_alarms_list
 				self.conference_alarm_dialog['list'].setList(new_alarms_list)
 				self.conference_alarm_dialog.show()
 

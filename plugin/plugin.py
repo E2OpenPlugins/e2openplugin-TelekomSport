@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 from skin import loadSkin
 from Plugins.Plugin import PluginDescriptor
@@ -100,7 +101,7 @@ def readPasswords(session):
 		return p1, p2
 	except Exception as e:
 		session.open(MessageBox, 'Error reading passwords' + str(e), MessageBox.TYPE_ERROR)
-		print "Error reading MagentaSport.cfg", e
+		print("Error reading MagentaSport.cfg", e)
 		return '', ''
 
 def savePasswords(session, p1, p2):
@@ -111,7 +112,7 @@ def savePasswords(session, p1, p2):
 		return True
 	except Exception as e:
 		session.open(MessageBox, 'Error writing passwords' + str(e), MessageBox.TYPE_ERROR)
-		print "Error writing MagentaSport.cfg", e
+		print("Error writing MagentaSport.cfg", e)
 		return False
 
 def loadTelekomSportJsonData(screen, statusField, buildListFunc, data):
@@ -484,11 +485,11 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 				self.conference_alarm_dialog.show()
 
 		except Exception as e:
-			print "MagentaSport error checkForNewAlarm", e
+			print("MagentaSport error checkForNewAlarm", e)
 			self.conference_alarm_timer.stop()
 
 	def checkAlarmHistoryError(self, err):
-		print "MagentaSport checkAlarmHistoryError", err
+		print("MagentaSport checkAlarmHistoryError", err)
 		self.conference_alarm_timer.stop()
 
 	def showLastConfAlarm(self):
@@ -1000,8 +1001,8 @@ class TelekomSportEventScreen(Screen):
 					i += 1
 				if streams:
 					streams.sort(key = lambda x : x[0])
-					if len(streams) <> 5:
-						print 'Warning: %d streams in m3u8. 5 expected' % len(streams)
+					if len(streams) != 5:
+						print('Warning: %d streams in m3u8. 5 expected' % len(streams))
 						if int(config.plugins.telekomsport.stream_quality.value) < 3:
 							return streams[0][1]
 						else:
@@ -1181,7 +1182,7 @@ class TelekomSportEventLaneScreen(Screen):
 					urlpart = events['target'].encode('utf8')
 					if subdescription:
 						description = description + ' - ' + subdescription
-					if 'home' in events['metadata']['details'] and events['metadata']['details']['home']['name_full'].encode('utf8') <> '':
+					if 'home' in events['metadata']['details'] and events['metadata']['details']['home']['name_full'].encode('utf8') != '':
 						home = events['metadata']['details']['home']['name_full'].encode('utf8')
 						away = events['metadata']['details']['away']['name_full'].encode('utf8')
 						self.eventList.append((description, starttime_str, home + ' - ' + away, urlpart, starttime))
@@ -1509,7 +1510,7 @@ class TelekomSportMainScreen(Screen):
 
 	def checkNewPasswordFileIsUsed(self):
 		if not path.isfile('/etc/enigma2/MagentaSport.cfg'):
-			print 'Migrating passwords'
+			print('Migrating passwords')
 			if savePasswords(self.session, decode(config.plugins.telekomsport.password1.value), decode(config.plugins.telekomsport.password2.value)):
 				config.plugins.telekomsport.password1.value = ''
 				config.plugins.telekomsport.password1.save()

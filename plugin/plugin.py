@@ -32,7 +32,7 @@ import json
 import base64
 import re
 from os import path
-from itertools import cycle, izip
+from itertools import cycle
 from datetime import datetime
 from twisted.web.client import Agent, readBody
 from twisted.internet import reactor
@@ -89,10 +89,10 @@ config.plugins.telekomsport.conf_alarm_duration = ConfigSelection(default = "800
 
 
 def encode(x):
-	return base64.encodestring(''.join(chr(ord(c) ^ ord(k)) for c, k in izip(x, cycle('password protection')))).strip()
+	return base64.encodestring(''.join(chr(ord(c) ^ ord(k)) for c, k in zip(x, cycle('password protection')))).strip()
 
 def decode(x):
-	return ''.join(chr(ord(c) ^ ord(k)) for c, k in izip(base64.decodestring(x), cycle('password protection')))
+	return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(base64.decodestring(x), cycle('password protection')))
 
 def readPasswords(session):
 	try:

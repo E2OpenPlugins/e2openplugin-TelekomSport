@@ -876,8 +876,8 @@ class TelekomSportStandingsScreen(Screen):
 class TelekomSportEventScreen(Screen):
 
 	oauth_url = b'https://accounts.login.idm.telekom.com/oauth2/tokens'
-	jwt_url = b'https://www.telekomsport.de/service/auth/app/login/jwt'
-	stream_access_url = b'https://www.telekomsport.de/service/player/streamAccess'
+	jwt_url = 'https://www.telekomsport.de/service/auth/app/login/jwt'
+	stream_access_url = 'https://www.telekomsport.de/service/player/streamAccess'
 
 	def __init__(self, session, description, starttime, match, url, standings_url, schedule_url):
 		Screen.__init__(self, session)
@@ -1441,7 +1441,7 @@ class TelekomSportMainScreen(Screen):
 
 	# for update
 	def checkForUpdate(self):
-		url = b'https://api.github.com/repos/E2OpenPlugins/e2openplugin-TelekomSport/releases'
+		url = 'https://api.github.com/repos/E2OpenPlugins/e2openplugin-TelekomSport/releases'
 		header = { 'Accept' : 'application/vnd.github.v3+json' }
 		req = Request(url, None, header)
 		self.update_exist = False

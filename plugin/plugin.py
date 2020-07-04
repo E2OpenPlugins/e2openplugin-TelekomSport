@@ -158,7 +158,7 @@ def downloadTelekomSportJson(url, callback, errorCallback):
 
 		contextFactory = WebClientContextFactory()
 		agent = Agent(reactor, contextFactory)
-	d = agent.request('GET', url, Headers({'user-agent': ['Twisted']}))
+	d = agent.request(b'GET', url, Headers({'user-agent': ['Twisted']}))
 	d.addCallback(boundFunction(handleTelekomSportWebsiteResponse, callback))
 	d.addErrback(errorCallback)
 
@@ -330,7 +330,7 @@ class TelekomSportConferenceAlarm(Screen):
 
 class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, InfoBarNotifications, InfoBarServiceNotifications, InfoBarShowHide, InfoBarSimpleEventView, InfoBarServiceErrorPopupSupport):
 
-	conference_alarm_url = 'https://www.magentasport.de/api/v2/player/alert/history'
+	conference_alarm_url = b'https://www.magentasport.de/api/v2/player/alert/history'
 
 	def __init__(self, session, service, standings_url, schedule_url, statistics_url, boxscore_url, conference_alarm_available, league_id, video_id):
 		Screen.__init__(self, session)
@@ -875,9 +875,9 @@ class TelekomSportStandingsScreen(Screen):
 
 class TelekomSportEventScreen(Screen):
 
-	oauth_url = 'https://accounts.login.idm.telekom.com/oauth2/tokens'
-	jwt_url = 'https://www.telekomsport.de/service/auth/app/login/jwt'
-	stream_access_url = 'https://www.telekomsport.de/service/player/streamAccess'
+	oauth_url = b'https://accounts.login.idm.telekom.com/oauth2/tokens'
+	jwt_url = b'https://www.telekomsport.de/service/auth/app/login/jwt'
+	stream_access_url = b'https://www.telekomsport.de/service/player/streamAccess'
 
 	def __init__(self, session, description, starttime, match, url, standings_url, schedule_url):
 		Screen.__init__(self, session)
@@ -967,7 +967,7 @@ class TelekomSportEventScreen(Screen):
 				self['status'].show()
 				return '', -1
 
-			url = 'https:' + jsonResult['data']['stream-access'][0]
+			url = b'https:' + jsonResult['data']['stream-access'][0]
 			response = urlopen(url).read()
 			xmlroot = ET.ElementTree(ET.fromstring(response))
 			playlisturl = xmlroot.find('token').get('url') + "?hdnea=" + xmlroot.find('token').get('auth')
@@ -1336,8 +1336,8 @@ class TelekomSportMainScreen(Screen):
 
 	version = 'v2.8.4'
 
-	base_url = 'https://www.magentasport.de/api/v2/mobile'
-	main_page = '/navigation'
+	base_url = b'https://www.magentasport.de/api/v2/mobile'
+	main_page = b'/navigation'
 	title = 'Magenta Sport'
 
 	def __init__(self, session, args = None):
@@ -1441,7 +1441,7 @@ class TelekomSportMainScreen(Screen):
 
 	# for update
 	def checkForUpdate(self):
-		url = 'https://api.github.com/repos/E2OpenPlugins/e2openplugin-TelekomSport/releases'
+		url = b'https://api.github.com/repos/E2OpenPlugins/e2openplugin-TelekomSport/releases'
 		header = { 'Accept' : 'application/vnd.github.v3+json' }
 		req = Request(url, None, header)
 		self.update_exist = False

@@ -875,7 +875,7 @@ class TelekomSportStandingsScreen(Screen):
 
 class TelekomSportEventScreen(Screen):
 
-	oauth_url = b'https://accounts.login.idm.telekom.com/oauth2/tokens'
+	oauth_url = 'https://accounts.login.idm.telekom.com/oauth2/tokens'
 	jwt_url = 'https://www.telekomsport.de/service/auth/app/login/jwt'
 	stream_access_url = 'https://www.telekomsport.de/service/player/streamAccess'
 
@@ -925,7 +925,7 @@ class TelekomSportEventScreen(Screen):
 		data = { "claims": "{'id_token':{'urn:telekom.com:all':null}}", "client_id": "10LIVESAM30000004901TSMAPP00000000000000", "grant_type": "password", "scope": "tsm offline_access", "username": username, "password": password }
 
 		try:
-			response = urlopen(self.oauth_url + '?' + urlencode(data), '').read()
+			response = urlopen(self.oauth_url + '?' + urlencode(data), b'').read()
 			jsonData = json.loads(response)
 			if 'access_token' not in jsonData:
 				if 'error_description' in jsonData:
@@ -933,7 +933,7 @@ class TelekomSportEventScreen(Screen):
 				else:
 					return 'Fehler beim Login ' + str(account) + '. Account. Kein access_token.'
 
-			response = urlopen(Request(self.jwt_url, json.dumps({'token': jsonData['access_token']}), {'Content-Type': 'application/json'})).read()
+			response = urlopen(Request(self.jwt_url, json.dumps({'token': jsonData['access_token']}).encode('utf8'), {'Content-Type': 'application/json'})).read()
 			jsonResult = json.loads(response)
 			if 'data' not in jsonResult or 'token' not in jsonResult['data']:
 				return 'Fehler beim Login ' + str(account) + '. Account. Kein Token.'
@@ -960,14 +960,14 @@ class TelekomSportEventScreen(Screen):
 
 	def getStreamUrl(self, videoid, token):
 		try:
-			response = urlopen(Request(self.stream_access_url, json.dumps({'videoId': videoid}), {'xauthorization': token, 'Content-Type': 'application/json'}, {'label': '2780_hls'})).read()
+			response = urlopen(Request(self.stream_access_url, json.dumps({'videoId': videoid}).encode('utf8'), {'xauthorization': token, 'Content-Type': 'application/json'}, {'label': '2780_hls'})).read()
 			jsonResult = json.loads(response)
 			if 'status' not in jsonResult or jsonResult['status'] != 'success':
 				self['status'].setText('Fehler beim streamAccess')
 				self['status'].show()
 				return '', -1
 
-			url = b'https:' + jsonResult['data']['stream-access'][0]
+			url = 'https:' + jsonResult['data']['stream-access'][0]
 			response = urlopen(url).read()
 			xmlroot = ET.ElementTree(ET.fromstring(response))
 			playlisturl = xmlroot.find('token').get('url') + "?hdnea=" + xmlroot.find('token').get('auth')

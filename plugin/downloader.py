@@ -11,7 +11,7 @@ class TelekomSportHTTPProgressDownloader(client.HTTPDownloader):
 		self.deferred = defer.Deferred()
 
 	def noPage(self, reason):
-		if self.status == "304":
+		if self.status == b"304":
 			client.HTTPDownloader.page(self, "")
 		else:
 			client.HTTPDownloader.noPage(self, reason)
@@ -19,7 +19,7 @@ class TelekomSportHTTPProgressDownloader(client.HTTPDownloader):
 			self.error_callback(reason.getErrorMessage(), self.status)
 
 	def gotHeaders(self, headers):
-		if self.status == "200":
+		if self.status == b"200":
 			if "content-length" in headers:
 				self.totalbytes = int(headers["content-length"][0])
 			else:
@@ -28,7 +28,7 @@ class TelekomSportHTTPProgressDownloader(client.HTTPDownloader):
 		return client.HTTPDownloader.gotHeaders(self, headers)
 
 	def pagePart(self, packet):
-		if self.status == "200":
+		if self.status == b"200":
 			self.currentbytes += len(packet)
 		if self.totalbytes and self.progress_callback:
 			self.progress_callback(self.currentbytes, self.totalbytes)

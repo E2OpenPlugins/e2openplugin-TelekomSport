@@ -25,8 +25,9 @@ from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceRefe
 
 import xml.etree.ElementTree as ET
 import time
-import urllib
-import urllib2
+from urllib.request import urlopen, Request
+from urllib.parse import urlencode
+from urllib.error import HTTPError, URLError
 import json
 import base64
 import re
@@ -924,7 +925,7 @@ class TelekomSportEventScreen(Screen):
 		data = { "claims": "{'id_token':{'urn:telekom.com:all':null}}", "client_id": "10LIVESAM30000004901TSMAPP00000000000000", "grant_type": "password", "scope": "tsm offline_access", "username": username, "password": password }
 
 		try:
-			response = urllib.urlopen(self.oauth_url + '?' + urllib.urlencode(data), '').read()
+			response = urlopen(self.oauth_url + '?' + urlencode(data), '').read()
 			jsonData = json.loads(response)
 			if 'access_token' not in jsonData:
 				if 'error_description' in jsonData:
@@ -932,7 +933,7 @@ class TelekomSportEventScreen(Screen):
 				else:
 					return 'Fehler beim Login ' + str(account) + '. Account. Kein access_token.'
 
-			response = urllib2.urlopen(urllib2.Request(self.jwt_url, json.dumps({'token': jsonData['access_token']}), {'Content-Type': 'application/json'})).read()
+			response = urlopen(Request(self.jwt_url, json.dumps({'token': jsonData['access_token']}), {'Content-Type': 'application/json'})).read()
 			jsonResult = json.loads(response)
 			if 'data' not in jsonResult or 'token' not in jsonResult['data']:
 				return 'Fehler beim Login ' + str(account) + '. Account. Kein Token.'
@@ -959,7 +960,7 @@ class TelekomSportEventScreen(Screen):
 
 	def getStreamUrl(self, videoid, token):
 		try:
-			response = urllib2.urlopen(urllib2.Request(self.stream_access_url, json.dumps({'videoId': videoid}), {'xauthorization': token, 'Content-Type': 'application/json'}, {'label': '2780_hls'})).read()
+			response = urlopen(Request(self.stream_access_url, json.dumps({'videoId': videoid}), {'xauthorization': token, 'Content-Type': 'application/json'}, {'label': '2780_hls'})).read()
 			jsonResult = json.loads(response)
 			if 'status' not in jsonResult or jsonResult['status'] != 'success':
 				self['status'].setText('Fehler beim streamAccess')
@@ -967,13 +968,13 @@ class TelekomSportEventScreen(Screen):
 				return '', -1
 
 			url = 'https:' + jsonResult['data']['stream-access'][0]
-			response = urllib.urlopen(url).read()
+			response = urlopen(url).read()
 			xmlroot = ET.ElementTree(ET.fromstring(response))
 			playlisturl = xmlroot.find('token').get('url') + "?hdnea=" + xmlroot.find('token').get('auth')
 			return playlisturl, 0
-		except urllib2.HTTPError as e:
+		except HTTPError as e:
 			return '', e.code
-		except urllib2.URLError as e2:
+		except URLError as e2:
 			if 'CERTIFICATE_VERIFY_FAILED' in str(e2.reason):
 				return '', -2
 			return '', -1
@@ -989,7 +990,7 @@ class TelekomSportEventScreen(Screen):
 		try:
 			attributeListPattern = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
 			streams = []
-			lines = urllib2.urlopen(m3u8_url).readlines()
+			lines = urlopen(m3u8_url).readlines()
 			if len(lines) > 0 and lines[0] == '#EXTM3U\n':
 				i = 1
 				count_lines = len(lines)
@@ -1442,10 +1443,10 @@ class TelekomSportMainScreen(Screen):
 	def checkForUpdate(self):
 		url = 'https://api.github.com/repos/E2OpenPlugins/e2openplugin-TelekomSport/releases'
 		header = { 'Accept' : 'application/vnd.github.v3+json' }
-		req = urllib2.Request(url, None, header)
+		req = Request(url, None, header)
 		self.update_exist = False
 		try:
-			response = urllib2.urlopen(req)
+			response = urlopen(req)
 			jsonData = json.loads(response.read())
 
 			for rel in jsonData:

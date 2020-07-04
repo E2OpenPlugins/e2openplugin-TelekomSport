@@ -2,7 +2,7 @@
 
 from twisted.web import client
 from twisted.internet import reactor, defer
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 class TelekomSportHTTPProgressDownloader(client.HTTPDownloader):
 	def __init__(self, url, outfile, headers=None):

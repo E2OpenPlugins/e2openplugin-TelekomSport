@@ -459,15 +459,15 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 			complete_list = []
 			if 'leagues' in jsonData['data']:
 				for league in jsonData['data']['leagues']:
-					if self.league_id == league.encode('utf8'):
+					if self.league_id == league:
 						leagueEvents = jsonData['data']['leagues'][league]
 						for ev in leagueEvents['events']:
-							title = leagueEvents['events'][ev]['title'].encode('utf8')
-							text = leagueEvents['events'][ev]['text'].encode('utf8')
+							title = leagueEvents['events'][ev]['title']
+							text = leagueEvents['events'][ev]['text']
 							if leagueEvents['events'][ev]['imageRightAlt']:
-								match = leagueEvents['events'][ev]['imageLeftAlt'].encode('utf8') + ' : ' + leagueEvents['events'][ev]['imageRightAlt'].encode('utf8')
+								match = leagueEvents['events'][ev]['imageLeftAlt'] + ' : ' + leagueEvents['events'][ev]['imageRightAlt']
 							else:
-								match = leagueEvents['events'][ev]['imageLeftAlt'].encode('utf8')
+								match = leagueEvents['events'][ev]['imageLeftAlt']
 							eventid = leagueEvents['events'][ev]['eventid']
 							videoid = leagueEvents['events'][ev]['videoid']
 							# don't show events from current stream to avoid showing events before they are visible in the stream (playback may be behind live point)
@@ -534,15 +534,15 @@ class TelekomSportBoxScoreScreen(Screen):
 			return
 
 		try:
-			home = jsonData['data']['data']['teams']['home']['name'].encode('utf8')
-			away = jsonData['data']['data']['teams']['away']['name'].encode('utf8')
-			result_home = str(jsonData['data']['data']['results']['home']).encode('utf8')
-			result_away = str(jsonData['data']['data']['results']['away']).encode('utf8')
+			home = jsonData['data']['data']['teams']['home']['name']
+			away = jsonData['data']['data']['teams']['away']['name']
+			result_home = str(jsonData['data']['data']['results']['home'])
+			result_away = str(jsonData['data']['data']['results']['away'])
 			self['match_home'].setText(home)
 			self['match_away'].setText(away)
 			self['endResult'].setText(result_home + ' : ' + result_away)
 			for period in jsonData['data']['data']['results']['periods']:
-				self.resultList.append((period['name'].encode('utf8') + '  ' + period['value'].encode('utf8'), ''))
+				self.resultList.append((period['name'] + '  ' + period['value'], ''))
 		except Exception as e:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportBoxScoreScreen BoxScore ' + str(e))
 			return
@@ -590,9 +590,9 @@ class TelekomSportStatisticsScreen(Screen):
 
 		try:
 			for ev in jsonData['data']:
-				self['match'].setText(jsonData['data'][ev]['name'].encode('utf8'))
+				self['match'].setText(jsonData['data'][ev]['name'])
 				for stat in jsonData['data'][ev]['statistics']:
-					stat_name = stat['name'].encode('utf8')
+					stat_name = stat['name']
 					if stat['data']['type'] == 'ratio':
 						home_prop = stat['data']['home']['proportion']
 						home_total = stat['data']['home']['total']
@@ -619,8 +619,8 @@ class TelekomSportStatisticsScreen(Screen):
 							percent = 50
 						else:
 							percent = int(float(home_value) / (home_value + away_value) * 100)
-						home_value_str = str(home_value).encode('utf8')
-						away_value_str = str(away_value).encode('utf8')
+						home_value_str = str(home_value)
+						away_value_str = str(away_value)
 					else:
 						continue
 					self.statList.append((home_value_str, stat_name, away_value_str, percent))
@@ -667,25 +667,25 @@ class TelekomSportScheduleScreen(Screen):
 
 	def loadSchedule(self, jsonData):
 		try:
-			self['title'].setText(jsonData['data']['metadata']['parent_title'].encode('utf8'))
+			self['title'].setText(jsonData['data']['metadata']['parent_title'])
 			for c in jsonData['data']['content']:
 				for g in c['group_elements']:
 					for d in g['data']['days']:
 						for ev in d['events']:
 							if ev['type'] in ('skyConferenceEvent', 'conferenceEvent'):
 								continue
-							description = ev['metadata']['description_bold'].encode('utf8')
-							sub_description = ev['metadata']['description_regular'].encode('utf8')
+							description = ev['metadata']['description_bold']
+							sub_description = ev['metadata']['description_regular']
 							if sub_description:
 								description = description + ' - ' + sub_description
 							original = ev['metadata']['scheduled_start']['original']
 							starttime = datetime.strptime(original, '%Y-%m-%d %H:%M:%S')
 							starttime_str = starttime.strftime('%d.%m.%Y %H:%M')
-							home_team = ev['metadata']['details']['home']['name_full'].encode('utf8')
-							away_team = ev['metadata']['details']['away']['name_full'].encode('utf8')
+							home_team = ev['metadata']['details']['home']['name_full']
+							away_team = ev['metadata']['details']['away']['name_full']
 							if 'result' in ev['metadata']['details']['encounter']:
-								home_goals = str(ev['metadata']['details']['encounter']['result']['home']).encode('utf8')
-								away_goals = str(ev['metadata']['details']['encounter']['result']['away']).encode('utf8')
+								home_goals = str(ev['metadata']['details']['encounter']['result']['home'])
+								away_goals = str(ev['metadata']['details']['encounter']['result']['away'])
 							else:
 								home_goals = ' '
 								away_goals = ' '
@@ -797,7 +797,7 @@ class TelekomSportStandingsScreen(Screen):
 		try:
 			for team in jsonData['data']['standing'][0]['ranking']:
 				rank = team['rank']
-				team_title = team['team_title'].encode('utf8')
+				team_title = team['team_title']
 				played = str(team['played'])
 				win = str(team['win'])
 				draw = str(team['draw'])
@@ -817,17 +817,17 @@ class TelekomSportStandingsScreen(Screen):
 	def loadPlayoffStandings(self, jsonData):
 		try:
 			if 'title' in jsonData['data']:
-				title = jsonData['data']['title'].encode('utf8')
+				title = jsonData['data']['title']
 			else:
 				title = ''
 			for round in jsonData['data']['rounds']:
-				subtitle = round['title'].encode('utf8')
+				subtitle = round['title']
 				for enc in round['encounters']:
 					if not enc:
 						continue
-					home_team = enc['home']['title_mini'].encode('utf8')
+					home_team = enc['home']['title_mini']
 					home_wins = str(enc['home']['wins'])
-					away_team = enc['away']['title_mini'].encode('utf8')
+					away_team = enc['away']['title_mini']
 					away_wins = str(enc['away']['wins'])
 					if home_wins == 'None':
 						home_wins = ' '
@@ -844,7 +844,7 @@ class TelekomSportStandingsScreen(Screen):
 		self.normal_standings_url = ''
 		self.playoff_standings_url = ''
 		try:
-			self['title'].setText(jsonData['data']['metadata']['parent_title'].encode('utf8'))
+			self['title'].setText(jsonData['data']['metadata']['parent_title'])
 			for c in jsonData['data']['content']:
 				for g in c['group_elements']:
 					if g['type'] == 'standings':
@@ -929,7 +929,7 @@ class TelekomSportEventScreen(Screen):
 			jsonData = json.loads(response)
 			if 'access_token' not in jsonData:
 				if 'error_description' in jsonData:
-					return jsonData['error_description'].encode('utf8')
+					return jsonData['error_description']
 				else:
 					return 'Fehler beim Login ' + str(account) + '. Account. Kein access_token.'
 
@@ -1071,10 +1071,10 @@ class TelekomSportEventScreen(Screen):
 						if element['type'] == 'eventVideos':	# remove all previous player videolist entries. This is needed for Bayern.TV
 							self.videoList = []
 						for videos in element['data']:
-							title = videos['title'].encode('utf8')
+							title = videos['title']
 							if videos['pay']:
 								title += ' *'
-							self.videoList.append((title, self.match + ' - ' + videos['title'].encode('utf8'), str(videos['videoID']), str(videos['pay'])))
+							self.videoList.append((title, self.match + ' - ' + videos['title'], str(videos['videoID']), str(videos['pay'])))
 					elif element['type'] == 'statistics':
 						self.statistics_url = element['data']['url'].encode('utf8')
 					elif element['type'] == 'boxScore':
@@ -1095,7 +1095,7 @@ class TelekomSportEventScreen(Screen):
 						title = 'Live Stream'
 						if element['data'][0]['pay']:
 							title += ' *'
-						self.videoList.append((title, element['data'][0]['title'].encode('utf8'), str(element['data'][0]['videoID']), str(element['data'][0]['pay'])))
+						self.videoList.append((title, element['data'][0]['title'], str(element['data'][0]['videoID']), str(element['data'][0]['pay'])))
 					elif element['type'] == 'statistics':
 						self.statistics_url = element['data']['url'].encode('utf8')
 					elif element['type'] == 'boxScore':
@@ -1175,20 +1175,20 @@ class TelekomSportEventLaneScreen(Screen):
 		try:
 			for events in jsonData['data']['data']:
 				if events['target_type'] and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
-					description = events['metadata']['description_bold'].encode('utf8')
-					subdescription = events['metadata']['description_regular'].encode('utf8')
-					original = events['metadata']['scheduled_start']['original'].encode('utf8')
+					description = events['metadata']['description_bold']
+					subdescription = events['metadata']['description_regular']
+					original = events['metadata']['scheduled_start']['original']
 					starttime = datetime.strptime(original, '%Y-%m-%d %H:%M:%S')
 					starttime_str = starttime.strftime('%d.%m.%Y %H:%M')
 					urlpart = events['target'].encode('utf8')
 					if subdescription:
 						description = description + ' - ' + subdescription
-					if 'home' in events['metadata']['details'] and events['metadata']['details']['home']['name_full'].encode('utf8') != '':
-						home = events['metadata']['details']['home']['name_full'].encode('utf8')
-						away = events['metadata']['details']['away']['name_full'].encode('utf8')
+					if 'home' in events['metadata']['details'] and events['metadata']['details']['home']['name_full'] != '':
+						home = events['metadata']['details']['home']['name_full']
+						away = events['metadata']['details']['away']['name_full']
 						self.eventList.append((description, starttime_str, home + ' - ' + away, urlpart, starttime))
 					else:
-						title = events['metadata']['title'].encode('utf8')
+						title = events['metadata']['title']
 						self.eventList.append((description, starttime_str, title, urlpart, starttime))
 		except Exception as e:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportEventLaneScreen ' + str(e))
@@ -1276,10 +1276,10 @@ class TelekomSportSportsTypeScreen(Screen):
 			title = ''
 			for content in jsonData['data']['content']:
 				if content['title'] and content['title'] != '':
-					title = content['title'].encode('utf8')
+					title = content['title']
 				for group_element in content['group_elements']:
 					if group_element['type'] == 'eventLane' or group_element['type'] == 'editorialLane':
-						subtitle = group_element['title'].encode('utf8')
+						subtitle = group_element['title']
 						urlpart = group_element['data_url'].encode('utf8')
 						if content['title'] != '' and subtitle == '':
 							self.eventLaneList.append((title, subtitle, title, urlpart))
@@ -1383,12 +1383,12 @@ class TelekomSportMainScreen(Screen):
 
 		try:
 			for sports in jsonData['data']['filter']:
-				title = sports['title'].encode('utf8')
+				title = sports['title']
 				self.sportslist.append((title, '', title, sports['target'].encode('utf8')))
 				default_section_choicelist.append((title, title))
 				if sports['children']:
 					for subsport in sports['children']:
-						subtitle = subsport['title'].encode('utf8')
+						subtitle = subsport['title']
 						self.sportslist.append(('', subtitle, title + ' - ' + subtitle, subsport['target'].encode('utf8')))
 						default_section_choicelist.append((subtitle, subtitle))
 		except Exception as e:
@@ -1453,7 +1453,7 @@ class TelekomSportMainScreen(Screen):
 				if rel['target_commitish'] != 'master':
 					continue
 				if self.version < rel['tag_name']:
-					self.updateText = rel['body'].encode('utf8')
+					self.updateText = rel['body']
 					for asset in rel['assets']:
 						if telekomsport_isDreamOS and asset['name'].endswith('.deb'):
 							self.updateUrl = asset['browser_download_url'].encode('utf8')

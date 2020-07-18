@@ -89,10 +89,10 @@ config.plugins.telekomsport.conf_alarm_duration = ConfigSelection(default = "800
 
 
 def encode(x):
-	return base64.encodestring(''.join(chr(ord(c) ^ ord(k)) for c, k in zip(x, cycle('password protection')))).strip()
+	return base64.encodebytes(''.join(chr(c ^ ord(k)) for c, k in zip(x, cycle('password protection'))).encode('utf-8')).strip()
 
 def decode(x):
-	return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(base64.decodestring(x), cycle('password protection')))
+	return ''.join(chr(c ^ ord(k)) for c, k in zip(base64.decodestring(x), cycle('password protection')))
 
 def readPasswords(session):
 	try:
@@ -108,8 +108,9 @@ def readPasswords(session):
 def savePasswords(session, p1, p2):
 	try:
 		with open('/etc/enigma2/MagentaSport.cfg', 'wb') as f:
-			f.write(encode(p1) + '\n')
-			f.write(encode(p2))
+			f.write(encode(p1.encode('utf-8')))
+			f.write('\n'.encode('utf-8'))
+			f.write(encode(p2.encode('utf-8')))
 		return True
 	except Exception as e:
 		session.open(MessageBox, 'Error writing passwords' + str(e), MessageBox.TYPE_ERROR)
@@ -1512,7 +1513,9 @@ class TelekomSportMainScreen(Screen):
 	def checkNewPasswordFileIsUsed(self):
 		if not path.isfile('/etc/enigma2/MagentaSport.cfg'):
 			print('Migrating passwords')
-			if savePasswords(self.session, decode(config.plugins.telekomsport.password1.value), decode(config.plugins.telekomsport.password2.value)):
+			p1 = config.plugins.telekomsport.password1.value.encode('utf-8')
+			p2 = config.plugins.telekomsport.password2.value.encode('utf-8')
+			if savePasswords(self.session, decode(p1), decode(p2)):
 				config.plugins.telekomsport.password1.value = ''
 				config.plugins.telekomsport.password1.save()
 				config.plugins.telekomsport.password2.value = ''

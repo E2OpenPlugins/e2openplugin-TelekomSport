@@ -1332,7 +1332,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.8.4'
+	version = 'v2.8.5'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'
@@ -1378,6 +1378,9 @@ class TelekomSportMainScreen(Screen):
 
 	def buildList(self, jsonData):
 		default_section_choicelist = [('', 'Default')]
+
+		self.sportslist.append(('MagentaSport Hauptseite', '', 'MagentaSport Hauptseite', '/page/1'))
+		default_section_choicelist.append(('MagentaSport Hauptseite', 'MagentaSport Hauptseite'))
 
 		try:
 			for sports in jsonData['data']['filter']:

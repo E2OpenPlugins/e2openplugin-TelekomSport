@@ -1335,7 +1335,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.8.4'
+	version = 'v2.9.0'
 
 	base_url = b'https://www.magentasport.de/api/v2/mobile'
 	main_page = b'/navigation'
@@ -1382,16 +1382,15 @@ class TelekomSportMainScreen(Screen):
 	def buildList(self, jsonData):
 		default_section_choicelist = [('', 'Default')]
 
+		self.sportslist.append(('MagentaSport Hauptseite', '', 'MagentaSport Hauptseite', '/page/1'))
+		default_section_choicelist.append(('MagentaSport Hauptseite', 'MagentaSport Hauptseite'))
+
 		try:
-			for sports in jsonData['data']['filter']:
+			for sports in jsonData['data']['league_filter']:
 				title = sports['title']
-				self.sportslist.append((title, '', title, sports['target'].encode('utf8')))
-				default_section_choicelist.append((title, title))
-				if sports['children']:
-					for subsport in sports['children']:
-						subtitle = subsport['title']
-						self.sportslist.append(('', subtitle, title + ' - ' + subtitle, subsport['target'].encode('utf8')))
-						default_section_choicelist.append((subtitle, subtitle))
+				if title != "":
+					self.sportslist.append((title, '', title, sports['target'].encode('utf8')))
+					default_section_choicelist.append((title, title))
 		except Exception as e:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportMainScreen ' + str(e))
 			return

@@ -791,21 +791,33 @@ class TelekomSportStandingsScreen(Screen):
 		elif self.curr == 'playoff' and not self.standingsList:
 			self.showPlayoff()
 
+	def loadNormalStandingsTable(self, standingsList, jsonData, table):
+		for team in jsonData['ranking']:
+			rank = team['rank']
+			team_title = team['team_title'].encode('utf8')
+			played = str(team['played'])
+			win = str(team['win'])
+			draw = str(team['draw'])
+			loss = str(team['loss'])
+			goals_for = str(team['goals_for'])
+			goals_against = str(team['goals_against'])
+			goal_diff = str(team['goal_diff'])
+			points = str(team['points'])
+			standingsList.append((str(rank), team_title, played, win, draw, loss, goals_for + ':' + goals_against, goal_diff, points, table, rank))
+
 	def loadNormalStandings(self, jsonData):
 		try:
-			for team in jsonData['data']['standing'][0]['ranking']:
-				rank = team['rank']
-				team_title = team['team_title'].encode('utf8')
-				played = str(team['played'])
-				win = str(team['win'])
-				draw = str(team['draw'])
-				loss = str(team['loss'])
-				goals_for = str(team['goals_for'])
-				goals_against = str(team['goals_against'])
-				goal_diff = str(team['goal_diff'])
-				points = str(team['points'])
-				self.standingsList.append((str(rank), team_title, played, win, draw, loss, goals_for + ':' + goals_against, goal_diff, points, rank))
-			self.standingsList = sorted(self.standingsList, key = lambda entry: entry[9])
+			if len(jsonData['data']['standing']) == 1:
+				self.loadNormalStandingsTable(self.standingsList, jsonData['data']['standing'][0], 1)
+			else:
+				self.loadNormalStandingsTable(self.standingsList, jsonData['data']['standing'][0], 1)
+				self.loadNormalStandingsTable(self.standingsList, jsonData['data']['standing'][1], 2)
+				# add headers for the 2 icehockey standings
+				self.standingsList.append(('', 'Nord', '', '', '', '', '', '', '', 1, 0))
+				self.standingsList.append(('', '', '', '', '', '', '', '', '', 2, -1))
+				self.standingsList.append(('', '', '', '', '', '', '', '', '', 2, -2))
+				self.standingsList.append(('', 'Süd', '', '', '', '', '', '', '', 2, 0))
+			self.standingsList = sorted(self.standingsList, key = lambda entry: (entry[9], entry[10]))
 			if not self.playoff_standings_url:
 				self.switchList()
 		except Exception as e:
@@ -1332,7 +1344,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.0'
+	version = 'v2.9.1'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

@@ -372,14 +372,14 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 
 		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions', 'SetupActions'],
 		{
-			'leavePlayer' : self.leavePlayer,
-			'cancel'      : self.leavePlayer,
+			'leavePlayer': self.leavePlayer,
+			'cancel': self.leavePlayer,
 			'leavePlayerOnExit': self.leavePlayerOnExit,
-			'deleteBackward'   : self.showLastConfAlarm,
-			'red'    : self.showBoxScore,
-			'green'  : self.showStatistics,
-			'yellow' : self.showSchedule,
-			'blue'   : self.showStandings,
+			'deleteBackward': self.showLastConfAlarm,
+			'red': self.showBoxScore,
+			'green': self.showStatistics,
+			'yellow': self.showSchedule,
+			'blue': self.showStandings,
 		}, -2)
 		self.onFirstExecBegin.append(self.playStream)
 		self.onClose.append(self.stopPlayback)
@@ -521,8 +521,8 @@ class TelekomSportBoxScoreScreen(Screen):
 
 		self['actions'] = ActionMap(['OkCancelActions'],
 		{
-			'ok' : self.close,
-			'cancel' : self.close,
+			'ok': self.close,
+			'cancel': self.close,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + boxscore_url, boundFunction(loadTelekomSportJsonData, 'BoxScore', self['status'], self.loadBoxScore), boundFunction(handleTelekomSportDownloadError, 'BoxScore', self['status']))
 
@@ -577,8 +577,8 @@ class TelekomSportStatisticsScreen(Screen):
 
 		self['actions'] = ActionMap(['OkCancelActions'],
 		{
-			'ok' : self.close,
-			'cancel' : self.close,
+			'ok': self.close,
+			'cancel': self.close,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + statistics_url, boundFunction(loadTelekomSportJsonData, 'Statistic', self['status'], self.loadStatistics), boundFunction(handleTelekomSportDownloadError, 'Statistics', self['status']))
 
@@ -932,7 +932,7 @@ class TelekomSportEventScreen(Screen):
 		if config_token.value and config_token_expiration_time.value > int(time.time()):
 			return ''
 
-		data = { "claims": "{'id_token':{'urn:telekom.com:all':null}}", "client_id": "10LIVESAM30000004901TSMAPP00000000000000", "grant_type": "password", "scope": "tsm offline_access", "username": username, "password": password }
+		data = {"claims": "{'id_token':{'urn:telekom.com:all':null}}", "client_id": "10LIVESAM30000004901TSMAPP00000000000000", "grant_type": "password", "scope": "tsm offline_access", "username": username, "password": password}
 
 		try:
 			response = urllib.urlopen(self.oauth_url + '?' + urllib.urlencode(data), '').read()
@@ -1011,7 +1011,7 @@ class TelekomSportEventScreen(Screen):
 							streams.append((int(bandwith), lines[i+1].strip()))
 					i += 1
 				if streams:
-					streams.sort(key=lambda x : x[0])
+					streams.sort(key=lambda x: x[0])
 					if len(streams) <> 5:
 						print 'Warning: %d streams in m3u8. 5 expected' % len(streams)
 						if int(config.plugins.telekomsport.stream_quality.value) < 3:
@@ -1451,7 +1451,7 @@ class TelekomSportMainScreen(Screen):
 	# for update
 	def checkForUpdate(self):
 		url = 'https://api.github.com/repos/E2OpenPlugins/e2openplugin-TelekomSport/releases'
-		header = { 'Accept' : 'application/vnd.github.v3+json' }
+		header = {'Accept': 'application/vnd.github.v3+json'}
 		req = urllib2.Request(url, None, header)
 		self.update_exist = False
 		try:

@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 
 pkg = 'Extensions.TelekomSport'
-setup (name='enigma2-plugin-extensions-telekomsport',
+setup(name='enigma2-plugin-extensions-telekomsport',
        version='1.0',
        license='GPLv2',
        url='https://github.com/E2OpenPlugins',

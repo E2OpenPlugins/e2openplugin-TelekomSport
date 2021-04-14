@@ -1008,7 +1008,7 @@ class TelekomSportEventScreen(Screen):
 					if lines[i].startswith('#EXT-X-STREAM-INF:'):
 						bandwith = self.readExtXStreamInfLine(lines[i], attributeListPattern)
 						if bandwith and i + 1 < count_lines:
-							streams.append((int(bandwith), lines[i+1].strip()))
+							streams.append((int(bandwith), lines[i + 1].strip()))
 					i += 1
 				if streams:
 					streams.sort(key=lambda x: x[0])
@@ -1017,7 +1017,7 @@ class TelekomSportEventScreen(Screen):
 						if int(config.plugins.telekomsport.stream_quality.value) < 3:
 							return streams[0][1]
 						else:
-							return streams[len(streams)-1][1]
+							return streams[len(streams) - 1][1]
 					return streams[int(config.plugins.telekomsport.stream_quality.value)][1]
 			return ''
 		except:
@@ -1422,7 +1422,7 @@ class TelekomSportMainScreen(Screen):
 
 	def selectDefaultSportsType(self):
 		if config.plugins.telekomsport.default_section.value:
-			items =  filter(lambda x: x[0] == config.plugins.telekomsport.default_section.value or x[1] == config.plugins.telekomsport.default_section.value, self.sportslist)
+			items = filter(lambda x: x[0] == config.plugins.telekomsport.default_section.value or x[1] == config.plugins.telekomsport.default_section.value, self.sportslist)
 			if items:
 				self.selectSportsType(items[0])
 

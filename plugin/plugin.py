@@ -68,22 +68,22 @@ except ImportError:
 #================================================
 
 config.plugins.telekomsport = ConfigSubsection()
-config.plugins.telekomsport.username1 = ConfigText(default = '', fixed_size = False)
-config.plugins.telekomsport.password1 = ConfigPassword(default = '', fixed_size = False)
-config.plugins.telekomsport.token1 = ConfigText(default = '')
-config.plugins.telekomsport.token1_expiration_time = ConfigInteger(default = 0)
-config.plugins.telekomsport.username2 = ConfigText(default = '', fixed_size = False)
-config.plugins.telekomsport.password2 = ConfigPassword(default = '', fixed_size = False)
-config.plugins.telekomsport.token2 = ConfigText(default = '')
-config.plugins.telekomsport.token2_expiration_time = ConfigInteger(default = 0)
+config.plugins.telekomsport.username1 = ConfigText(default='', fixed_size=False)
+config.plugins.telekomsport.password1 = ConfigPassword(default='', fixed_size=False)
+config.plugins.telekomsport.token1 = ConfigText(default='')
+config.plugins.telekomsport.token1_expiration_time = ConfigInteger(default=0)
+config.plugins.telekomsport.username2 = ConfigText(default='', fixed_size=False)
+config.plugins.telekomsport.password2 = ConfigPassword(default='', fixed_size=False)
+config.plugins.telekomsport.token2 = ConfigText(default='')
+config.plugins.telekomsport.token2_expiration_time = ConfigInteger(default=0)
 config.plugins.telekomsport.hide_unplayable = ConfigYesNo(default=False)
 # Use 2 config variables as workaround as empty ConfigSelection is not initialized with the stored value after e2 restart
-config.plugins.telekomsport.default_section = ConfigText(default = '', fixed_size = False)
-config.plugins.telekomsport.default_section_chooser = NoSave(ConfigSelection([], default = None))
+config.plugins.telekomsport.default_section = ConfigText(default='', fixed_size=False)
+config.plugins.telekomsport.default_section_chooser = NoSave(ConfigSelection([], default=None))
 # Some images like DreamOS need streams with fix quality
-config.plugins.telekomsport.fix_stream_quality = ConfigYesNo(default = telekomsport_isDreamOS)
-config.plugins.telekomsport.stream_quality = ConfigSelection(default = "2", choices = [("0", _("sehr gering")), ("1", _("gering")), ("2", _("mittel")), ("3", _("hoch")), ("4", _("sehr hoch"))])
-config.plugins.telekomsport.conf_alarm_duration = ConfigSelection(default = "8000", choices = [("4000", "4 Sekunden"), ("6000", "6 Sekunden"), ("8000", "8 Sekunden"), ("10000", "10 Sekunden"), ("12000", "12 Sekunden")])
+config.plugins.telekomsport.fix_stream_quality = ConfigYesNo(default=telekomsport_isDreamOS)
+config.plugins.telekomsport.stream_quality = ConfigSelection(default="2", choices=[("0", _("sehr gering")), ("1", _("gering")), ("2", _("mittel")), ("3", _("hoch")), ("4", _("sehr hoch"))])
+config.plugins.telekomsport.conf_alarm_duration = ConfigSelection(default="8000", choices=[("4000", "4 Sekunden"), ("6000", "6 Sekunden"), ("8000", "8 Sekunden"), ("10000", "10 Sekunden"), ("12000", "12 Sekunden")])
 
 
 def encode(x):
@@ -164,7 +164,7 @@ def downloadTelekomSportJson(url, callback, errorCallback):
 class TelekomSportMainScreenSummary(SetupSummary):
 
 	def __init__(self, session, parent):
-		SetupSummary.__init__(self, session, parent = parent)
+		SetupSummary.__init__(self, session, parent=parent)
 		self.skinName = 'SetupSummary'
 		self.onShow.append(self.addWatcher)
 		self.onHide.append(self.removeWatcher)
@@ -279,9 +279,9 @@ class TelekomSportConfigScreen(ConfigListScreen, Screen):
 
 	def virtualKeyboard(self):
 		if self['config'].getCurrent() in (self.config_username1, self.config_username2, self.config_password1, self.config_password2):
-			self.session.openWithCallback(self.virtualKeyBoardCallback, VirtualKeyBoard, title = self['config'].getCurrent()[0], text = self['config'].getCurrent()[1].value)
+			self.session.openWithCallback(self.virtualKeyBoardCallback, VirtualKeyBoard, title=self['config'].getCurrent()[0], text=self['config'].getCurrent()[1].value)
 
-	def virtualKeyBoardCallback(self, callback = None):
+	def virtualKeyBoardCallback(self, callback=None):
 		if callback is not None:
 			self['config'].getCurrent()[1].value = callback
 			self['config'].invalidate(self['config'].getCurrent())
@@ -448,7 +448,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 	def showMovies(self):
 		pass
 
-	def checkAlarmHistory(self, showAll = False):
+	def checkAlarmHistory(self, showAll=False):
 		downloadTelekomSportJson(self.conference_alarm_url, boundFunction(loadTelekomSportJsonData, 'Player', None, boundFunction(self.checkForNewAlarm, showAll)), self.checkAlarmHistoryError)
 
 	def checkForNewAlarm(self, showAll, jsonData):
@@ -817,7 +817,7 @@ class TelekomSportStandingsScreen(Screen):
 				self.standingsList.append(('', '', '', '', '', '', '', '', '', 2, -1))
 				self.standingsList.append(('', '', '', '', '', '', '', '', '', 2, -2))
 				self.standingsList.append(('', 'Süd', '', '', '', '', '', '', '', 2, 0))
-			self.standingsList = sorted(self.standingsList, key = lambda entry: (entry[9], entry[10]))
+			self.standingsList = sorted(self.standingsList, key=lambda entry: (entry[9], entry[10]))
 			if not self.playoff_standings_url:
 				self.switchList()
 		except Exception as e:
@@ -1011,7 +1011,7 @@ class TelekomSportEventScreen(Screen):
 							streams.append((int(bandwith), lines[i+1].strip()))
 					i += 1
 				if streams:
-					streams.sort(key = lambda x : x[0])
+					streams.sort(key=lambda x : x[0])
 					if len(streams) <> 5:
 						print 'Warning: %d streams in m3u8. 5 expected' % len(streams)
 						if int(config.plugins.telekomsport.stream_quality.value) < 3:
@@ -1276,7 +1276,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 	def update(self):
 		if self.telekomSportMainScreen.update_exist:
-			self.session.openWithCallback(self.telekomSportMainScreen.updateConfirmed, MessageBox, 'Ein Update ist verfügbar. Wollen sie es installieren?\nInformationen:\n' + self.telekomSportMainScreen.updateText, MessageBox.TYPE_YESNO, default = False)
+			self.session.openWithCallback(self.telekomSportMainScreen.updateConfirmed, MessageBox, 'Ein Update ist verfügbar. Wollen sie es installieren?\nInformationen:\n' + self.telekomSportMainScreen.updateText, MessageBox.TYPE_YESNO, default=False)
 
 	def closeRecursive(self):
 		self.close(True)
@@ -1350,7 +1350,7 @@ class TelekomSportMainScreen(Screen):
 	main_page = '/navigation'
 	title = 'Magenta Sport'
 
-	def __init__(self, session, args = None):
+	def __init__(self, session, args=None):
 		Screen.__init__(self, session)
 		self.session = session
 
@@ -1484,7 +1484,7 @@ class TelekomSportMainScreen(Screen):
 
 	def update(self):
 		if self.updateUrl:
-			self.session.openWithCallback(self.updateConfirmed, MessageBox, 'Ein Update ist verfügbar. Wollen sie es installieren?\nInformationen:\n' + self.updateText, MessageBox.TYPE_YESNO, default = False)
+			self.session.openWithCallback(self.updateConfirmed, MessageBox, 'Ein Update ist verfügbar. Wollen sie es installieren?\nInformationen:\n' + self.updateText, MessageBox.TYPE_YESNO, default=False)
 
 	def updateConfirmed(self, answer):
 		if answer:
@@ -1510,7 +1510,7 @@ class TelekomSportMainScreen(Screen):
 		self['buttongreen'].hide()
 		self.updateUrl = ''
 		if retval == 0:
-			self.session.openWithCallback(self.restartE2, MessageBox, 'Das Magenta Sport Plugin wurde erfolgreich installiert!\nSoll das E2 GUI neugestartet werden?', MessageBox.TYPE_YESNO, default = False)
+			self.session.openWithCallback(self.restartE2, MessageBox, 'Das Magenta Sport Plugin wurde erfolgreich installiert!\nSoll das E2 GUI neugestartet werden?', MessageBox.TYPE_YESNO, default=False)
 		else:
 			self.session.open(MessageBox, 'Bei der Installation ist ein Problem aufgetreten.', MessageBox.TYPE_ERROR)
 
@@ -1533,4 +1533,4 @@ def main(session, **kwargs):
 	session.open(TelekomSportMainScreen)
 
 def Plugins(**kwargs):
-	return PluginDescriptor(name='Magenta Sport', description=_('Magenta Sport Plugin'), where = PluginDescriptor.WHERE_PLUGINMENU, icon='plugin.png', fnc=main)
+	return PluginDescriptor(name='Magenta Sport', description=_('Magenta Sport Plugin'), where=PluginDescriptor.WHERE_PLUGINMENU, icon='plugin.png', fnc=main)

@@ -345,7 +345,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		InfoBarServiceErrorPopupSupport.__init__(self)
 
 		# disable 2nd infobar as it calls openEventView
-		if hasattr(config.usage,"show_second_infobar"):
+		if hasattr(config.usage, "show_second_infobar"):
 			self.saved_show_second_infobar_value = config.usage.show_second_infobar.value
 			config.usage.show_second_infobar.value = '0'
 
@@ -412,7 +412,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 			self.session.deleteDialog(self.conference_alarm_dialog)
 			self.conference_alarm_dialog = None
 			# restore old 2nd infobar config value
-			if hasattr(config.usage,"show_second_infobar"):
+			if hasattr(config.usage, "show_second_infobar"):
 				config.usage.show_second_infobar.value = self.saved_show_second_infobar_value
 			self.close()
 

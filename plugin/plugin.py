@@ -89,8 +89,10 @@ config.plugins.telekomsport.conf_alarm_duration = ConfigSelection(default="8000"
 def encode(x):
 	return base64.encodestring(''.join(chr(ord(c) ^ ord(k)) for c, k in izip(x, cycle('password protection')))).strip()
 
+
 def decode(x):
 	return ''.join(chr(ord(c) ^ ord(k)) for c, k in izip(base64.decodestring(x), cycle('password protection')))
+
 
 def readPasswords(session):
 	try:
@@ -103,6 +105,7 @@ def readPasswords(session):
 		print "Error reading MagentaSport.cfg", e
 		return '', ''
 
+
 def savePasswords(session, p1, p2):
 	try:
 		with open('/etc/enigma2/MagentaSport.cfg', 'wb') as f:
@@ -113,6 +116,7 @@ def savePasswords(session, p1, p2):
 		session.open(MessageBox, 'Error writing passwords' + str(e), MessageBox.TYPE_ERROR)
 		print "Error writing MagentaSport.cfg", e
 		return False
+
 
 def loadTelekomSportJsonData(screen, statusField, buildListFunc, data):
 	try:
@@ -126,14 +130,17 @@ def loadTelekomSportJsonData(screen, statusField, buildListFunc, data):
 	except Exception as e:
 		statusField.setText(screen + ': Fehler beim Laden der JSON Daten "' + str(e) + '"')
 
+
 def handleTelekomSportWebsiteResponse(callback, response):
 	d = readBody(response)
 	d.addCallback(callback)
 	return d
 
+
 def handleTelekomSportDownloadError(screen, statusField, err):
 	if statusField:
 		statusField.setText(screen + ': Fehler beim Download "' + str(err) + '"')
+
 
 def downloadTelekomSportJson(url, callback, errorCallback):
 	if telekomsport_isDreamOS == False:
@@ -1528,9 +1535,9 @@ class TelekomSportMainScreen(Screen):
 				config.plugins.telekomsport.password2.save()
 
 
-
 def main(session, **kwargs):
 	session.open(TelekomSportMainScreen)
+
 
 def Plugins(**kwargs):
 	return PluginDescriptor(name='Magenta Sport', description=_('Magenta Sport Plugin'), where=PluginDescriptor.WHERE_PLUGINMENU, icon='plugin.png', fnc=main)

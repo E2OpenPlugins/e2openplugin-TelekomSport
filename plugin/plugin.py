@@ -345,7 +345,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		InfoBarServiceErrorPopupSupport.__init__(self)
 
 		# disable 2nd infobar as it calls openEventView
-		if hasattr(config.usage,"show_second_infobar"):
+		if hasattr(config.usage, "show_second_infobar"):
 			self.saved_show_second_infobar_value = config.usage.show_second_infobar.value
 			config.usage.show_second_infobar.value = '0'
 
@@ -372,14 +372,14 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 
 		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions', 'SetupActions'],
 		{
-			'leavePlayer' : self.leavePlayer,
-			'cancel'      : self.leavePlayer,
+			'leavePlayer': self.leavePlayer,
+			'cancel'     : self.leavePlayer,
 			'leavePlayerOnExit': self.leavePlayerOnExit,
 			'deleteBackward'   : self.showLastConfAlarm,
-			'red'    : self.showBoxScore,
-			'green'  : self.showStatistics,
-			'yellow' : self.showSchedule,
-			'blue'   : self.showStandings,
+			'red'   : self.showBoxScore,
+			'green' : self.showStatistics,
+			'yellow': self.showSchedule,
+			'blue'  : self.showStandings,
 		}, -2)
 		self.onFirstExecBegin.append(self.playStream)
 		self.onClose.append(self.stopPlayback)
@@ -412,7 +412,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 			self.session.deleteDialog(self.conference_alarm_dialog)
 			self.conference_alarm_dialog = None
 			# restore old 2nd infobar config value
-			if hasattr(config.usage,"show_second_infobar"):
+			if hasattr(config.usage, "show_second_infobar"):
 				config.usage.show_second_infobar.value = self.saved_show_second_infobar_value
 			self.close()
 
@@ -521,8 +521,8 @@ class TelekomSportBoxScoreScreen(Screen):
 
 		self['actions'] = ActionMap(['OkCancelActions'],
 		{
-			'ok' : self.close,
-			'cancel' : self.close,
+			'ok': self.close,
+			'cancel': self.close,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + boxscore_url, boundFunction(loadTelekomSportJsonData, 'BoxScore', self['status'], self.loadBoxScore), boundFunction(handleTelekomSportDownloadError, 'BoxScore', self['status']))
 
@@ -577,8 +577,8 @@ class TelekomSportStatisticsScreen(Screen):
 
 		self['actions'] = ActionMap(['OkCancelActions'],
 		{
-			'ok' : self.close,
-			'cancel' : self.close,
+			'ok': self.close,
+			'cancel': self.close,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + statistics_url, boundFunction(loadTelekomSportJsonData, 'Statistic', self['status'], self.loadStatistics), boundFunction(handleTelekomSportDownloadError, 'Statistics', self['status']))
 
@@ -1011,7 +1011,7 @@ class TelekomSportEventScreen(Screen):
 							streams.append((int(bandwith), lines[i+1].strip()))
 					i += 1
 				if streams:
-					streams.sort(key = lambda x : x[0])
+					streams.sort(key = lambda x: x[0])
 					if len(streams) <> 5:
 						print 'Warning: %d streams in m3u8. 5 expected' % len(streams)
 						if int(config.plugins.telekomsport.stream_quality.value) < 3:
@@ -1422,7 +1422,7 @@ class TelekomSportMainScreen(Screen):
 
 	def selectDefaultSportsType(self):
 		if config.plugins.telekomsport.default_section.value:
-			items =  filter(lambda x: x[0] == config.plugins.telekomsport.default_section.value or x[1] == config.plugins.telekomsport.default_section.value, self.sportslist)
+			items = filter(lambda x: x[0] == config.plugins.telekomsport.default_section.value or x[1] == config.plugins.telekomsport.default_section.value, self.sportslist)
 			if items:
 				self.selectSportsType(items[0])
 
@@ -1526,7 +1526,6 @@ class TelekomSportMainScreen(Screen):
 				config.plugins.telekomsport.password1.save()
 				config.plugins.telekomsport.password2.value = ''
 				config.plugins.telekomsport.password2.save()
-
 
 
 def main(session, **kwargs):

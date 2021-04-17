@@ -40,6 +40,7 @@ class TelekomSportHTTPProgressDownloader(client.HTTPDownloader):
 			self.end_callback()
 		return ret
 
+
 class TelekomSportDownloadWithProgress:
 	def __init__(self, url, outputfile, contextFactory=None, *args, **kwargs):
 		parsed = urlparse(url)

@@ -1183,8 +1183,14 @@ class TelekomSportEventLaneScreen(Screen):
 
 	def buildList(self, jsonData):
 		try:
-			for events in jsonData['data']['data']:
-				if events['target_type'] and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
+			if 'panels' in jsonData['data']['data']:
+				jsonData = jsonData['data']['data']['panels']
+			else:
+				jsonData = jsonData['data']['data']
+			for events in jsonData:
+				if 'event' in events:
+					events = events['event']
+				if 'target_type' in events and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
 					description = events['metadata']['description_bold'].encode('utf8')
 					subdescription = events['metadata']['description_regular'].encode('utf8')
 					original = events['metadata']['scheduled_start']['original'].encode('utf8')
@@ -1288,7 +1294,7 @@ class TelekomSportSportsTypeScreen(Screen):
 				if content['title'] and content['title'] != '':
 					title = content['title'].encode('utf8')
 				for group_element in content['group_elements']:
-					if group_element['type'] == 'eventLane' or group_element['type'] == 'editorialLane':
+					if group_element['type'] == 'eventLane' or group_element['type'] == 'editorialLane' or group_element['type'] == 'teaserGrid':
 						subtitle = group_element['title'].encode('utf8')
 						urlpart = group_element['data_url'].encode('utf8')
 						if content['title'] != '' and subtitle == '':
@@ -1296,8 +1302,10 @@ class TelekomSportSportsTypeScreen(Screen):
 						elif content['title'] != '' and subtitle != '':
 							self.eventLaneList.append((title, '', title, ''))
 							self.eventLaneList.append(('', subtitle, title + ' - ' + subtitle, urlpart))
+						elif content['title'] == '' and subtitle != '':
+							self.eventLaneList.append(('', subtitle, subtitle, urlpart))
 						else:
-							self.eventLaneList.append(('', subtitle, title + ' - ' + subtitle, urlpart))
+							self.eventLaneList.append(('Live', subtitle, 'Live', urlpart))
 			if 'navigation' in jsonData['data'] and 'header' in jsonData['data']['navigation']:
 				for header in jsonData['data']['navigation']['header']:
 					if header['target_type'] == 'standings':

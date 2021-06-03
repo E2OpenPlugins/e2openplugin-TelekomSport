@@ -348,7 +348,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 		InfoBarServiceErrorPopupSupport.__init__(self)
 
 		# disable 2nd infobar as it calls openEventView
-		if hasattr(config.usage,"show_second_infobar"):
+		if hasattr(config.usage, "show_second_infobar"):
 			self.saved_show_second_infobar_value = config.usage.show_second_infobar.value
 			config.usage.show_second_infobar.value = '0'
 
@@ -375,14 +375,14 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 
 		self['actions'] = ActionMap(['MoviePlayerActions', 'ColorActions', 'OkCancelActions', 'SetupActions'],
 		{
-			'leavePlayer' : self.leavePlayer,
-			'cancel'      : self.leavePlayer,
+			'leavePlayer': self.leavePlayer,
+			'cancel'     : self.leavePlayer,
 			'leavePlayerOnExit': self.leavePlayerOnExit,
 			'deleteBackward'   : self.showLastConfAlarm,
-			'red'    : self.showBoxScore,
-			'green'  : self.showStatistics,
-			'yellow' : self.showSchedule,
-			'blue'   : self.showStandings,
+			'red'   : self.showBoxScore,
+			'green' : self.showStatistics,
+			'yellow': self.showSchedule,
+			'blue'  : self.showStandings,
 		}, -2)
 		self.onFirstExecBegin.append(self.playStream)
 		self.onClose.append(self.stopPlayback)
@@ -415,7 +415,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 			self.session.deleteDialog(self.conference_alarm_dialog)
 			self.conference_alarm_dialog = None
 			# restore old 2nd infobar config value
-			if hasattr(config.usage,"show_second_infobar"):
+			if hasattr(config.usage, "show_second_infobar"):
 				config.usage.show_second_infobar.value = self.saved_show_second_infobar_value
 			self.close()
 
@@ -524,8 +524,8 @@ class TelekomSportBoxScoreScreen(Screen):
 
 		self['actions'] = ActionMap(['OkCancelActions'],
 		{
-			'ok' : self.close,
-			'cancel' : self.close,
+			'ok': self.close,
+			'cancel': self.close,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + boxscore_url, boundFunction(loadTelekomSportJsonData, 'BoxScore', self['status'], self.loadBoxScore), boundFunction(handleTelekomSportDownloadError, 'BoxScore', self['status']))
 
@@ -580,8 +580,8 @@ class TelekomSportStatisticsScreen(Screen):
 
 		self['actions'] = ActionMap(['OkCancelActions'],
 		{
-			'ok' : self.close,
-			'cancel' : self.close,
+			'ok': self.close,
+			'cancel': self.close,
 		})
 		downloadTelekomSportJson(TelekomSportMainScreen.base_url + statistics_url, boundFunction(loadTelekomSportJsonData, 'Statistic', self['status'], self.loadStatistics), boundFunction(handleTelekomSportDownloadError, 'Statistics', self['status']))
 
@@ -794,21 +794,33 @@ class TelekomSportStandingsScreen(Screen):
 		elif self.curr == 'playoff' and not self.standingsList:
 			self.showPlayoff()
 
+	def loadNormalStandingsTable(self, standingsList, jsonData, table):
+		for team in jsonData['ranking']:
+			rank = team['rank']
+			team_title = team['team_title']
+			played = str(team['played'])
+			win = str(team['win'])
+			draw = str(team['draw'])
+			loss = str(team['loss'])
+			goals_for = str(team['goals_for'])
+			goals_against = str(team['goals_against'])
+			goal_diff = str(team['goal_diff'])
+			points = str(team['points'])
+			standingsList.append((str(rank), team_title, played, win, draw, loss, goals_for + ':' + goals_against, goal_diff, points, table, rank))
+
 	def loadNormalStandings(self, jsonData):
 		try:
-			for team in jsonData['data']['standing'][0]['ranking']:
-				rank = team['rank']
-				team_title = team['team_title']
-				played = str(team['played'])
-				win = str(team['win'])
-				draw = str(team['draw'])
-				loss = str(team['loss'])
-				goals_for = str(team['goals_for'])
-				goals_against = str(team['goals_against'])
-				goal_diff = str(team['goal_diff'])
-				points = str(team['points'])
-				self.standingsList.append((str(rank), team_title, played, win, draw, loss, goals_for + ':' + goals_against, goal_diff, points, rank))
-			self.standingsList = sorted(self.standingsList, key = lambda entry: entry[9])
+			if len(jsonData['data']['standing']) == 1:
+				self.loadNormalStandingsTable(self.standingsList, jsonData['data']['standing'][0], 1)
+			else:
+				self.loadNormalStandingsTable(self.standingsList, jsonData['data']['standing'][0], 1)
+				self.loadNormalStandingsTable(self.standingsList, jsonData['data']['standing'][1], 2)
+				# add headers for the 2 icehockey standings
+				self.standingsList.append(('', 'Nord', '', '', '', '', '', '', '', 1, 0))
+				self.standingsList.append(('', '', '', '', '', '', '', '', '', 2, -1))
+				self.standingsList.append(('', '', '', '', '', '', '', '', '', 2, -2))
+				self.standingsList.append(('', 'Süd', '', '', '', '', '', '', '', 2, 0))
+			self.standingsList = sorted(self.standingsList, key = lambda entry: (entry[9], entry[10]))
 			if not self.playoff_standings_url:
 				self.switchList()
 		except Exception as e:
@@ -1002,7 +1014,7 @@ class TelekomSportEventScreen(Screen):
 							streams.append((int(bandwith), lines[i+1].strip()))
 					i += 1
 				if streams:
-					streams.sort(key = lambda x : x[0])
+					streams.sort(key = lambda x: x[0])
 					if len(streams) != 5:
 						print('Warning: %d streams in m3u8. 5 expected' % len(streams))
 						if int(config.plugins.telekomsport.stream_quality.value) < 3:
@@ -1174,8 +1186,14 @@ class TelekomSportEventLaneScreen(Screen):
 
 	def buildList(self, jsonData):
 		try:
-			for events in jsonData['data']['data']:
-				if events['target_type'] and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
+			if 'panels' in jsonData['data']['data']:
+				jsonData = jsonData['data']['data']['panels']
+			else:
+				jsonData = jsonData['data']['data']
+			for events in jsonData:
+				if 'event' in events:
+					events = events['event']
+				if 'target_type' in events and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
 					description = events['metadata']['description_bold']
 					subdescription = events['metadata']['description_regular']
 					original = events['metadata']['scheduled_start']['original']
@@ -1279,7 +1297,7 @@ class TelekomSportSportsTypeScreen(Screen):
 				if content['title'] and content['title'] != '':
 					title = content['title']
 				for group_element in content['group_elements']:
-					if group_element['type'] == 'eventLane' or group_element['type'] == 'editorialLane':
+					if group_element['type'] == 'eventLane' or group_element['type'] == 'editorialLane' or group_element['type'] == 'teaserGrid':
 						subtitle = group_element['title']
 						urlpart = group_element['data_url'].encode('utf8')
 						if content['title'] != '' and subtitle == '':
@@ -1287,8 +1305,10 @@ class TelekomSportSportsTypeScreen(Screen):
 						elif content['title'] != '' and subtitle != '':
 							self.eventLaneList.append((title, '', title, ''))
 							self.eventLaneList.append(('', subtitle, title + ' - ' + subtitle, urlpart))
+						elif content['title'] == '' and subtitle != '':
+							self.eventLaneList.append(('', subtitle, subtitle, urlpart))
 						else:
-							self.eventLaneList.append(('', subtitle, title + ' - ' + subtitle, urlpart))
+							self.eventLaneList.append(('Live', subtitle, 'Live', urlpart))
 			if 'navigation' in jsonData['data'] and 'header' in jsonData['data']['navigation']:
 				for header in jsonData['data']['navigation']['header']:
 					if header['target_type'] == 'standings':
@@ -1335,7 +1355,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.0'
+	version = 'v2.9.2'
 
 	base_url = b'https://www.magentasport.de/api/v2/mobile'
 	main_page = b'/navigation'
@@ -1413,7 +1433,7 @@ class TelekomSportMainScreen(Screen):
 
 	def selectDefaultSportsType(self):
 		if config.plugins.telekomsport.default_section.value:
-			items =  filter(lambda x: x[0] == config.plugins.telekomsport.default_section.value or x[1] == config.plugins.telekomsport.default_section.value, self.sportslist)
+			items = filter(lambda x: x[0] == config.plugins.telekomsport.default_section.value or x[1] == config.plugins.telekomsport.default_section.value, self.sportslist)
 			if items:
 				self.selectSportsType(items[0])
 
@@ -1519,7 +1539,6 @@ class TelekomSportMainScreen(Screen):
 				config.plugins.telekomsport.password1.save()
 				config.plugins.telekomsport.password2.value = ''
 				config.plugins.telekomsport.password2.save()
-
 
 
 def main(session, **kwargs):

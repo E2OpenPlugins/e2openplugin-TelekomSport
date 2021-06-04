@@ -1402,7 +1402,7 @@ class TelekomSportMainScreen(Screen):
 	def buildList(self, jsonData):
 		default_section_choicelist = [('', 'Default')]
 
-		self.sportslist.append(('MagentaSport Hauptseite', '', 'MagentaSport Hauptseite', '/page/1'))
+		self.sportslist.append(('MagentaSport Hauptseite', '', 'MagentaSport Hauptseite', b'/page/1'))
 		default_section_choicelist.append(('MagentaSport Hauptseite', 'MagentaSport Hauptseite'))
 
 		try:

@@ -886,8 +886,8 @@ class TelekomSportStandingsScreen(Screen):
 class TelekomSportEventScreen(Screen):
 
 	oauth_url = 'https://accounts.login.idm.telekom.com/oauth2/tokens'
-	jwt_url = 'https://www.telekomsport.de/service/auth/app/login/jwt'
-	stream_access_url = 'https://www.telekomsport.de/service/player/streamAccess'
+	jwt_url = 'https://www.magentasport.de/service/auth/app/login/jwt'
+	stream_access_url = 'https://www.magentasport.de/service/player/v2/streamAccess'
 
 	def __init__(self, session, description, starttime, match, url, standings_url, schedule_url):
 		Screen.__init__(self, session)
@@ -1352,7 +1352,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.2'
+	version = 'v2.9.3'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

@@ -1154,7 +1154,7 @@ class TelekomSportEventScreen(Screen):
 
 class TelekomSportEventLaneScreen(Screen):
 
-	def __init__(self, session, main_title, title, url, standings_url, schedule_url):
+	def __init__(self, session, main_title, title, url, epg_url, standings_url, schedule_url):
 		Screen.__init__(self, session)
 		self.session = session
 		self.standings_url = standings_url
@@ -1176,10 +1176,31 @@ class TelekomSportEventLaneScreen(Screen):
 			'cancel': self.close,
 			'ok': self.ok,
 		})
-		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'EventLane', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'EventLane', self['status']))
+		if url != '':
+			downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'EventLane', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'EventLane', self['status']))
+		elif epg_url != '':
+			downloadTelekomSportJson(TelekomSportMainScreen.base_url + epg_url, boundFunction(loadTelekomSportJsonData, 'EventLane', self['status'], self.buildEpgList), boundFunction(handleTelekomSportDownloadError, 'EventLane', self['status']))
 
 	def closeRecursive(self):
 		self.close(True)
+
+	def addEventToList(self, events):
+		if 'target_type' in events and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
+			description = events['metadata']['description_bold'].encode('utf8')
+			subdescription = events['metadata']['description_regular'].encode('utf8')
+			original = events['metadata']['scheduled_start']['original'].encode('utf8')
+			starttime = datetime.strptime(original, '%Y-%m-%d %H:%M:%S')
+			starttime_str = starttime.strftime('%d.%m.%Y %H:%M')
+			urlpart = events['target'].encode('utf8')
+			if subdescription:
+				description = description + ' - ' + subdescription
+			if 'home' in events['metadata']['details'] and 'name_full' in events['metadata']['details']['home'] and events['metadata']['details']['home']['name_full'].encode('utf8') <> '':
+				home = events['metadata']['details']['home']['name_full'].encode('utf8')
+				away = events['metadata']['details']['away']['name_full'].encode('utf8')
+				self.eventList.append((description, starttime_str, home + ' - ' + away, urlpart, starttime))
+			else:
+				title = events['metadata']['title'].encode('utf8')
+				self.eventList.append((description, starttime_str, title, urlpart, starttime))
 
 	def buildList(self, jsonData):
 		try:
@@ -1190,22 +1211,20 @@ class TelekomSportEventLaneScreen(Screen):
 			for events in jsonData:
 				if 'event' in events:
 					events = events['event']
-				if 'target_type' in events and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
-					description = events['metadata']['description_bold'].encode('utf8')
-					subdescription = events['metadata']['description_regular'].encode('utf8')
-					original = events['metadata']['scheduled_start']['original'].encode('utf8')
-					starttime = datetime.strptime(original, '%Y-%m-%d %H:%M:%S')
-					starttime_str = starttime.strftime('%d.%m.%Y %H:%M')
-					urlpart = events['target'].encode('utf8')
-					if subdescription:
-						description = description + ' - ' + subdescription
-					if 'home' in events['metadata']['details'] and events['metadata']['details']['home']['name_full'].encode('utf8') <> '':
-						home = events['metadata']['details']['home']['name_full'].encode('utf8')
-						away = events['metadata']['details']['away']['name_full'].encode('utf8')
-						self.eventList.append((description, starttime_str, home + ' - ' + away, urlpart, starttime))
-					else:
-						title = events['metadata']['title'].encode('utf8')
-						self.eventList.append((description, starttime_str, title, urlpart, starttime))
+				self.addEventToList(events)
+		except Exception as e:
+			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportEventLaneScreen ' + str(e))
+			return
+
+		self['list'].setList(self.eventList)
+		self['status'].hide()
+
+	def buildEpgList(self, jsonData):
+		try:
+			for element in jsonData['data']['elements']:
+				for slot in element['slots']:
+					for events in slot['events']:
+						self.addEventToList(events)
 		except Exception as e:
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportEventLaneScreen ' + str(e))
 			return
@@ -1298,14 +1317,17 @@ class TelekomSportSportsTypeScreen(Screen):
 						subtitle = group_element['title'].encode('utf8')
 						urlpart = group_element['data_url'].encode('utf8')
 						if content['title'] != '' and subtitle == '':
-							self.eventLaneList.append((title, subtitle, title, urlpart))
+							self.eventLaneList.append((title, subtitle, title, urlpart, ''))
 						elif content['title'] != '' and subtitle != '':
-							self.eventLaneList.append((title, '', title, ''))
-							self.eventLaneList.append(('', subtitle, title + ' - ' + subtitle, urlpart))
+							self.eventLaneList.append((title, '', title, '', ''))
+							self.eventLaneList.append(('', subtitle, title + ' - ' + subtitle, urlpart, ''))
 						elif content['title'] == '' and subtitle != '':
-							self.eventLaneList.append(('', subtitle, subtitle, urlpart))
+							self.eventLaneList.append(('', subtitle, subtitle, urlpart, ''))
 						else:
-							self.eventLaneList.append(('Live', subtitle, 'Live', urlpart))
+							self.eventLaneList.append(('Aktuelles', subtitle, 'Aktuelles', urlpart, ''))
+					if group_element['type'] == 'teaserGrid': # read epg data to get all matches
+						content_id = group_element['content_id']
+						self.eventLaneList.append(('Spielplan', '', 'Spielplan', '', '/epg/content/' + str(content_id)))
 			if 'navigation' in jsonData['data'] and 'header' in jsonData['data']['navigation']:
 				for header in jsonData['data']['navigation']['header']:
 					if header['target_type'] == 'standings':
@@ -1325,8 +1347,9 @@ class TelekomSportSportsTypeScreen(Screen):
 		if self['list'].getCurrent():
 			title = self['list'].getCurrent()[2]
 			urlpart = self['list'].getCurrent()[3]
-			if urlpart != '':
-				self.session.openWithCallback(self.recursiveClose, TelekomSportEventLaneScreen, self.main_title, title, urlpart, self.standings_url, self.schedule_url)
+			epg_urlpart = self['list'].getCurrent()[4]
+			if urlpart != '' or epg_urlpart != '':
+				self.session.openWithCallback(self.recursiveClose, TelekomSportEventLaneScreen, self.main_title, title, urlpart, epg_urlpart, self.standings_url, self.schedule_url)
 
 	def recursiveClose(self, *retVal):
 		if retVal:
@@ -1352,7 +1375,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.3'
+	version = 'v2.9.4'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

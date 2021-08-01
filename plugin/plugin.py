@@ -92,7 +92,7 @@ def encode(x):
 	return base64.encodebytes(''.join(chr(c ^ ord(k)) for c, k in zip(x, cycle('password protection'))).encode('utf-8')).strip()
 
 def decode(x):
-	return ''.join(chr(c ^ ord(k)) for c, k in zip(base64.decodestring(x), cycle('password protection')))
+	return ''.join(chr(c ^ ord(k)) for c, k in zip(base64.decodebytes(x), cycle('password protection')))
 
 def readPasswords(session):
 	try:

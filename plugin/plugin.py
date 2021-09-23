@@ -477,7 +477,7 @@ class TelekomSportMoviePlayer(Screen, InfoBarMenu, InfoBarBase, InfoBarSeek, Inf
 
 							complete_list.append((ev, match, title, text, eventid, videoid))
 
-							if (filter(lambda x: x[0] == ev, self.conference_complete_alarm_list) == []) or showAll: # event not found in the current list or conference alarm enabled -> show all events
+							if (list(filter(lambda x: x[0] == ev, self.conference_complete_alarm_list)) == []) or showAll: # event not found in the current list or conference alarm enabled -> show all events
 								new_alarms_list.append((ev, match, title, text, eventid, videoid))
 
 						self.conference_complete_alarm_list = complete_list
@@ -1459,7 +1459,7 @@ class TelekomSportMainScreen(Screen):
 
 	def selectDefaultSportsType(self):
 		if config.plugins.telekomsport.default_section.value:
-			items = filter(lambda x: x[0] == config.plugins.telekomsport.default_section.value or x[1] == config.plugins.telekomsport.default_section.value, self.sportslist)
+			items = list(filter(lambda x: x[0] == config.plugins.telekomsport.default_section.value or x[1] == config.plugins.telekomsport.default_section.value, self.sportslist))
 			if items:
 				self.selectSportsType(items[0])
 

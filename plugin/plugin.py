@@ -1000,7 +1000,11 @@ class TelekomSportEventScreen(Screen):
 		try:
 			attributeListPattern = re.compile(r'''((?:[^,"']|"[^"]*"|'[^']*')+)''')
 			streams = []
-			lines = urllib2.urlopen(m3u8_url).readlines()
+			req = urllib2.Request(m3u8_url)
+			req.add_header('User-Agent', 'Enigma2 HbbTV/1.1.1 (PVRRTSPDL;OpenPLi;;;)')
+			response = urllib2.urlopen(req)
+			self.cookies = response.info().getheaders('Set-Cookie')
+			lines = response.readlines()
 			if len(lines) > 0 and lines[0] == '#EXTM3U\n':
 				i = 1
 				count_lines = len(lines)
@@ -1052,7 +1056,7 @@ class TelekomSportEventScreen(Screen):
 		if config.plugins.telekomsport.fix_stream_quality.value:
 			url = self.getFixQualtiyStreamUrl(playlisturl)
 			if url:
-				playlisturl = url
+				playlisturl = url + "#User-Agent=Enigma2 HbbTV/1.1.1 (PVRRTSPDL;OpenPLi;;;)&Cookie=" + ";".join(self.cookies)
 
 		ref = eServiceReference(4097, 0, playlisturl)
 		ref.setName(title)
@@ -1375,7 +1379,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.4'
+	version = 'v2.9.5'
 
 	base_url = 'https://www.magentasport.de/api/v2/mobile'
 	main_page = '/navigation'

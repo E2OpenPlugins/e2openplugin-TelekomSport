@@ -1008,6 +1008,8 @@ class TelekomSportEventScreen(Screen):
 			response = urlopen(req)
 			self.cookies = list(item[1] for item in response.getheaders() if item[0] == 'Set-Cookie')
 			lines = response.readlines()
+			for i in range(0, len(lines)):
+				lines[i] = lines[i].decode('utf-8')
 			if len(lines) > 0 and lines[0] == '#EXTM3U\n':
 				i = 1
 				count_lines = len(lines)

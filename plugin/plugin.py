@@ -1238,6 +1238,9 @@ class TelekomSportEventLaneScreen(Screen):
 			self['status'].setText('Bitte Pluginentwickler informieren:\nTelekomSportEventLaneScreen ' + str(e))
 			return
 
+		self['list'].setList(self.eventList)
+		self['status'].hide()
+
 	def ok(self):
 		if self['list'].getCurrent():
 			description = self['list'].getCurrent()[0]
@@ -1333,7 +1336,7 @@ class TelekomSportSportsTypeScreen(Screen):
 							self.eventLaneList.append(('Aktuelles', subtitle, 'Aktuelles', urlpart, ''))
 					if group_element['type'] == 'teaserGrid': # read epg data to get all matches
 						content_id = group_element['content_id']
-						self.eventLaneList.append(('Spielplan', '', 'Spielplan', '', '/epg/content/' + str(content_id)))
+						self.eventLaneList.append(('Spielplan', '', 'Spielplan', '', ('/epg/content/' + str(content_id)).encode('utf8')))
 			if 'navigation' in jsonData['data'] and 'header' in jsonData['data']['navigation']:
 				for header in jsonData['data']['navigation']['header']:
 					if header['target_type'] == 'standings':

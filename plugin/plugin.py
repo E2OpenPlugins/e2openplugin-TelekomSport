@@ -25,12 +25,15 @@ from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceRefe
 
 import xml.etree.ElementTree as ET
 import time
-from urllib.request import urlopen, Request
+from urllib.request import urlopen, Request, build_opener, HTTPRedirectHandler
 from urllib.parse import urlencode
 from urllib.error import HTTPError, URLError
 import json
 import base64
 import re
+import random
+import string
+import hashlib
 from os import path
 from itertools import cycle
 from datetime import datetime
@@ -162,6 +165,19 @@ def downloadTelekomSportJson(url, callback, errorCallback):
 	d = agent.request(b'GET', url, Headers({'user-agent': ['Twisted']}))
 	d.addCallback(boundFunction(handleTelekomSportWebsiteResponse, callback))
 	d.addErrback(errorCallback)
+
+class TelekomSportRedirectHandler(HTTPRedirectHandler):
+
+	screen = None
+
+	def __init__(self, screen):
+		self.screen = screen
+
+	def http_error_302(self, req, fp, code, msg, headers):
+		location = headers.get('Location')
+		pos = location.find('code=') + 5
+		self.screen.auth_code = location[pos: pos + 8]
+		return None
 
 
 class TelekomSportMainScreenSummary(SetupSummary):
@@ -888,9 +904,12 @@ class TelekomSportStandingsScreen(Screen):
 
 class TelekomSportEventScreen(Screen):
 
-	oauth_url = 'https://accounts.login.idm.telekom.com/oauth2/tokens'
+	oauth_url = 'https://accounts.login.idm.telekom.com/oauth2/auth'
+	oauth_factorx_url = 'https://accounts.login.idm.telekom.com/factorx'
+	oauth_token_url = 'https://accounts.login.idm.telekom.com/oauth2/tokens'
 	jwt_url = 'https://www.magentasport.de/service/auth/app/login/jwt'
 	stream_access_url = 'https://www.magentasport.de/service/player/v2/streamAccess'
+	auth_code = ''
 
 	def __init__(self, session, description, starttime, match, url, standings_url, schedule_url):
 		Screen.__init__(self, session)
@@ -929,17 +948,65 @@ class TelekomSportEventScreen(Screen):
 	def closeRecursive(self):
 		self.close(True)
 
+	def findXsrfTid(self, html):
+		pos = html.find('name="xsrf')
+		xsrf_name = html[pos + 6: pos + 33]
+		pos = html.find('value=',pos)
+		xsrf_value = html[pos + 7: pos + 29]
+		pos = html.find('name="tid" value="')
+		tid = html[pos + 18: pos + 54]
+		return xsrf_name, xsrf_value, tid
+
 	def login(self, account, username, password, config_token, config_token_expiration_time):
 		err = ''
 		# check if token is present and valid
 		if config_token.value and config_token_expiration_time.value > int(time.time()):
 			return ''
 
-		data = { "claims": "{'id_token':{'urn:telekom.com:all':null}}", "client_id": "10LIVESAM30000004901TSMAPP00000000000000", "grant_type": "password", "scope": "tsm offline_access", "username": username, "password": password }
+		nonce = ''.join(random.sample(string.ascii_letters + string.digits, 20))
+		code_verifier = ''.join(random.sample(string.ascii_letters + string.digits, 20))
+		code_challenge = base64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode('utf-8')).digest()).split('='.encode('utf-8'))[0]
+		state = ''.join(random.sample(string.ascii_letters + string.digits, 20))
+
+		data = { 'prompt': 'x-no-sso', 'nonce': nonce, 'response_type': 'code', 'scope': 'openid', 'code_challenge': code_challenge, 'code_challenge_method': 'S256', 'redirect_uri': 'sso.magentasport://web_login_callback', 'client_id': '10LIVESAM30000004901MAGENTASPORTIOS00000', 'state': state}
 
 		try:
-			response = urlopen(self.oauth_url + '?' + urlencode(data), b'').read()
-			jsonData = json.loads(response)
+			response = urlopen(self.oauth_url + '?' + urlencode(data), None)
+			cookies = list(item[1] for item in response.getheaders() if item[0] == 'Set-Cookie')
+			html = response.read().decode('utf-8')
+			xsrf_name, xsrf_value, tid = self.findXsrfTid(html)
+
+			# send username
+			data = { xsrf_name: xsrf_value, 'tid': tid, 'x-show-cancel': 'true', 'bdata': '' , 'pw_usr': username, 'pw_submit': '', 'hidden_pwd' :''}
+			req = Request(self.oauth_factorx_url, urlencode(data).encode('utf8'))
+			req.add_header('Cookie', ';'.join(cookies))
+			response = urlopen(req)
+			cookies += list(item[1] for item in response.getheaders() if item[0] == 'Set-Cookie')
+			html = response.read().decode('utf-8')
+			xsrf_name, xsrf_value, tid = self.findXsrfTid(html)
+
+			# send password
+			data = { xsrf_name: xsrf_value, 'tid': tid, 'bdata':'' , 'hidden_usr': username, 'pw_submit': '', 'pw_pwd': password }
+			# request is redirected which needs to be prevented
+			opener = build_opener(TelekomSportRedirectHandler(self)).open
+			req = Request(self.oauth_factorx_url, urlencode(data).encode('utf8'))
+			req.add_header('Cookie', ';'.join(cookies))
+			try:
+				response = opener(req)
+			except Exception as e: # ignore redirect error we need only auth_code which is set in the handler
+				pass
+			if self.auth_code == '':
+				return 'Fehler beim Login ' + str(account) + '. Account. Kein auth code.'
+
+			# get auth code token
+			data = { 'code': self.auth_code, 'code_verifier': code_verifier, 'client_id': '10LIVESAM30000004901MAGENTASPORTIOS00000', 'grant_type': 'authorization_code' , 'redirect_uri': 'sso.magentasport://web_login_callback'}
+			response = urlopen(Request(self.oauth_token_url, urlencode(data).encode('utf8')))
+			jsonData= json.loads(response.read())
+
+			# get tsm token
+			data = { 'refresh_token': jsonData['refresh_token'], 'client_id': '10LIVESAM30000004901MAGENTASPORTIOS00000', 'grant_type':'refresh_token', 'redirect_uri': 'sso.magentasport://web_login_callback', 'scope':'tsm'}
+			response = urlopen(Request(self.oauth_token_url, urlencode(data).encode('utf8')))
+			jsonData= json.loads(response.read())
 			if 'access_token' not in jsonData:
 				if 'error_description' in jsonData:
 					return jsonData['error_description']
@@ -1384,7 +1451,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.5'
+	version = 'v2.9.6'
 
 	base_url = b'https://www.magentasport.de/api/v2/mobile'
 	main_page = b'/navigation'

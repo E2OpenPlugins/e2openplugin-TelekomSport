@@ -18,7 +18,7 @@ from Components.ConfigList import ConfigListScreen
 from Components.config import config, getConfigListEntry, ConfigSubsection, ConfigText, ConfigPassword, ConfigInteger, ConfigNothing, ConfigYesNo, ConfigSelection, NoSave
 from Tools.BoundFunction import boundFunction
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
-from downloader import TelekomSportDownloadWithProgress
+from downloader import TelekomSportFileDownloader
 
 from enigma import eTimer, eListboxPythonMultiContent, gFont, eEnv, eServiceReference, getDesktop, eConsoleAppContainer
 
@@ -1465,7 +1465,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.7'
+	version = 'v2.9.8'
 
 	base_url = 'https://www.magentasport.de'
 	api_url = '/api/v3/mobile'
@@ -1610,13 +1610,10 @@ class TelekomSportMainScreen(Screen):
 
 	def updateConfirmed(self, answer):
 		if answer:
-			self.downloader = TelekomSportDownloadWithProgress(self.updateUrl, self.filename)
-			self.downloader.addError(self.updateFailed)
-			self.downloader.addEnd(self.downloadFinished)
-			self.downloader.start()
+			downloader = TelekomSportFileDownloader(telekomsport_isDreamOS)
+			downloader.start(self.updateUrl, self.filename, self.downloadFinished, self.updateFailed)
 
 	def downloadFinished(self):
-		self.downloader.stop()
 		self.container = eConsoleAppContainer()
 		if telekomsport_isDreamOS:
 			self.container.appClosed_conn = self.container.appClosed.connect(self.updateFinished)
@@ -1625,7 +1622,7 @@ class TelekomSportMainScreen(Screen):
 			self.container.appClosed.append(self.updateFinished)
 			self.container.execute('opkg update; opkg install ' + self.filename)
 
-	def updateFailed(self, reason, status):
+	def updateFailed(self, reason):
 		self.updateFinished(1)
 
 	def updateFinished(self, retval):

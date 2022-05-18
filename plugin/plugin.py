@@ -36,7 +36,8 @@ import string
 import hashlib
 from os import path
 from itertools import cycle
-from datetime import datetime
+from datetime import datetime, timedelta
+
 from twisted.web.client import Agent, readBody
 from twisted.internet import reactor
 from twisted.web.http_headers import Headers
@@ -96,6 +97,14 @@ def encode(x):
 
 def decode(x):
 	return ''.join(chr(c ^ ord(k)) for c, k in zip(base64.decodebytes(x), cycle('password protection')))
+
+def generateToken(url):
+	api_salt = '55!#r%Rn3%xn?U?PX*k'
+	t = int(((datetime.now() - timedelta(hours=5)).replace(hour=0, minute=0, second=0, microsecond=0) - datetime(1970, 1, 1)).total_seconds())
+	return hashlib.sha256('{0}{1}{2}'.format(api_salt, t, url.decode('utf-8')).encode('utf-8')).hexdigest().encode('utf-8')
+
+def generateUrl(urlEnd):
+	return TelekomSportMainScreen.base_url + TelekomSportMainScreen.api_url + urlEnd + b'?token=' + generateToken(TelekomSportMainScreen.api_url + urlEnd)
 
 def readPasswords(session):
 	try:
@@ -543,7 +552,7 @@ class TelekomSportBoxScoreScreen(Screen):
 			'ok': self.close,
 			'cancel': self.close,
 		})
-		downloadTelekomSportJson(TelekomSportMainScreen.base_url + boxscore_url, boundFunction(loadTelekomSportJsonData, 'BoxScore', self['status'], self.loadBoxScore), boundFunction(handleTelekomSportDownloadError, 'BoxScore', self['status']))
+		downloadTelekomSportJson(generateUrl(boxscore_url), boundFunction(loadTelekomSportJsonData, 'BoxScore', self['status'], self.loadBoxScore), boundFunction(handleTelekomSportDownloadError, 'BoxScore', self['status']))
 
 	def loadBoxScore(self, jsonData):
 		if not jsonData['data'] or not jsonData['data']['data'] or not jsonData['data']['data']['results'] or not jsonData['data']['type'] == 'boxScore':
@@ -599,7 +608,7 @@ class TelekomSportStatisticsScreen(Screen):
 			'ok': self.close,
 			'cancel': self.close,
 		})
-		downloadTelekomSportJson(TelekomSportMainScreen.base_url + statistics_url, boundFunction(loadTelekomSportJsonData, 'Statistic', self['status'], self.loadStatistics), boundFunction(handleTelekomSportDownloadError, 'Statistics', self['status']))
+		downloadTelekomSportJson(generateUrl(statistics_url), boundFunction(loadTelekomSportJsonData, 'Statistic', self['status'], self.loadStatistics), boundFunction(handleTelekomSportDownloadError, 'Statistics', self['status']))
 
 	def loadStatistics(self, jsonData):
 		if not jsonData['data']:
@@ -680,7 +689,7 @@ class TelekomSportScheduleScreen(Screen):
 			'cancel': self.close,
 			'ok': self.close,
 		})
-		downloadTelekomSportJson(TelekomSportMainScreen.base_url + schedule_url, boundFunction(loadTelekomSportJsonData, 'Schedule', self['status'], self.loadSchedule), boundFunction(handleTelekomSportDownloadError, 'Schedule', self['status']))
+		downloadTelekomSportJson(generateUrl(schedule_url), boundFunction(loadTelekomSportJsonData, 'Schedule', self['status'], self.loadSchedule), boundFunction(handleTelekomSportDownloadError, 'Schedule', self['status']))
 
 	def loadSchedule(self, jsonData):
 		try:
@@ -763,7 +772,7 @@ class TelekomSportStandingsScreen(Screen):
 			'blue': self.switchList,
 		})
 		self.toogleStandingsVisibility(False)
-		downloadTelekomSportJson(TelekomSportMainScreen.base_url + standings_url, boundFunction(loadTelekomSportJsonData, 'Standings', self['status'], self.loadStandings), boundFunction(handleTelekomSportDownloadError, 'Standings', self['status']))
+		downloadTelekomSportJson(generateUrl(standings_url), boundFunction(loadTelekomSportJsonData, 'Standings', self['status'], self.loadStandings), boundFunction(handleTelekomSportDownloadError, 'Standings', self['status']))
 
 	def toogleStandingsVisibility(self, show):
 		self['table_header_team'].setVisible(show)
@@ -890,9 +899,9 @@ class TelekomSportStandingsScreen(Screen):
 			return
 
 		if self.normal_standings_url:
-			downloadTelekomSportJson(TelekomSportMainScreen.base_url + self.normal_standings_url, boundFunction(loadTelekomSportJsonData, 'NormalStandings', self['status'], self.loadNormalStandings), boundFunction(handleTelekomSportDownloadError, 'NormalStandings', self['status']))
+			downloadTelekomSportJson(generateUrl(self.normal_standings_url), boundFunction(loadTelekomSportJsonData, 'NormalStandings', self['status'], self.loadNormalStandings), boundFunction(handleTelekomSportDownloadError, 'NormalStandings', self['status']))
 		if self.playoff_standings_url:
-			downloadTelekomSportJson(TelekomSportMainScreen.base_url + self.playoff_standings_url, boundFunction(loadTelekomSportJsonData, 'PlayoffStandings', self['status'], self.loadPlayoffStandings), boundFunction(handleTelekomSportDownloadError, 'PlayoffStandings', self['status']))
+			downloadTelekomSportJson(generateUrl(self.playoff_standings_url), boundFunction(loadTelekomSportJsonData, 'PlayoffStandings', self['status'], self.loadPlayoffStandings), boundFunction(handleTelekomSportDownloadError, 'PlayoffStandings', self['status']))
 		if self.normal_standings_url and self.playoff_standings_url:
 			self['buttonblue'].show()
 
@@ -948,7 +957,7 @@ class TelekomSportEventScreen(Screen):
 			'cancel': self.close,
 			'ok': self.ok,
 		})
-		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'Event', self['status'], self.buildScreen), boundFunction(handleTelekomSportDownloadError, 'Event', self['status']))
+		downloadTelekomSportJson(generateUrl(url), boundFunction(loadTelekomSportJsonData, 'Event', self['status'], self.buildScreen), boundFunction(handleTelekomSportDownloadError, 'Event', self['status']))
 
 	def closeRecursive(self):
 		self.close(True)
@@ -1258,9 +1267,9 @@ class TelekomSportEventLaneScreen(Screen):
 			'ok': self.ok,
 		})
 		if url != '':
-			downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'EventLane', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'EventLane', self['status']))
+			downloadTelekomSportJson(generateUrl(url), boundFunction(loadTelekomSportJsonData, 'EventLane', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'EventLane', self['status']))
 		elif epg_url != '':
-			downloadTelekomSportJson(TelekomSportMainScreen.base_url + epg_url, boundFunction(loadTelekomSportJsonData, 'EventLane', self['status'], self.buildEpgList), boundFunction(handleTelekomSportDownloadError, 'EventLane', self['status']))
+			downloadTelekomSportJson(generateUrl(epg_url), boundFunction(loadTelekomSportJsonData, 'EventLane', self['status'], self.buildEpgList), boundFunction(handleTelekomSportDownloadError, 'EventLane', self['status']))
 
 	def closeRecursive(self):
 		self.close(True)
@@ -1382,7 +1391,7 @@ class TelekomSportSportsTypeScreen(Screen):
 			'blue': self.showTableResults,
 			'green': self.update,
 		})
-		downloadTelekomSportJson(TelekomSportMainScreen.base_url + url, boundFunction(loadTelekomSportJsonData, 'SportsType', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'SportsType', self['status']))
+		downloadTelekomSportJson(generateUrl(url), boundFunction(loadTelekomSportJsonData, 'SportsType', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'SportsType', self['status']))
 
 	def update(self):
 		if self.telekomSportMainScreen.update_exist:
@@ -1460,9 +1469,10 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.6'
+	version = 'v2.9.7'
 
-	base_url = b'https://www.magentasport.de/api/v2/mobile'
+	base_url = b'https://www.magentasport.de'
+	api_url = b'/api/v3/mobile'
 	main_page = b'/navigation'
 	title = 'Magenta Sport'
 
@@ -1495,7 +1505,7 @@ class TelekomSportMainScreen(Screen):
 			'blue': self.showSetup,
 			'green': self.update,
 		})
-		downloadTelekomSportJson(self.base_url + self.main_page, boundFunction(loadTelekomSportJsonData, 'Main', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'Main', self['status']))
+		downloadTelekomSportJson(generateUrl(self.main_page), boundFunction(loadTelekomSportJsonData, 'Main', self['status'], self.buildList), boundFunction(handleTelekomSportDownloadError, 'Main', self['status']))
 		self.onLayoutFinish.append(self.checkForUpdate)
 		self.migrate_timer = eTimer()
 		if telekomsport_isDreamOS:

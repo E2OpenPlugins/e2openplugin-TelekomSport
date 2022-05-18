@@ -818,7 +818,12 @@ class TelekomSportStandingsScreen(Screen):
 			loss = str(team['loss'])
 			goals_for = str(team['goals_for'])
 			goals_against = str(team['goals_against'])
-			goal_diff = str(team['goal_diff'])
+			if 'goals_diff' in team:
+				goal_diff = str(team['goals_diff'])
+			elif 'goal_diff' in team:
+				goal_diff = str(team['goal_diff'])
+			else:
+				goal_diff = ''
 			points = str(team['points'])
 			standingsList.append((str(rank), team_title, played, win, draw, loss, goals_for + ':' + goals_against, goal_diff, points, table, rank))
 
@@ -830,10 +835,10 @@ class TelekomSportStandingsScreen(Screen):
 				self.loadNormalStandingsTable(self.standingsList, jsonData['data']['standing'][0], 1)
 				self.loadNormalStandingsTable(self.standingsList, jsonData['data']['standing'][1], 2)
 				# add headers for the 2 icehockey standings
-				self.standingsList.append(('', 'Nord', '', '', '', '', '', '', '', 1, 0))
+				self.standingsList.append(('', 'Gruppe 1', '', '', '', '', '', '', '', 1, 0))
 				self.standingsList.append(('', '', '', '', '', '', '', '', '', 2, -1))
 				self.standingsList.append(('', '', '', '', '', '', '', '', '', 2, -2))
-				self.standingsList.append(('', 'Süd', '', '', '', '', '', '', '', 2, 0))
+				self.standingsList.append(('', 'Gruppe 2', '', '', '', '', '', '', '', 2, 0))
 			self.standingsList = sorted(self.standingsList, key = lambda entry: (entry[9], entry[10]))
 			if not self.playoff_standings_url:
 				self.switchList()
@@ -1260,9 +1265,13 @@ class TelekomSportEventLaneScreen(Screen):
 		if 'target_type' in events and events['target_type'] == 'event' and (events['target_playable'] or not config.plugins.telekomsport.hide_unplayable.value):
 			description = events['metadata']['description_bold'].encode('utf8')
 			subdescription = events['metadata']['description_regular'].encode('utf8')
-			original = events['metadata']['scheduled_start']['original'].encode('utf8')
-			starttime = datetime.strptime(original, '%Y-%m-%d %H:%M:%S')
-			starttime_str = starttime.strftime('%d.%m.%Y %H:%M')
+			if events['metadata']['scheduled_start']['original'] is None:
+				starttime = datetime.now()
+				starttime_str = 'Jetzt'
+			else:
+				original = events['metadata']['scheduled_start']['original'].encode('utf8')
+				starttime = datetime.strptime(original, '%Y-%m-%d %H:%M:%S')
+				starttime_str = starttime.strftime('%d.%m.%Y %H:%M')
 			urlpart = events['target'].encode('utf8')
 			if subdescription:
 				description = description + ' - ' + subdescription

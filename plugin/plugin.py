@@ -1586,7 +1586,7 @@ class TelekomSportMainScreen(Screen):
 							self['buttongreen'].show()
 							self.update_exist = True
 							break
-						elif (not telekomsport_isDreamOS) and asset['name'].endswith('.ipk'):
+						elif (not telekomsport_isDreamOS) and asset['name'].endswith('.ipk') and asset['name'].startswith('py3'):
 							self.updateUrl = asset['browser_download_url'].encode('utf8')
 							self.filename = '/tmp/enigma2-plugin-extensions-telekomsport.ipk'
 							self['buttongreen'].show()

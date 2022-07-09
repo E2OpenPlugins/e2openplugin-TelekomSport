@@ -1094,7 +1094,11 @@ class TelekomSportEventScreen(Screen):
 					if lines[i].startswith('#EXT-X-STREAM-INF:'):
 						bandwith = self.readExtXStreamInfLine(lines[i], attributeListPattern)
 						if bandwith and i + 1 < count_lines:
-							streams.append((int(bandwith), lines[i+1].strip()))
+							if lines[i+1].strip().startswith('https'):
+								stream_url = lines[i+1].strip()
+							else:
+								stream_url = m3u8_url.rsplit('/', 1)[0] + '/' + lines[i+1].strip()
+							streams.append((int(bandwith), stream_url))
 					i += 1
 				if streams:
 					streams.sort(key = lambda x: x[0])
@@ -1465,7 +1469,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.8'
+	version = 'v2.9.9'
 
 	base_url = 'https://www.magentasport.de'
 	api_url = '/api/v3/mobile'

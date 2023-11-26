@@ -1469,7 +1469,7 @@ class TelekomSportSportsTypeScreen(Screen):
 
 class TelekomSportMainScreen(Screen):
 
-	version = 'v2.9.9'
+	version = 'v3.0.0'
 
 	base_url = 'https://www.magentasport.de'
 	api_url = '/api/v3/mobile'
@@ -1523,7 +1523,7 @@ class TelekomSportMainScreen(Screen):
 		try:
 			for sports in jsonData['data']['league_filter']:
 				title = sports['title'].encode('utf8')
-				if title != "":
+				if title != "" and 'target' in sports:
 					self.sportslist.append((title, '', title, sports['target'].encode('utf8')))
 					default_section_choicelist.append((title, title))
 		except Exception as e:
